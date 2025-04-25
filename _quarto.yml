@@ -1,0 +1,61 @@
+project:
+  type: book
+
+book:
+  title: "Эффект некогнитивных навыков на результаты молодежи на рынке труда при переходе от учебы к работе"
+  author: "Аванесян Карен Алексеевич"
+  date: "4/23/2025"
+  chapters:
+    - index.qmd
+    - 1_intro.qmd
+    - 2_lit_rev.qmd
+    - 3_data.qmd
+    - 4_ncs_empl.qmd
+    - 5_ncs_neet.qmd
+    - 6_ncs_wages.qmd
+    - 7_ncs_job_satisf.qmd
+    - 9_concl.qmd
+    - references.qmd
+    - appendix.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+  pdf:
+    latex-engine: xelatex
+    mainfont: "Times New Roman"          # body text
+    sansfont: "Times New Roman"          # sans-serif text (used in headings by some classes)
+    monofont: "Courier New"              # monospace text (code blocks, etc.)
+    titlefont: "Times New Roman"         # <- this works in `quarto` >=1.5
+    documentclass: scrreprt
+    number-sections: true
+    lang: ru-RU
+    fontsize: 12pt                       # <- set font size here
+    toc: true                # ← оглавление
+    lof: true                # ← список рисунков
+    lot: true                # ← список таблиц
+  docx: 
+    number-sections: true
+    mainfont: "Times New Roman"          # body text
+    sansfont: "Times New Roman"          # sans-serif text (used in headings by some classes)
+    monofont: "Courier New"              # monospace text (code blocks, etc.)
+    titlefont: "Times New Roman"         # <- this works in `quarto` >=1.5
+    toc: true                # ← оглавление
+    lof: true                # ← список рисунков
+    lot: true                # ← список таблиц
+
+lang: ru-RU
+citeproc: true
+biblio-style: bwl-FU
+csl: "apa-with-abstract.csl"
+
+editor: visual
+
+execute:
+  echo: false
+  warning: false
+  message: false
+  error: false  # optional
+

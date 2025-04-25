@@ -1,0 +1,11 @@
+#  {.unnumbered}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+main_repo = "~/Documents/GitHub/NonCognSkillsRLMS"
+source(file.path(main_repo, "user_profile.R"))
+
+
+```
+
