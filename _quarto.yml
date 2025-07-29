@@ -7,14 +7,11 @@ book:
   date: "4/23/2025"
   chapters:
     - index.qmd
-    - 1_intro.qmd
-    - 2_lit_rev.qmd
-    - 3_data.qmd
-    - 4_ncs_empl.qmd
-    - 5_ncs_neet.qmd
-    - 6_ncs_wages.qmd
-    - 7_ncs_job_satisf.qmd
-    - 9_concl.qmd
+    - 01_intro.qmd
+    - 02_lit_rev.qmd
+    - 04_ncs_empl.qmd    
+    - 06_ncs_job_satisf.qmd
+    - 07_concl.qmd
     - references.qmd
     - appendix.qmd
 
