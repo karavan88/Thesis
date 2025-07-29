@@ -7,14 +7,14 @@ book:
   date: "4/23/2025"
   chapters:
     - index.qmd
-    - 1_intro.qmd
-    - 2_lit_rev.qmd
-    - 3_data.qmd
-    - 4_ncs_empl.qmd
-    - 5_ncs_neet.qmd
-    - 6_ncs_wages.qmd
-    - 7_ncs_job_satisf.qmd
-    - 9_concl.qmd
+    - 01_intro.qmd
+    - 02_lit_rev.qmd
+    - 03_data.qmd
+    - 04_ncs_empl.qmd
+    - 06_ncs_wages.qmd
+    - 07_ncs_job_satisf.qmd
+    - 08_ncs_family.qmd
+    - 10_concl.qmd
     - references.qmd
     - appendix.qmd
 
@@ -36,6 +36,9 @@ format:
     toc: true                # ← оглавление
     lof: true                # ← список рисунков
     lot: true                # ← список таблиц
+    include-in-header: 
+      text: |
+        \usepackage{pdflscape}
   docx: 
     number-sections: true
     mainfont: "Times New Roman"          # body text
