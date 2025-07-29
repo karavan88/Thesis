@@ -1,8 +1,9 @@
 # Ignore everything by default
 *
 
-# Exception for directories (allow them to be traversed)
-!*/
+# Exception for _book folder and its contents
+!_book/
+!_book/**
 
 # Exception for specific file types
 !*.qmd
