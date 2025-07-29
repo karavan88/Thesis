@@ -1,8 +1,31 @@
-.Rproj.user
+# Ignore everything by default
+*
+
+# Exception for directories (allow them to be traversed)
+!*/
+
+# Exception for specific file types
+!*.qmd
+!*.yml
+!*.yaml
+!*.bib
+!*.Rproj
+
+# Exception for specific files
+!apa-with-abstract.csl
+!header.tex
+
+# Keep this gitignore file itself
+!.gitignore
+
+# Still ignore these R-specific files
+.Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
 
+# Still ignore Quarto cache
 /.quarto/
 
+# Still ignore macOS files
 .DS_Store
