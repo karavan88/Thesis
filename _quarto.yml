@@ -45,8 +45,7 @@ format:
     monofont: "Courier New"              # monospace text (code blocks, etc.)
     titlefont: "Times New Roman"         # <- this works in `quarto` >=1.5
     toc: true                # ← оглавление
-    lof: true                # ← список рисунков
-    lot: true                # ← список таблиц
+
 
 lang: ru-RU
 citeproc: true
