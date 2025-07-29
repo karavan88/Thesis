@@ -98,7 +98,7 @@ model1_ipw <-
   )
 
 # base_reg_tab
-model1_ipw
+# model1_ipw
 ```
 
 ### Некогнитивные навыки и отдача от образования
@@ -154,7 +154,7 @@ model2 <-
   )
 
 # base_reg_tab
-model2
+# model2
 
 ```
 
