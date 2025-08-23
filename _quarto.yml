@@ -44,7 +44,7 @@ format:
     sansfont: "Times New Roman"          # sans-serif text (used in headings by some classes)
     monofont: "Courier New"              # monospace text (code blocks, etc.)
     titlefont: "Times New Roman"         # <- this works in `quarto` >=1.5
-    toc: true                # ← оглавление
+    toc: true                            # ← оглавление
 
 
 lang: ru-RU
