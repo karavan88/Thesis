@@ -30,3 +30,5 @@
 
 # Still ignore macOS files
 .DS_Store
+
+.ncs_terra_economicus.qmd
