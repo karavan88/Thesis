@@ -17,7 +17,7 @@ book:
     - references.qmd
     - appendix.qmd
 
-bibliography: references.bib
+bibliography: references_sorted.bib
 
 format:
   html:
