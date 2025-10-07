@@ -5,6 +5,10 @@
 !_book/
 !_book/**
 
+# Exception for docs folder and its contents (for GitHub Pages)
+!docs/
+!docs/**
+
 # Exception for specific file types
 !*.qmd
 !*.yml
