@@ -1,10 +1,11 @@
 project:
   type: book
+  output-dir: docs
 
 book:
-  title: "Эффект некогнитивных навыков на результаты молодежи на рынке труда при переходе от учебы к работе"
-  author: "Аванесян Карен Алексеевич"
-  date: "4/23/2025"
+  title: ""
+  author: ""
+  date: ""
   chapters:
     - index.qmd
     - 01_intro.qmd
@@ -15,7 +16,6 @@ book:
     - 06_ncs_job_satisf.qmd
     - 07_concl.qmd
     - references.qmd
-    - appendix.qmd
 
 bibliography: references_sorted.bib
 
@@ -32,9 +32,9 @@ format:
     number-sections: true
     lang: ru-RU
     fontsize: 12pt                       # <- set font size here
-    toc: true                # ← оглавление
-    lof: true                # ← список рисунков
-    lot: true                # ← список таблиц
+    toc: false               # ← suppress automatic TOC
+    lof: false               # ← suppress automatic list of figures  
+    lot: false               # ← suppress automatic list of tables
     include-in-header: 
       text: |
         \usepackage{pdflscape}
@@ -44,7 +44,9 @@ format:
     sansfont: "Times New Roman"          # sans-serif text (used in headings by some classes)
     monofont: "Courier New"              # monospace text (code blocks, etc.)
     titlefont: "Times New Roman"         # <- this works in `quarto` >=1.5
-    toc: true                            # ← оглавление
+    toc: true                            # ← enable automatic TOC
+    lof: true                            # ← enable automatic list of figures
+    lot: true                            # ← enable automatic list of tables
 
 
 lang: ru-RU

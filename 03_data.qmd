@@ -232,7 +232,7 @@ wage_summary
 
 ```{r}
 #| label: fig-corr-jobsatisf
-#| fig-cap: Correlation Matrix of the Overall Job Satisfaction and its Specific Domains
+#| fig-cap: Матрица корреляций общей удовлетворённости работой и её отдельных компонентов
 
 source(file.path(jobSatisfNcs, "01_data_prep_jobsatisf.R"))
 source(file.path(jobSatisfNcs, "02_descriptive_jobsatisf.R"))
