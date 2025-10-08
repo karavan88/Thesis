@@ -51,7 +51,7 @@ div.csl-indent {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./02_lit_rev.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./list_of_tables.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -125,6 +125,18 @@ div.csl-indent {
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./list_of_figures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Список рисунков</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./list_of_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Список таблиц</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -362,7 +374,7 @@ div.csl-indent {
 <p>Данная диссертационная работа представляет собой полностью воспроизводимое исследование, реализованное в среде <code>Quarto Markdown</code> <span class="citation" data-cites="quarto">(<a href="references.html#ref-quarto" role="doc-biblioref">Allaire &amp; Dervieux, 2024</a>)</span> с использованием языка <code>R</code> <span class="citation" data-cites="r2024">(<a href="references.html#ref-r2024" role="doc-biblioref">R Core Team, 2024</a>)</span> — lingua franca статистического программирования и анализа данных.</p>
 <p>В отличие от традиционного подхода, где текст и результаты исследования существуют отдельно, вся структура работы — от описания данных до построения моделей и визуализаций — является единым проектом, основанном на коде. Все таблицы, графики и результаты регрессионных моделей генерируются автоматически на основе первичных данных из РМЭЗ, что обеспечивает максимальную прозрачность и исключает возможность случайных ошибок или ручной подгонки результатов.</p>
 <p>Для анализа данных с помощью регрессионных моделей со смешанными эффектами использовался пакет <code>lme4</code> <span class="citation" data-cites="bates2015">(<a href="references.html#ref-bates2015" role="doc-biblioref">Bates и др., 2015</a>)</span>, а для оценки статистической значимости коэффициентов данных моделей — пакет <code>lmerTest</code> <span class="citation" data-cites="lmerTest">(<a href="references.html#ref-lmerTest" role="doc-biblioref">Kuznetsova и др., 2017</a>)</span>. Квантильные модели со смешанными эффектами были реализованы в пакете <code>lqmm</code> <span class="citation" data-cites="lqmm">(<a href="references.html#ref-lqmm" role="doc-biblioref">Geraci, 2014</a>)</span>. Для расчета весов обратной вероятности с целью контроля смещения самоотбора в занятость использовался пакет <code>WeightIt</code> <span class="citation" data-cites="WeightIt">(<a href="references.html#ref-WeightIt" role="doc-biblioref">Greifer, 2024</a>)</span>. Генерализованные аддитивные модели построены с помощью пакета <code>mgcv</code> <span class="citation" data-cites="mgcv">(<a href="references.html#ref-mgcv" role="doc-biblioref">Wood, 2011</a>)</span>.</p>
-<p>Для визуализации были задействованы такие передовые статистические пакеты, как <code>modelsummary</code> <span class="citation" data-cites="modelsummary">(<a href="references.html#ref-modelsummary" role="doc-biblioref">Arel-Bundock, 2022</a>)</span>, <code>sjPlot</code> <span class="citation" data-cites="sjPlot">(<a href="references.html#ref-sjPlot" role="doc-biblioref">Lüdecke, 2024</a>)</span>, <code>ggplot2</code> <span class="citation" data-cites="ggplot2">(<a href="references.html#ref-ggplot2" role="doc-biblioref">Wickham, 2016</a>)</span>, а также авторские функции, оптимизированные под специфические задачи исследования. Весь исследовательский процесс — включая импорт, обработку, дескриптивный и регрессионный анализ, визуализацию и написание текста — полностью задокументирован и доступен в открытом доступе в двух репозиториях на платформе GitHub: <a href="https://github.com/karavan88/NonCognSkillsRLMS" class="uri">https://github.com/karavan88/NonCognSkillsRLMS</a> и <a href="https://github.com/karavan88/Thesis" class="uri">https://github.com/karavan88/Thesis</a>.</p>
+<p>Для визуализации были задействованы такие передовые статистические пакеты, как <code>modelsummary</code> <span class="citation" data-cites="modelsummary">(<a href="references.html#ref-modelsummary" role="doc-biblioref">Arel-Bundock, 2022</a>)</span>, <code>sjPlot</code> <span class="citation" data-cites="sjPlot">(<a href="references.html#ref-sjPlot" role="doc-biblioref">Lüdecke, 2024</a>)</span>, <code>ggplot2</code> <span class="citation" data-cites="ggplot2">(<a href="references.html#ref-ggplot2" role="doc-biblioref">Wickham, 2016</a>)</span>, а также авторские функции, оптимизированные под специфические задачи исследования. Весь исследовательский процесс — включая импорт, обработку, дескриптивный и регрессионный анализ, визуализацию и написание текста — полностью задокументирован и доступен в открытом доступе в двух репозиториях на платформе GitHub: <a href="https://github.com/karavan88/NonCognSkillsRLMS" class="uri">https://github.com/karavan88/NonCognSkillsRLMS</a> и <a href="https://github.com/karavan88/Thesis" class="uri">https://github.com/karavan88/Thesis</a>. Сама диссертационная работа представлена в виде динамического документа онлайн по следующей ссылке: <a href="https://karavan88.github.io/Thesis/" class="uri">https://karavan88.github.io/Thesis/</a>.</p>
 <p>Таким образом, диссертация не только ставит целью внести вклад в академическую повестку, но и служит примером открытой, реплицируемой и методологически строгой науки, соответствующей передовым стандартам современной эмпирической экономики.</p>
 </section>
 </section>
@@ -1271,8 +1283,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ</span>
+      <a href="./list_of_tables.html" class="pagination-link" aria-label="Список таблиц">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Список таблиц</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

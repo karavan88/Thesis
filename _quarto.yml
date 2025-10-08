@@ -8,6 +8,8 @@ book:
   date: ""
   chapters:
     - index.qmd
+    - list_of_figures.qmd
+    - list_of_tables.qmd
     - 01_intro.qmd
     - 02_lit_rev.qmd
     - 03_data.qmd
