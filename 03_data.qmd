@@ -4,14 +4,28 @@
 #| echo: false
 #| message: false
 #| warning: false
+#| output: false  
+#| results: 'hide'
 
-main_repo = "~/Documents/GitHub/NonCognSkillsRLMS"
-source(file.path(main_repo, "user_profile.R"))
-source(file.path(rCodes, "libraries.R"))
-source(file.path(rCodes, "00_data_prep/05_data_checks.R"))
-source(file.path(rCodes, "01_EmplNCS/02_descr_empl.R"))
-source(file.path(returnsNcs, "01_data_prep_returns.R"))
-source(file.path(returnsNcs, "02_descr_returns.R"))
+# Set working directory and paths for the analysis repo
+projectFolder <- "/Users/karavan88/Documents/GitHub/NonCognSkillsRLMS"
+
+# Change to the analysis repo directory temporarily
+old_wd <- getwd()
+setwd(projectFolder)
+
+# Now source the project config from within the repo
+source("project_config.R")
+
+# Source the analysis scripts (suppress all output)
+invisible(capture.output({
+  source(file.path(rCodes, "05_data_checks.R"))
+  source(file.path(codesEmplNcs, "02_descr_empl.R"))
+  source(file.path(codesReturnsNcs, "01_data_prep_returns.R"))
+  source(file.path(codesReturnsNcs, "02_descr_returns.R"))
+}))
+
+  
 ```
 
 Цель данной главы — представить и охарактеризовать эмпирическую базу, на которой строится диссертационное исследование, а также обозначить основные этапы предварительного анализа, предшествующего построению моделей в последующих главах. Особое внимание уделяется тому, как в используемых данных представлены некогнитивные навыки, и в какой степени применяемые измерения позволяют валидно и надёжно зафиксировать межличностные различия по ключевым характеристикам личности.
@@ -83,7 +97,7 @@ extr_items
 
 ```{r}
 #| label: tbl-psychometric-analysis4
-#| tbl-cap: 'Психометрический анализ некогнитивных навыков: дружелюбие'
+#| tbl-cap: 'Психометрический анализ некогнитивных навыков: доброжелательность'
 #| echo: false
 #| results: asis
 
@@ -234,8 +248,15 @@ wage_summary
 #| label: fig-corr-jobsatisf
 #| fig-cap: Матрица корреляций общей удовлетворённости работой и её отдельных компонентов
 
-source(file.path(jobSatisfNcs, "01_data_prep_jobsatisf.R"))
-source(file.path(jobSatisfNcs, "02_descriptive_jobsatisf.R"))
+
+
+# Source the analysis scripts (suppress all output)
+invisible(capture.output({
+    source(file.path(codesJobSatisfNcs, "01_data_prep_jobsatisf.R"))
+    source(file.path(codesJobSatisfNcs, "02_descriptive_jobsatisf.R"))
+}))
+
+
 js_corr_matrix
 
 ```

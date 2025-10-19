@@ -4,13 +4,27 @@
 #| echo: false
 #| message: false
 #| warning: false
+#| output: false  
+#| results: 'hide'
 
-main_repo = "~/Documents/GitHub/NonCognSkillsRLMS"
-source(file.path(main_repo, "user_profile.R"))
-source(file.path(rCodes, "libraries.R"))
-source(file.path(jobSatisfNcs, "01_data_prep_jobsatisf.R"))
-# source(file.path(jobSatisfNcs, "02_descr_returns.R"))
-source(file.path(jobSatisfNcs, "03_regressions_jobsatisf.R"))
+# Set working directory and paths for the analysis repo
+projectFolder <- "/Users/karavan88/Documents/GitHub/NonCognSkillsRLMS"
+
+# Change to the analysis repo directory temporarily
+old_wd <- getwd()
+setwd(projectFolder)
+
+# Now source the project config from within the repo
+source("project_config.R")
+
+# Source the analysis scripts (suppress all output)
+invisible(capture.output({
+    source(file.path(codesJobSatisfNcs, "01_data_prep_jobsatisf.R"))
+    source(file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R"))
+}))
+
+
+
 ```
 
 ## Постановка исследовательской задачи

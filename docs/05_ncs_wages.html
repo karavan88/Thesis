@@ -304,8 +304,8 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_yrl87lrsrtqv0vritrpa(i, j, css_id) {
-          var table = document.getElementById("tinytable_yrl87lrsrtqv0vritrpa");
+      function styleCell_speol7ixfup1qhfuvvm5(i, j, css_id) {
+          var table = document.getElementById("tinytable_speol7ixfup1qhfuvvm5");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -315,7 +315,7 @@ window.Quarto = {
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_yrl87lrsrtqv0vritrpa');
+        var table = document.getElementById('tinytable_speol7ixfup1qhfuvvm5');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -323,8 +323,8 @@ window.Quarto = {
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_yrl87lrsrtqv0vritrpa(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_yrl87lrsrtqv0vritrpa");
+      function spanCell_speol7ixfup1qhfuvvm5(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_speol7ixfup1qhfuvvm5");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -354,15 +354,15 @@ window.Quarto = {
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_mmlh0yy0dn2aozyp0l1u',}, 
-          { positions: [ { i: 17, j: 0 }, { i: 17, j: 1 }, { i: 17, j: 4 }, { i: 17, j: 3 }, { i: 17, j: 2 }, { i: 17, j: 5 },  ], css_id: 'tinytable_css_di95l3vllu7welx55af9',}, 
-          { positions: [ { i: 15, j: 0 }, { i: 15, j: 3 }, { i: 15, j: 1 }, { i: 15, j: 4 }, { i: 15, j: 2 }, { i: 15, j: 5 },  ], css_id: 'tinytable_css_48jcvv4r2wpdxqxmi24j',}, 
+          { positions: [ { i: 15, j: 0 }, { i: 15, j: 3 }, { i: 15, j: 1 }, { i: 15, j: 4 }, { i: 15, j: 2 }, { i: 15, j: 5 },  ], css_id: 'tinytable_css_japs7zworfa205uveax2',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_dplz22y2t058gt1572rr',}, 
+          { positions: [ { i: 17, j: 0 }, { i: 17, j: 1 }, { i: 17, j: 4 }, { i: 17, j: 3 }, { i: 17, j: 2 }, { i: 17, j: 5 },  ], css_id: 'tinytable_css_3p0mamk4j8zo3l2ov3f2',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_yrl87lrsrtqv0vritrpa(cell.i, cell.j, group.css_id);
+                  styleCell_speol7ixfup1qhfuvvm5(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -370,12 +370,12 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_mmlh0yy0dn2aozyp0l1u, .table th.tinytable_css_mmlh0yy0dn2aozyp0l1u { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_di95l3vllu7welx55af9, .table th.tinytable_css_di95l3vllu7welx55af9 { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_48jcvv4r2wpdxqxmi24j, .table th.tinytable_css_48jcvv4r2wpdxqxmi24j { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_japs7zworfa205uveax2, .table th.tinytable_css_japs7zworfa205uveax2 { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_dplz22y2t058gt1572rr, .table th.tinytable_css_dplz22y2t058gt1572rr { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_3p0mamk4j8zo3l2ov3f2, .table th.tinytable_css_3p0mamk4j8zo3l2ov3f2 { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_yrl87lrsrtqv0vritrpa" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_speol7ixfup1qhfuvvm5" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -392,127 +392,127 @@ window.Quarto = {
 <tr><td colspan="6">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Intercept          </td>
-                  <td>3.914 (0.16)***</td>
-                  <td>4.371 (0.06)***</td>
-                  <td>4.647 (0.08)***</td>
-                  <td>4.744 (0.09)***</td>
-                  <td>5.058 (0.1)*** </td>
+                  <td>Константа                 </td>
+                  <td>4.459 (0.18)***</td>
+                  <td>4.416 (0.09)***</td>
+                  <td>4.659 (0.07)***</td>
+                  <td>4.805 (0.08)***</td>
+                  <td>5.087 (0.09)***</td>
                 </tr>
                 <tr>
-                  <td>Experience         </td>
-                  <td>0.089 (0.02)***</td>
-                  <td>0.087 (0.01)***</td>
-                  <td>0.065 (0.01)***</td>
+                  <td>Опыт                      </td>
+                  <td>0.019 (0.02)   </td>
+                  <td>0.058 (0.02)***</td>
+                  <td>0.062 (0.01)***</td>
                   <td>0.081 (0.01)***</td>
-                  <td>0.024 (0.01).  </td>
+                  <td>0.033 (0.03)   </td>
                 </tr>
                 <tr>
-                  <td>Experience Sqd.    </td>
-                  <td>-0.005 (0)**   </td>
-                  <td>-0.006 (0)***  </td>
+                  <td>Опыт²                     </td>
+                  <td>-0.001 (0)     </td>
+                  <td>-0.003 (0)*    </td>
                   <td>-0.004 (0)***  </td>
-                  <td>-0.004 (0)***  </td>
-                  <td>0 (0)          </td>
+                  <td>-0.005 (0)***  </td>
+                  <td>-0.001 (0)     </td>
                 </tr>
                 <tr>
-                  <td>Area: Settlement   </td>
-                  <td>0.088 (0.1)    </td>
-                  <td>0.005 (0.07)   </td>
-                  <td>0.041 (0.07)   </td>
-                  <td>0.122 (0.08)   </td>
-                  <td>0.144 (0.08).  </td>
+                  <td>Тип поселения: ПГТ        </td>
+                  <td>-0.038 (0.1)   </td>
+                  <td>-0.036 (0.06)  </td>
+                  <td>-0.028 (0.06)  </td>
+                  <td>0.017 (0.07)   </td>
+                  <td>0.111 (0.07)   </td>
                 </tr>
                 <tr>
-                  <td>Area: City         </td>
-                  <td>0.257 (0.1)*   </td>
-                  <td>0.05 (0.07)    </td>
-                  <td>0.135 (0.06)*  </td>
-                  <td>0.236 (0.06)***</td>
-                  <td>0.289 (0.07)***</td>
+                  <td>Тип поселения: Город      </td>
+                  <td>0.054 (0.1)    </td>
+                  <td>0.058 (0.07)   </td>
+                  <td>0.148 (0.05)** </td>
+                  <td>0.248 (0.05)***</td>
+                  <td>0.26 (0.06)*** </td>
                 </tr>
                 <tr>
-                  <td>Area: Reg Center   </td>
-                  <td>0.258 (0.2)    </td>
-                  <td>0.068 (0.19)   </td>
-                  <td>0.19 (0.18)    </td>
-                  <td>0.26 (0.18)    </td>
-                  <td>0.303 (0.18)   </td>
+                  <td>Тип поселения: Райцентр   </td>
+                  <td>0.094 (0.26)   </td>
+                  <td>0.118 (0.27)   </td>
+                  <td>0.205 (0.27)   </td>
+                  <td>0.227 (0.27)   </td>
+                  <td>0.277 (0.26)   </td>
                 </tr>
                 <tr>
-                  <td>Sex: Male          </td>
-                  <td>0.461 (0.07)***</td>
-                  <td>0.288 (0.03)***</td>
-                  <td>0.242 (0.03)***</td>
-                  <td>0.291 (0.03)***</td>
-                  <td>0.257 (0.04)***</td>
+                  <td>Пол: Мужской              </td>
+                  <td>0.224 (0.08)** </td>
+                  <td>0.251 (0.04)***</td>
+                  <td>0.243 (0.03)***</td>
+                  <td>0.271 (0.03)***</td>
+                  <td>0.24 (0.04)*** </td>
                 </tr>
                 <tr>
-                  <td>Family: Married    </td>
-                  <td>-0.062 (0.06)  </td>
-                  <td>-0.051 (0.02)* </td>
-                  <td>-0.004 (0.02)  </td>
-                  <td>-0.001 (0.03)  </td>
-                  <td>0.011 (0.03)   </td>
-                </tr>
-                <tr>
-                  <td>Family: Divorced   </td>
-                  <td>-0.055 (0.09)  </td>
-                  <td>-0.022 (0.07)  </td>
-                  <td>0.023 (0.06)   </td>
-                  <td>0.025 (0.08)   </td>
-                  <td>0.077 (0.1)    </td>
-                </tr>
-                <tr>
-                  <td>Openness           </td>
-                  <td>0.057 (0.02)*  </td>
-                  <td>0.059 (0.02)** </td>
-                  <td>0.055 (0.02)** </td>
-                  <td>0.073 (0.02)***</td>
-                  <td>0.076 (0.02)** </td>
-                </tr>
-                <tr>
-                  <td>Conscientiousness  </td>
-                  <td>0.018 (0.03)   </td>
-                  <td>0.016 (0.02)   </td>
-                  <td>0.01 (0.01)    </td>
-                  <td>-0.012 (0.01)  </td>
-                  <td>-0.021 (0.02)  </td>
-                </tr>
-                <tr>
-                  <td>Extraversion       </td>
-                  <td>0.006 (0.03)   </td>
-                  <td>0.001 (0.01)   </td>
-                  <td>0.01 (0.01)    </td>
-                  <td>0.016 (0.01)   </td>
-                  <td>0.007 (0.01)   </td>
-                </tr>
-                <tr>
-                  <td>Agreeableness      </td>
-                  <td>0.036 (0.02)   </td>
+                  <td>Семья: Женат/замужем      </td>
+                  <td>-0.138 (0.05)* </td>
+                  <td>-0.054 (0.03). </td>
                   <td>0.009 (0.02)   </td>
-                  <td>0.012 (0.01)   </td>
+                  <td>-0.016 (0.03)  </td>
+                  <td>0.013 (0.04)   </td>
+                </tr>
+                <tr>
+                  <td>Семья: Разведен/вдовец    </td>
+                  <td>0.029 (0.11)   </td>
+                  <td>-0.013 (0.06)  </td>
+                  <td>-0.001 (0.05)  </td>
+                  <td>-0.008 (0.07)  </td>
+                  <td>0.017 (0.08)   </td>
+                </tr>
+                <tr>
+                  <td>Открытость                </td>
+                  <td>0.038 (0.03)   </td>
+                  <td>0.048 (0.02)** </td>
+                  <td>0.057 (0.01)***</td>
+                  <td>0.068 (0.01)***</td>
+                  <td>0.086 (0.02)***</td>
+                </tr>
+                <tr>
+                  <td>Добросовестность          </td>
+                  <td>0.043 (0.02)*  </td>
+                  <td>0.017 (0.02)   </td>
+                  <td>0.007 (0.01)   </td>
+                  <td>-0.01 (0.02)   </td>
+                  <td>-0.025 (0.02)  </td>
+                </tr>
+                <tr>
+                  <td>Экстраверсия              </td>
+                  <td>-0.001 (0.02)  </td>
+                  <td>0.006 (0.02)   </td>
+                  <td>0.017 (0.01)   </td>
+                  <td>0.031 (0.02).  </td>
+                  <td>0.016 (0.02)   </td>
+                </tr>
+                <tr>
+                  <td>Доброжелательность        </td>
+                  <td>0.006 (0.02)   </td>
+                  <td>0.015 (0.01)   </td>
+                  <td>0.019 (0.01)   </td>
+                  <td>0.006 (0.01)   </td>
                   <td>0.002 (0.02)   </td>
-                  <td>0.005 (0.02)   </td>
                 </tr>
                 <tr>
-                  <td>Emotional Stability</td>
-                  <td>0.028 (0.02)   </td>
-                  <td>0.02 (0.01)    </td>
-                  <td>0.009 (0.01)   </td>
-                  <td>-0.005 (0.01)  </td>
-                  <td>-0.021 (0.02)  </td>
+                  <td>Эмоциональная стабильность</td>
+                  <td>0.039 (0.02)   </td>
+                  <td>0.029 (0.01)*  </td>
+                  <td>0.021 (0.01).  </td>
+                  <td>0 (0.01)       </td>
+                  <td>-0.022 (0.01)  </td>
                 </tr>
                 <tr>
-                  <td>Region             </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
+                  <td>Регион                    </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
                 </tr>
                 <tr>
-                  <td>No. Groups         </td>
+                  <td>Кол-во групп              </td>
                   <td>2170           </td>
                   <td>2170           </td>
                   <td>2170           </td>
@@ -520,7 +520,7 @@ window.Quarto = {
                   <td>2170           </td>
                 </tr>
                 <tr>
-                  <td>No. Obs            </td>
+                  <td>Кол-во наблюдений         </td>
                   <td>2673           </td>
                   <td>2673           </td>
                   <td>2673           </td>
@@ -540,9 +540,9 @@ window.Quarto = {
 <section id="некогнитивные-навыки-и-отдача-от-образования" class="level3" data-number="5.3.2">
 <h3 data-number="5.3.2" class="anchored" data-anchor-id="некогнитивные-навыки-и-отдача-от-образования"><span class="header-section-number">5.3.2</span> Некогнитивные навыки и отдача от образования</h3>
 <p>Расширенная модель включает уровень образования в качестве дополнительной переменной, формируя минсерианскую модель заработной платы с дополнением за счет некогнитивных характеристик. Включение образования существенно изменяет эффекты, особенно для открытости и добросовестности, одновременно выявляя значимую отдачу от самого образования.</p>
-<p>В базовой модели открытость демонстрировала устойчивую положительную отдачу на всех процентилях — от 5.7% до 7.6% (Q10–Q90). Однако в расширенной модели, после учета образования, отдача от открытости снижается — до 3.6–4.2% соответственно. Это указывает на то, что часть эффекта открытости в базовой модели обусловлена посредническим влиянием образования. Тем не менее, открытость остается статистически значимой по большинству процентилей, подтверждая её независимую роль.</p>
-<p>Интересно, что после учета образования проявляются два других значимых эффекта. Для добросовестности эффект становится положительным и значимым на 10-м процентиле, обеспечивая премию в 4.2% (p&lt;0.1). Экстраверсия дает рост зарплаты на 2.5% (p&lt;0.1) на 75-м процентиле.</p>
-<p>Образование оказывается мощным предиктором заработка: высшее образование связано с премиями в 31.4%, 26.5%, 35.3%, 41% и 46.8% соответственно (все p&lt;0.001) по процентилям от Q10 до Q90.</p>
+<p>В базовой модели открытость демонстрировала устойчивую положительную отдачу на всех процентилях. Однако в расширенной модели, после учета образования, отдача от открытости снижается. Это указывает на то, что часть эффекта открытости в базовой модели обусловлена посредническим влиянием образования. Тем не менее, открытость остается статистически значимой по на тех же самых уровнях оплаты труда, что и в предыдущей модели, что подтверждает её независимую и уникальную роль.</p>
+<p>Тем не менее, при контроле образования исчезает значимость эффекта добросовестности для молодежи на самом низком уровне оплаты труда, а также эффект экстраверсии для молодежи с заработком выше среднего. Эмоциональная стабильность, сохраняя значимость эффектов, меняет уровни оплаты труда, на которых она производит премию: вместо 25го и 50го процентилей, при контроле образования ее роль становится видима на 10м и 90м процентилях заработной платы.</p>
+<p>Наконец, образование само по себе оказывается мощным предиктором заработка: чем выше процентиль оплаты труда, тем более ощутимой является премия за высшее образование, варьируясь от приблизительно 25% на 10м процентиле до более чем 40% на 90м процентиле заработной платы.</p>
 <p>Таким образом, хотя включение образования снижает отдачу от некогнитивных навыков, последние продолжают демонстрировать значимость, подчеркивая их независимую роль в определении различий в доходах.</p>
 <div class="cell">
 <div id="tbl-extended-reg" class="cell quarto-float quarto-figure quarto-figure-center anchored">
@@ -556,8 +556,8 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_l24g85ox44je212pwq7e(i, j, css_id) {
-          var table = document.getElementById("tinytable_l24g85ox44je212pwq7e");
+      function styleCell_39expk4d50aytfyzamig(i, j, css_id) {
+          var table = document.getElementById("tinytable_39expk4d50aytfyzamig");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -567,7 +567,7 @@ window.Quarto = {
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_l24g85ox44je212pwq7e');
+        var table = document.getElementById('tinytable_39expk4d50aytfyzamig');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -575,8 +575,8 @@ window.Quarto = {
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_l24g85ox44je212pwq7e(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_l24g85ox44je212pwq7e");
+      function spanCell_39expk4d50aytfyzamig(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_39expk4d50aytfyzamig");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -606,15 +606,15 @@ window.Quarto = {
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_zwzy9z4qd9vyqabjlzfi',}, 
-          { positions: [ { i: 18, j: 0 }, { i: 18, j: 1 }, { i: 18, j: 4 }, { i: 18, j: 3 }, { i: 18, j: 2 }, { i: 18, j: 5 },  ], css_id: 'tinytable_css_nbasgcyy6305zxkzxt86',}, 
-          { positions: [ { i: 16, j: 0 }, { i: 16, j: 3 }, { i: 16, j: 1 }, { i: 16, j: 4 }, { i: 16, j: 2 }, { i: 16, j: 5 },  ], css_id: 'tinytable_css_l2evc5ovdepy6jsx1svc',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_v20rzmvzlrv0pqlgfx48',}, 
+          { positions: [ { i: 18, j: 0 }, { i: 18, j: 3 }, { i: 18, j: 1 }, { i: 18, j: 4 }, { i: 18, j: 2 }, { i: 18, j: 5 },  ], css_id: 'tinytable_css_j0dfy5o7ie0u8qzex8eu',}, 
+          { positions: [ { i: 20, j: 0 }, { i: 20, j: 1 }, { i: 20, j: 4 }, { i: 20, j: 3 }, { i: 20, j: 2 }, { i: 20, j: 5 },  ], css_id: 'tinytable_css_evssvwwvv1jti52ntsh4',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_l24g85ox44je212pwq7e(cell.i, cell.j, group.css_id);
+                  styleCell_39expk4d50aytfyzamig(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -622,12 +622,12 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_zwzy9z4qd9vyqabjlzfi, .table th.tinytable_css_zwzy9z4qd9vyqabjlzfi { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_nbasgcyy6305zxkzxt86, .table th.tinytable_css_nbasgcyy6305zxkzxt86 { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_l2evc5ovdepy6jsx1svc, .table th.tinytable_css_l2evc5ovdepy6jsx1svc { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_v20rzmvzlrv0pqlgfx48, .table th.tinytable_css_v20rzmvzlrv0pqlgfx48 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_j0dfy5o7ie0u8qzex8eu, .table th.tinytable_css_j0dfy5o7ie0u8qzex8eu { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_evssvwwvv1jti52ntsh4, .table th.tinytable_css_evssvwwvv1jti52ntsh4 { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_l24g85ox44je212pwq7e" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_39expk4d50aytfyzamig" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -644,135 +644,151 @@ window.Quarto = {
 <tr><td colspan="6">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Intercept          </td>
-                  <td>3.88 (0.16)*** </td>
-                  <td>4.327 (0.1)*** </td>
-                  <td>4.534 (0.08)***</td>
-                  <td>4.607 (0.09)***</td>
-                  <td>4.718 (0.1)*** </td>
+                  <td>Константа                 </td>
+                  <td>4.096 (0.17)***</td>
+                  <td>4.425 (0.1)*** </td>
+                  <td>4.573 (0.09)***</td>
+                  <td>4.71 (0.1)***  </td>
+                  <td>4.809 (0.11)***</td>
                 </tr>
                 <tr>
-                  <td>Edu: Second        </td>
-                  <td>0.15 (0.06)*   </td>
-                  <td>0.02 (0.04)    </td>
-                  <td>0.102 (0.04)** </td>
-                  <td>0.173 (0.04)***</td>
-                  <td>0.225 (0.04)***</td>
+                  <td>Образование: Среднее      </td>
+                  <td>0.04 (0.07)    </td>
+                  <td>0.023 (0.06)   </td>
+                  <td>0.03 (0.05)    </td>
+                  <td>0.143 (0.05)*  </td>
+                  <td>0.192 (0.05)** </td>
                 </tr>
                 <tr>
-                  <td>Edu: Vocat         </td>
-                  <td>0.23 (0.06)*** </td>
-                  <td>0.105 (0.04)*  </td>
-                  <td>0.191 (0.04)***</td>
-                  <td>0.246 (0.04)***</td>
-                  <td>0.322 (0.06)***</td>
+                  <td>Образование: Среднее проф.</td>
+                  <td>0.146 (0.07)*  </td>
+                  <td>0.107 (0.04)*  </td>
+                  <td>0.137 (0.04)** </td>
+                  <td>0.232 (0.04)***</td>
+                  <td>0.299 (0.05)***</td>
                 </tr>
                 <tr>
-                  <td>Edu: Tert          </td>
-                  <td>0.314 (0.06)***</td>
-                  <td>0.265 (0.04)***</td>
-                  <td>0.353 (0.04)***</td>
-                  <td>0.41 (0.04)*** </td>
-                  <td>0.468 (0.06)***</td>
+                  <td>Образование: Высшее       </td>
+                  <td>0.265 (0.06)***</td>
+                  <td>0.264 (0.04)***</td>
+                  <td>0.295 (0.04)***</td>
+                  <td>0.399 (0.04)***</td>
+                  <td>0.436 (0.04)***</td>
                 </tr>
                 <tr>
-                  <td>Experience         </td>
-                  <td>0.044 (0.01)** </td>
-                  <td>0.04 (0.02)*   </td>
-                  <td>0.053 (0.01)***</td>
-                  <td>0.064 (0.01)***</td>
-                  <td>0.026 (0.01).  </td>
+                  <td>Опыт                      </td>
+                  <td>0.058 (0.01)***</td>
+                  <td>0.025 (0.02)   </td>
+                  <td>0.06 (0.01)*** </td>
+                  <td>0.063 (0.01)***</td>
+                  <td>0.025 (0.02)   </td>
                 </tr>
                 <tr>
-                  <td>Experience Sqd.    </td>
-                  <td>-0.002 (0)     </td>
-                  <td>-0.002 (0)     </td>
+                  <td>Опыт²                     </td>
                   <td>-0.003 (0)**   </td>
+                  <td>-0.001 (0)     </td>
+                  <td>-0.003 (0)***  </td>
                   <td>-0.003 (0)**   </td>
                   <td>0 (0)          </td>
                 </tr>
                 <tr>
-                  <td>Sex: Male          </td>
-                  <td>0.427 (0.05)***</td>
-                  <td>0.332 (0.03)***</td>
-                  <td>0.292 (0.02)***</td>
-                  <td>0.308 (0.03)***</td>
-                  <td>0.351 (0.04)***</td>
+                  <td>Пол: Мужской              </td>
+                  <td>0.364 (0.05)***</td>
+                  <td>0.298 (0.03)***</td>
+                  <td>0.273 (0.03)***</td>
+                  <td>0.307 (0.03)***</td>
+                  <td>0.312 (0.04)***</td>
                 </tr>
                 <tr>
-                  <td>Area: Settlement   </td>
-                  <td>0.113 (0.08)   </td>
-                  <td>0.013 (0.06)   </td>
-                  <td>0.023 (0.05)   </td>
-                  <td>0.074 (0.06)   </td>
-                  <td>0.114 (0.08)   </td>
+                  <td>Тип поселения: ПГТ        </td>
+                  <td>0.016 (0.08)   </td>
+                  <td>-0.041 (0.06)  </td>
+                  <td>-0.046 (0.06)  </td>
+                  <td>-0.013 (0.06)  </td>
+                  <td>0.046 (0.1)    </td>
                 </tr>
                 <tr>
-                  <td>Area: City         </td>
-                  <td>0.18 (0.11).   </td>
-                  <td>0.018 (0.07)   </td>
-                  <td>0.125 (0.06)*  </td>
-                  <td>0.155 (0.06)*  </td>
-                  <td>0.241 (0.06)***</td>
+                  <td>Тип поселения: Город      </td>
+                  <td>0.071 (0.07)   </td>
+                  <td>0.049 (0.06)   </td>
+                  <td>0.079 (0.06)   </td>
+                  <td>0.161 (0.06)*  </td>
+                  <td>0.192 (0.06)** </td>
                 </tr>
                 <tr>
-                  <td>Area: Reg Center   </td>
-                  <td>0.175 (0.24)   </td>
-                  <td>0.089 (0.22)   </td>
-                  <td>0.171 (0.22)   </td>
-                  <td>0.164 (0.21)   </td>
-                  <td>0.249 (0.22)   </td>
+                  <td>Тип поселения: Райцентр   </td>
+                  <td>0.083 (0.26)   </td>
+                  <td>0.106 (0.26)   </td>
+                  <td>0.16 (0.25)    </td>
+                  <td>0.171 (0.25)   </td>
+                  <td>0.219 (0.25)   </td>
                 </tr>
                 <tr>
-                  <td>Openness           </td>
-                  <td>0.036 (0.02).  </td>
-                  <td>0.034 (0.02).  </td>
-                  <td>0.029 (0.01).  </td>
-                  <td>0.043 (0.02)*  </td>
-                  <td>0.042 (0.02).  </td>
+                  <td>Семья: Женат/замужем      </td>
+                  <td>-0.067 (0.05)  </td>
+                  <td>-0.056 (0.03)* </td>
+                  <td>0.004 (0.02)   </td>
+                  <td>-0.007 (0.03)  </td>
+                  <td>0.024 (0.04)   </td>
                 </tr>
                 <tr>
-                  <td>Conscientiousness  </td>
-                  <td>0.042 (0.02).  </td>
-                  <td>0.013 (0.01)   </td>
-                  <td>0.008 (0.01)   </td>
-                  <td>-0.008 (0.01)  </td>
-                  <td>-0.005 (0.02)  </td>
+                  <td>Семья: Разведен/вдовец    </td>
+                  <td>0.022 (0.13)   </td>
+                  <td>-0.005 (0.08)  </td>
+                  <td>0.044 (0.07)   </td>
+                  <td>0.025 (0.08)   </td>
+                  <td>0.073 (0.08)   </td>
                 </tr>
                 <tr>
-                  <td>Extraversion       </td>
-                  <td>0.024 (0.03)   </td>
-                  <td>0.007 (0.02)   </td>
-                  <td>0.017 (0.01)   </td>
-                  <td>0.025 (0.01).  </td>
-                  <td>0.009 (0.02)   </td>
+                  <td>Открытость                </td>
+                  <td>0.037 (0.03)   </td>
+                  <td>0.037 (0.02)*  </td>
+                  <td>0.036 (0.01)*  </td>
+                  <td>0.052 (0.02)** </td>
+                  <td>0.051 (0.02)*  </td>
                 </tr>
                 <tr>
-                  <td>Agreeableness      </td>
-                  <td>0.035 (0.03)   </td>
-                  <td>0.011 (0.01)   </td>
-                  <td>0.005 (0.01)   </td>
-                  <td>0.008 (0.01)   </td>
-                  <td>-0.02 (0.01)   </td>
-                </tr>
-                <tr>
-                  <td>Emotional Stability</td>
+                  <td>Добросовестность          </td>
+                  <td>0.019 (0.02)   </td>
                   <td>0.015 (0.02)   </td>
-                  <td>0.019 (0.01)   </td>
                   <td>0.002 (0.01)   </td>
-                  <td>-0.007 (0.01)  </td>
-                  <td>-0.023 (0.02)  </td>
+                  <td>-0.015 (0.01)  </td>
+                  <td>-0.025 (0.02)  </td>
                 </tr>
                 <tr>
-                  <td>Region             </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
+                  <td>Экстраверсия              </td>
+                  <td>-0.014 (0.03)  </td>
+                  <td>0.016 (0.01)   </td>
+                  <td>0.018 (0.01)   </td>
+                  <td>0.029 (0.01)** </td>
+                  <td>0.011 (0.02)   </td>
                 </tr>
                 <tr>
-                  <td>No. Groups         </td>
+                  <td>Доброжелательность        </td>
+                  <td>0.015 (0.02)   </td>
+                  <td>0.008 (0.01)   </td>
+                  <td>0.011 (0.01)   </td>
+                  <td>0.012 (0.01)   </td>
+                  <td>0.018 (0.02)   </td>
+                </tr>
+                <tr>
+                  <td>Эмоциональная стабильность</td>
+                  <td>0.035 (0.02).  </td>
+                  <td>0.019 (0.02)   </td>
+                  <td>0.005 (0.01)   </td>
+                  <td>-0.013 (0.01)  </td>
+                  <td>-0.037 (0.02)* </td>
+                </tr>
+                <tr>
+                  <td>Регион                    </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
+                </tr>
+                <tr>
+                  <td>Кол-во групп              </td>
                   <td>2170           </td>
                   <td>2170           </td>
                   <td>2170           </td>
@@ -780,7 +796,7 @@ window.Quarto = {
                   <td>2170           </td>
                 </tr>
                 <tr>
-                  <td>No. Obs            </td>
+                  <td>Кол-во наблюдений         </td>
                   <td>2673           </td>
                   <td>2673           </td>
                   <td>2673           </td>
@@ -801,7 +817,7 @@ window.Quarto = {
 <h3 data-number="5.3.3" class="anchored" data-anchor-id="приводит-ли-наличие-высшего-образования-к-большей-отдаче-от-некогнитивных-навыков"><span class="header-section-number">5.3.3</span> Приводит ли наличие высшего образования к большей отдаче от некогнитивных навыков?</h3>
 <p>Для изоляции эффекта образования как на уровень заработной платы, так и на некогнитивные навыки, были оценены отдельные регрессионные модели для каждой категории уровня образования. В связи с небольшим размером выборки, респонденты с полным средним образованием и те, кто не окончил среднюю школу, были объединены в одну категорию под названием «среднее и ниже». Такой подход позволяет более чётко сравнить отдачу от некогнитивных навыков по разным уровням образования, устраняя потенциальные искажения, вызванные взаимосвязью между образованием и заработной платой, а также между образованием и личностными характеристиками.</p>
 <p>Коэффициенты отдачи от некогнитивных навыков по уровням образования, оценённые с использованием модели с обратными вероятностными весами, представлены на графике <a href="#fig-edu-ncs" class="quarto-xref">Рисунок&nbsp;<span>5.1</span></a>. Результаты показывают, что работники без образовательных квалификаций (т.е. со «средним и ниже» уровнем образования) практически не получают выгоды от своих некогнитивных навыков. Единственный выявленный эффект — эмоциональная стабильность на 10-м процентиле распределения заработной платы (6.4%, p&lt;0.1). Также ограниченная продуктивность наблюдается и среди молодёжи с высшим образованием: добросовестность в этом случае оказывает положительное влияние только на 25-м перцентиле (7.2%, p&lt;0.1).</p>
-<p>В то же время у респондентов со средним профессиональным образованием наблюдается более выразительная картина. Так, статистически значимый положительный эффект открытости зафиксирован почти на всех выбранных процентилях, за исключением 10-го. При этом на 75-м процентиле экстраверсия увеличивает почасовую оплату труда на 3.9%. Важно отметить, что дружелюбие (agreeableness) снижает заработную плату на 90-м процентиле на 4.2%, что подчёркивает важность межличностных навыков для работников со средним и выше уровнем заработка, занятых в профессиональных и технических ролях. Однако избыточная уступчивость, как показывают данные, не приводит к позитивным результатам на верхнем уровне шкалы доходов.</p>
+<p>В то же время у респондентов со средним профессиональным образованием наблюдается более выразительная картина. Так, статистически значимый положительный эффект открытости зафиксирован почти на всех выбранных процентилях, за исключением 10-го. При этом на 75-м процентиле экстраверсия увеличивает почасовую оплату труда на 3.9%. Важно отметить, что доброжелательность снижает заработную плату на 90-м процентиле на 4.2%, что подчёркивает важность межличностных навыков для работников со средним и выше уровнем заработка, занятых в профессиональных и технических ролях. Однако избыточная уступчивость, как показывают данные, не приводит к позитивным результатам на верхнем уровне шкалы доходов.</p>
 <p>Таким образом, несмотря на то что некогнитивные навыки вносят вклад в вариативность заработной платы на всех уровнях образования, их влияние опосредовано как самим уровнем образования, так и позицией работников в распределении заработка.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -821,8 +837,8 @@ window.Quarto = {
 <section id="взаимодействие-некогнитивных-навыков-и-пола" class="level3" data-number="5.3.4">
 <h3 data-number="5.3.4" class="anchored" data-anchor-id="взаимодействие-некогнитивных-навыков-и-пола"><span class="header-section-number">5.3.4</span> Взаимодействие некогнитивных навыков и пола</h3>
 <p>Современные экономические исследования последовательно указывают на наличие существенной гендерной дискриминации на российском рынке труда, демонстрируя, что женщины сталкиваются с выраженными трудностями в получении справедливого вознаграждения. Это поднимает важные вопросы — могут ли некогнитивные навыки способствовать сокращению гендерного разрыва в оплате труда. Для анализа данной гипотезы была построена модель с переменными взаимодействия между полом и некогнитивными характеристиками. Модель оценивалась для заработной платы на медианном уровне и выше. Результаты представлены в таблице <a href="#tbl-reg-gndr" class="quarto-xref">Таблица&nbsp;<span>5.3</span></a>.</p>
-<p>Среди всех рассматриваемых некогнитивных навыков именно дружелюбие (agreeableness) выделяется как единственная характеристика, статистически значимо сокращающая гендерный разрыв в заработной плате — эффект наблюдается на медианном уровне оплаты. При использовании женщины как базовой категории переменная дружелюбия демонстрирует положительный эффект, увеличивая заработную плату на 3.7% (p&lt;0.1). В то же время переменная взаимодействия «мужчина × дружелюбие» показывает отрицательный статистически значимый эффект в размере -3.2% на 50-м процентиле (p&lt;0.1). Это означает, что дружелюбие оказывает негативное влияние на заработную плату молодых мужчин по сравнению с женщинами.</p>
-<p>Однако данный результат не следует интерпретировать как прямое указание на то, что развитие дружелюбия в женской аудитории приведёт к справедливой оплате труда при выходе на рынок. Скорее, он подчёркивает, что для молодых мужчин избыточная выраженность данной черты снижает уровень заработной платы относительно женщин, обладающих схожим уровнем дружелюбия.</p>
+<p>Среди всех рассматриваемых некогнитивных навыков именно доброжелательность выделяется как единственная характеристика, статистически значимо сокращающая гендерный разрыв в заработной плате — эффект наблюдается на медианном уровне оплаты. При использовании женщины как базовой категории переменная доброжелательности демонстрирует положительный эффект, увеличивая заработную плату на 3.7% (p&lt;0.1). В то же время переменная взаимодействия «мужчина × доброжелательность» показывает отрицательный статистически значимый эффект в размере -3.2% на 50-м процентиле (p&lt;0.1). Это означает, что доброжелательность оказывает негативное влияние на заработную плату молодых мужчин по сравнению с женщинами.</p>
+<p>Однако данный результат не следует интерпретировать как прямое указание на то, что развитие доброжелательности в женской аудитории приведёт к справедливой оплате труда при выходе на рынок. Скорее, он подчёркивает, что для молодых мужчин избыточная выраженность данной черты снижает уровень заработной платы относительно женщин, обладающих схожим уровнем доброжелательности.</p>
 <div class="cell">
 <div id="tbl-reg-gndr" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -835,8 +851,8 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_gemohevks2868u6u5gh1(i, j, css_id) {
-          var table = document.getElementById("tinytable_gemohevks2868u6u5gh1");
+      function styleCell_g22ppe1uf5yz1y1a22eg(i, j, css_id) {
+          var table = document.getElementById("tinytable_g22ppe1uf5yz1y1a22eg");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -846,7 +862,7 @@ window.Quarto = {
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_gemohevks2868u6u5gh1');
+        var table = document.getElementById('tinytable_g22ppe1uf5yz1y1a22eg');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -854,8 +870,8 @@ window.Quarto = {
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_gemohevks2868u6u5gh1(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_gemohevks2868u6u5gh1");
+      function spanCell_g22ppe1uf5yz1y1a22eg(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_g22ppe1uf5yz1y1a22eg");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -885,15 +901,15 @@ window.Quarto = {
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 20, j: 1 }, { i: 20, j: 0 }, { i: 20, j: 3 }, { i: 20, j: 2 },  ], css_id: 'tinytable_css_xzwcdh7q3ln0wsnmxm5g',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_t26ffqpcmpd2wr9e0fh4',}, 
-          { positions: [ { i: 22, j: 2 }, { i: 22, j: 1 }, { i: 22, j: 0 }, { i: 22, j: 3 },  ], css_id: 'tinytable_css_hvayae5yllye76tn3dgg',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_ycgrrbj3usrgp53v4qlk',}, 
+          { positions: [ { i: 20, j: 1 }, { i: 20, j: 0 }, { i: 20, j: 3 }, { i: 20, j: 2 },  ], css_id: 'tinytable_css_esq65l77jt3rq9ma5hp0',}, 
+          { positions: [ { i: 22, j: 2 }, { i: 22, j: 1 }, { i: 22, j: 0 }, { i: 22, j: 3 },  ], css_id: 'tinytable_css_eey0w7km5a92g2kv49ma',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_gemohevks2868u6u5gh1(cell.i, cell.j, group.css_id);
+                  styleCell_g22ppe1uf5yz1y1a22eg(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -901,12 +917,12 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_xzwcdh7q3ln0wsnmxm5g, .table th.tinytable_css_xzwcdh7q3ln0wsnmxm5g { border-bottom: solid black 0.1em; }
-      .table td.tinytable_css_t26ffqpcmpd2wr9e0fh4, .table th.tinytable_css_t26ffqpcmpd2wr9e0fh4 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_hvayae5yllye76tn3dgg, .table th.tinytable_css_hvayae5yllye76tn3dgg { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_ycgrrbj3usrgp53v4qlk, .table th.tinytable_css_ycgrrbj3usrgp53v4qlk { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_esq65l77jt3rq9ma5hp0, .table th.tinytable_css_esq65l77jt3rq9ma5hp0 { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_eey0w7km5a92g2kv49ma, .table th.tinytable_css_eey0w7km5a92g2kv49ma { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_gemohevks2868u6u5gh1" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_g22ppe1uf5yz1y1a22eg" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -921,133 +937,133 @@ window.Quarto = {
 <tr><td colspan="4">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Intercept                 </td>
+                  <td>Константа                           </td>
                   <td>4.69 (0.07)*** </td>
                   <td>4.815 (0.08)***</td>
                   <td>4.93 (0.08)*** </td>
                 </tr>
                 <tr>
-                  <td>Experience                </td>
+                  <td>Опыт                                </td>
                   <td>0.069 (0.01)***</td>
                   <td>0.075 (0.01)***</td>
                   <td>0.053 (0.01)** </td>
                 </tr>
                 <tr>
-                  <td>Experience Sqd.           </td>
+                  <td>Опыт²                               </td>
                   <td>-0.004 (0)***  </td>
                   <td>-0.004 (0)**   </td>
                   <td>-0.003 (0)*    </td>
                 </tr>
                 <tr>
-                  <td>Area: Settlement          </td>
+                  <td>Тип поселения: ПГТ                  </td>
                   <td>-0.022 (0.07)  </td>
                   <td>0.009 (0.07)   </td>
                   <td>0.189 (0.09)*  </td>
                 </tr>
                 <tr>
-                  <td>Area: City                </td>
+                  <td>Тип поселения: Город                </td>
                   <td>0.15 (0.07)*   </td>
                   <td>0.212 (0.07)** </td>
                   <td>0.305 (0.08)***</td>
                 </tr>
                 <tr>
-                  <td>Area: Reg Center          </td>
+                  <td>Тип поселения: Райцентр             </td>
                   <td>0.206 (0.27)   </td>
                   <td>0.246 (0.27)   </td>
                   <td>0.336 (0.26)   </td>
                 </tr>
                 <tr>
-                  <td>Sex: Male                 </td>
+                  <td>Пол: Мужской                        </td>
                   <td>0.233 (0.03)***</td>
                   <td>0.272 (0.03)***</td>
                   <td>0.273 (0.05)***</td>
                 </tr>
                 <tr>
-                  <td>Family: Married           </td>
+                  <td>Семья: Женат/замужем                </td>
                   <td>-0.011 (0.03)  </td>
                   <td>-0.014 (0.03)  </td>
                   <td>0.037 (0.04)   </td>
                 </tr>
                 <tr>
-                  <td>Family: Divorced          </td>
+                  <td>Семья: Разведен/вдовец              </td>
                   <td>-0.027 (0.06)  </td>
                   <td>0.008 (0.07)   </td>
                   <td>0.057 (0.09)   </td>
                 </tr>
                 <tr>
-                  <td>Openness                  </td>
+                  <td>Открытость                          </td>
                   <td>0.063 (0.03)*  </td>
                   <td>0.063 (0.03)*  </td>
                   <td>0.072 (0.04)*  </td>
                 </tr>
                 <tr>
-                  <td>Conscientiousness         </td>
+                  <td>Добросовестность                    </td>
                   <td>-0.015 (0.02)  </td>
                   <td>-0.034 (0.02)  </td>
                   <td>-0.016 (0.03)  </td>
                 </tr>
                 <tr>
-                  <td>Extraversion              </td>
+                  <td>Экстраверсия                        </td>
                   <td>0.018 (0.02)   </td>
                   <td>0.032 (0.03)   </td>
                   <td>0.009 (0.03)   </td>
                 </tr>
                 <tr>
-                  <td>Agreeableness             </td>
+                  <td>Доброжелательность                  </td>
                   <td>0.037 (0.02).  </td>
                   <td>0.009 (0.02)   </td>
                   <td>0.015 (0.03)   </td>
                 </tr>
                 <tr>
-                  <td>Emotional Stability       </td>
+                  <td>Эмоциональная стабильность          </td>
                   <td>0.017 (0.02)   </td>
                   <td>0.003 (0.02)   </td>
                   <td>-0.021 (0.02)  </td>
                 </tr>
                 <tr>
-                  <td>Male * Openness           </td>
+                  <td>Мужской * Открытость                </td>
                   <td>-0.008 (0.03)  </td>
                   <td>-0.016 (0.04)  </td>
                   <td>0.015 (0.04)   </td>
                 </tr>
                 <tr>
-                  <td>Male * Conscientiousness  </td>
+                  <td>Мужской * Добросовестность          </td>
                   <td>0.028 (0.03)   </td>
                   <td>0.028 (0.03)   </td>
                   <td>0 (0.03)       </td>
                 </tr>
                 <tr>
-                  <td>Male * Extraversion       </td>
+                  <td>Мужской * Экстраверсия              </td>
                   <td>-0.005 (0.03)  </td>
                   <td>-0.014 (0.03)  </td>
                   <td>0.012 (0.03)   </td>
                 </tr>
                 <tr>
-                  <td>Male * Agreeableness      </td>
+                  <td>Мужской * Доброжелательность        </td>
                   <td>-0.032 (0.02). </td>
                   <td>0 (0.03)       </td>
                   <td>-0.017 (0.03)  </td>
                 </tr>
                 <tr>
-                  <td>Male * Emotional Stability</td>
+                  <td>Мужской * Эмоциональная стабильность</td>
                   <td>-0.005 (0.02)  </td>
                   <td>-0.003 (0.03)  </td>
                   <td>0.017 (0.03)   </td>
                 </tr>
                 <tr>
-                  <td>Region                    </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
+                  <td>Регион                              </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
                 </tr>
                 <tr>
-                  <td>No. Groups                </td>
+                  <td>Кол-во групп                        </td>
                   <td>2170           </td>
                   <td>2170           </td>
                   <td>2170           </td>
                 </tr>
                 <tr>
-                  <td>No. Obs                   </td>
+                  <td>Кол-во наблюдений                   </td>
                   <td>2673           </td>
                   <td>2673           </td>
                   <td>2673           </td>
@@ -1088,7 +1104,7 @@ window.Quarto = {
 <p>В отличие от открытости, остальные некогнитивные навыки демонстрируют выраженную изменчивость влияния в зависимости от возраста, что подтверждает динамический характер их эффекта. Так, добросовестность (conscientiousness) не оказывает статистически значимого влияния на заработную плату у молодёжи (1.6%, p&gt;0.05), что может быть связано с ограниченными возможностями карьерного роста на начальных этапах трудовой биографии. Однако у работников 50–65 лет эта черта приносит премию в размере 3.8% (p&lt;0.05), что подчеркивает значимость организованности и надёжности на поздних стадиях профессионального пути.</p>
 <p>Экстраверсия оказывается значимой для группы 30–40 лет (3.8%, p&lt;0.01), но теряет значимость в более старших возрастах, что, возможно, отражает роль социальных навыков в построении профессиональных связей и карьерного продвижения в среднем возрасте.</p>
 <p>Эмоциональная стабильность незначима для молодых работников, но становится значимой у более зрелых возрастных групп: 4.3% (p&lt;0.01) у 30–40 лет, 3.4% (p&lt;0.05) у 40–50 лет и 2.4% (p&lt;0.1) у 50–65 лет, что свидетельствует о возрастающей ценности устойчивости к стрессу по мере усложнения профессиональных и жизненных задач.</p>
-<p>Дружелюбие (agreeableness) не оказывает значимого влияния на заработную плату ни в одной возрастной группе, включая молодёжь, что может свидетельствовать о системной недооценке качеств, связанных с кооперацией и эмпатией, в контексте материального вознаграждения.</p>
+<p>Доброжелательность не оказывает значимого влияния на заработную плату ни в одной возрастной группе, включая молодёжь, что может свидетельствовать о системной недооценке качеств, связанных с кооперацией и эмпатией, в контексте материального вознаграждения.</p>
 <p>Полученные результаты подчеркивают важность использования перспективы жизненного цикла при анализе влияния некогнитивных навыков на результаты на рынке труда. Открытость выступает универсально полезным качеством, тогда как эффект других черт — добросовестности, экстраверсии и эмоциональной устойчивости — зависит от возраста и карьерного этапа. Это подчёркивает необходимость разработки целевых политик и программ по развитию навыков, учитывающих особенности различных возрастных когорт, с целью обеспечения устойчивого успеха на рынке труда в течение всей жизни.</p>
 <div class="cell">
 <div id="tbl-reg-lc" class="cell quarto-float quarto-figure quarto-figure-center anchored">
@@ -1102,8 +1118,8 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_v9mirfy7n9wffoeovr9z(i, j, css_id) {
-          var table = document.getElementById("tinytable_v9mirfy7n9wffoeovr9z");
+      function styleCell_xbjycejcx6abjsza0wy5(i, j, css_id) {
+          var table = document.getElementById("tinytable_xbjycejcx6abjsza0wy5");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -1113,7 +1129,7 @@ window.Quarto = {
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_v9mirfy7n9wffoeovr9z');
+        var table = document.getElementById('tinytable_xbjycejcx6abjsza0wy5');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1121,8 +1137,8 @@ window.Quarto = {
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_v9mirfy7n9wffoeovr9z(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_v9mirfy7n9wffoeovr9z");
+      function spanCell_xbjycejcx6abjsza0wy5(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_xbjycejcx6abjsza0wy5");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1152,15 +1168,15 @@ window.Quarto = {
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_jkeqyjvzdufsfifgg3y4',}, 
-          { positions: [ { i: 17, j: 0 }, { i: 17, j: 3 }, { i: 17, j: 2 }, { i: 17, j: 1 }, { i: 17, j: 4 },  ], css_id: 'tinytable_css_ivjy78xoc00l52y7v4hj',}, 
-          { positions: [ { i: 15, j: 0 }, { i: 15, j: 3 }, { i: 15, j: 2 }, { i: 15, j: 1 }, { i: 15, j: 4 },  ], css_id: 'tinytable_css_dowsrtgdtdhwuvm6fr8h',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_ym099w8pfavm2zlvxw9d',}, 
+          { positions: [ { i: 15, j: 0 }, { i: 15, j: 3 }, { i: 15, j: 2 }, { i: 15, j: 1 }, { i: 15, j: 4 },  ], css_id: 'tinytable_css_b9dfmkmvyx0neh1loqfn',}, 
+          { positions: [ { i: 17, j: 0 }, { i: 17, j: 3 }, { i: 17, j: 2 }, { i: 17, j: 1 }, { i: 17, j: 4 },  ], css_id: 'tinytable_css_65g9a4yra1t629rfzxuq',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_v9mirfy7n9wffoeovr9z(cell.i, cell.j, group.css_id);
+                  styleCell_xbjycejcx6abjsza0wy5(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1168,12 +1184,12 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_jkeqyjvzdufsfifgg3y4, .table th.tinytable_css_jkeqyjvzdufsfifgg3y4 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_ivjy78xoc00l52y7v4hj, .table th.tinytable_css_ivjy78xoc00l52y7v4hj { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_dowsrtgdtdhwuvm6fr8h, .table th.tinytable_css_dowsrtgdtdhwuvm6fr8h { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_ym099w8pfavm2zlvxw9d, .table th.tinytable_css_ym099w8pfavm2zlvxw9d { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_b9dfmkmvyx0neh1loqfn, .table th.tinytable_css_b9dfmkmvyx0neh1loqfn { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_65g9a4yra1t629rfzxuq, .table th.tinytable_css_65g9a4yra1t629rfzxuq { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_v9mirfy7n9wffoeovr9z" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_xbjycejcx6abjsza0wy5" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1189,120 +1205,120 @@ window.Quarto = {
 <tr><td colspan="5">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Intercept          </td>
-                  <td>4.726 (0.06)***</td>
-                  <td>4.543 (0.14)***</td>
-                  <td>4.738 (0.12)***</td>
-                  <td>4.211 (0.14)***</td>
+                  <td>Константа                 </td>
+                  <td>4.726 (0.05)*** </td>
+                  <td>4.543 (0.11)***</td>
+                  <td>4.738 (0.13)***</td>
+                  <td>4.211 (0.17)***</td>
                 </tr>
                 <tr>
-                  <td>Experience         </td>
-                  <td>0.024 (0)***   </td>
+                  <td>Опыт                      </td>
+                  <td>0.024 (0)***    </td>
                   <td>0.047 (0.01)***</td>
-                  <td>0.018 (0.01)*  </td>
+                  <td>0.018 (0.01).  </td>
                   <td>0.046 (0.01)***</td>
                 </tr>
                 <tr>
-                  <td>Experience Sqd.    </td>
+                  <td>Опыт²                     </td>
+                  <td>-0.001 (0)***   </td>
                   <td>-0.001 (0)***  </td>
-                  <td>-0.001 (0)***  </td>
-                  <td>0 (0).         </td>
+                  <td>0 (0)          </td>
                   <td>-0.001 (0)***  </td>
                 </tr>
                 <tr>
-                  <td>Area: Settlement   </td>
-                  <td>0.043 (0.04)   </td>
-                  <td>0.11 (0.07)    </td>
-                  <td>0.003 (0.07)   </td>
-                  <td>0.129 (0.04)** </td>
+                  <td>Тип поселения: ПГТ        </td>
+                  <td>0.043 (0.04)    </td>
+                  <td>0.11 (0.06).   </td>
+                  <td>0.003 (0.06)   </td>
+                  <td>0.129 (0.06)*  </td>
                 </tr>
                 <tr>
-                  <td>Area: City         </td>
-                  <td>0.115 (0.03)***</td>
-                  <td>0.1 (0.05)*    </td>
-                  <td>0.096 (0.05).  </td>
+                  <td>Тип поселения: Город      </td>
+                  <td>0.115 (0.02)*** </td>
+                  <td>0.1 (0.04)*    </td>
+                  <td>0.096 (0.04)*  </td>
                   <td>0.097 (0.04)*  </td>
                 </tr>
                 <tr>
-                  <td>Area: Reg Center   </td>
-                  <td>0.346 (0.14)*  </td>
-                  <td>0.584 (0.31).  </td>
-                  <td>0.036 (0.17)   </td>
-                  <td>0.095 (0.18)   </td>
+                  <td>Тип поселения: Райцентр   </td>
+                  <td>0.346 (0.14)*   </td>
+                  <td>0.584 (0.37)   </td>
+                  <td>0.036 (0.14)   </td>
+                  <td>0.095 (0.22)   </td>
                 </tr>
                 <tr>
-                  <td>Sex: Male          </td>
-                  <td>0.234 (0.01)***</td>
+                  <td>Пол: Мужской              </td>
+                  <td>0.234 (0.01)*** </td>
                   <td>0.262 (0.02)***</td>
-                  <td>0.234 (0.02)***</td>
+                  <td>0.234 (0.03)***</td>
                   <td>0.149 (0.03)***</td>
                 </tr>
                 <tr>
-                  <td>Family: Married    </td>
-                  <td>-0.062 (0.02)**</td>
+                  <td>Семья: Женат/замужем      </td>
+                  <td>-0.062 (0.02)***</td>
                   <td>-0.066 (0.03)* </td>
                   <td>-0.013 (0.05)  </td>
                   <td>-0.021 (0.06)  </td>
                 </tr>
                 <tr>
-                  <td>Family: Divorced   </td>
-                  <td>-0.09 (0.02)***</td>
+                  <td>Семья: Разведен/вдовец    </td>
+                  <td>-0.09 (0.02)*** </td>
                   <td>-0.093 (0.04)* </td>
-                  <td>-0.01 (0.05)   </td>
-                  <td>-0.122 (0.06)* </td>
+                  <td>-0.01 (0.06)   </td>
+                  <td>-0.122 (0.07). </td>
                 </tr>
                 <tr>
-                  <td>Openness           </td>
-                  <td>0.094 (0.01)***</td>
+                  <td>Открытость                </td>
+                  <td>0.094 (0.01)*** </td>
                   <td>0.093 (0.01)***</td>
                   <td>0.087 (0.01)***</td>
-                  <td>0.102 (0.01)***</td>
+                  <td>0.102 (0.02)***</td>
                 </tr>
                 <tr>
-                  <td>Conscientiousness  </td>
-                  <td>0.017 (0.01)*  </td>
+                  <td>Добросовестность          </td>
+                  <td>0.017 (0.01)**  </td>
                   <td>0.005 (0.01)   </td>
                   <td>0.014 (0.01)   </td>
                   <td>0.042 (0.02)*  </td>
                 </tr>
                 <tr>
-                  <td>Extraversion       </td>
-                  <td>0.013 (0.01).  </td>
-                  <td>0.023 (0.01)*  </td>
+                  <td>Экстраверсия              </td>
+                  <td>0.013 (0.01).   </td>
+                  <td>0.023 (0.01)** </td>
                   <td>0.009 (0.01)   </td>
-                  <td>0.001 (0.01)   </td>
-                </tr>
-                <tr>
-                  <td>Agreeableness      </td>
-                  <td>0.002 (0.01)   </td>
-                  <td>-0.003 (0.01)  </td>
-                  <td>0.006 (0.01)   </td>
                   <td>0.001 (0.02)   </td>
                 </tr>
                 <tr>
-                  <td>Emotional Stability</td>
-                  <td>0.035 (0.01)***</td>
-                  <td>0.04 (0.01)**  </td>
-                  <td>0.03 (0.01)**  </td>
-                  <td>0.031 (0.01)*  </td>
+                  <td>Доброжелательность        </td>
+                  <td>0.002 (0.01)    </td>
+                  <td>-0.003 (0.01)  </td>
+                  <td>0.006 (0.02)   </td>
+                  <td>0.001 (0.02)   </td>
                 </tr>
                 <tr>
-                  <td>Region             </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
-                  <td>Controlled     </td>
+                  <td>Эмоциональная стабильность</td>
+                  <td>0.035 (0.01)*** </td>
+                  <td>0.04 (0.01)*** </td>
+                  <td>0.03 (0.02).   </td>
+                  <td>0.031 (0.02).  </td>
                 </tr>
                 <tr>
-                  <td>No. Groups         </td>
-                  <td>9797           </td>
+                  <td>Регион                    </td>
+                  <td>Контролируется  </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
+                  <td>Контролируется </td>
+                </tr>
+                <tr>
+                  <td>Кол-во групп              </td>
+                  <td>9797            </td>
                   <td>3484           </td>
                   <td>2824           </td>
                   <td>2519           </td>
                 </tr>
                 <tr>
-                  <td>No. Obs            </td>
-                  <td>14648          </td>
+                  <td>Кол-во наблюдений         </td>
+                  <td>14648           </td>
                   <td>4584           </td>
                   <td>3818           </td>
                   <td>3522           </td>
