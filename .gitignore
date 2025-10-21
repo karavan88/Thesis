@@ -19,6 +19,7 @@
 # Exception for specific files
 !apa-with-abstract.csl
 !header.tex
+!README.md
 
 # Keep this gitignore file itself
 !.gitignore
