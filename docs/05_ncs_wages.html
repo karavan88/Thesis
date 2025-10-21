@@ -304,8 +304,8 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_kingngh901sy9yy8mn1u(i, j, css_id) {
-          var table = document.getElementById("tinytable_kingngh901sy9yy8mn1u");
+      function styleCell_bq95xfeirjevwpf0hq69(i, j, css_id) {
+          var table = document.getElementById("tinytable_bq95xfeirjevwpf0hq69");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -315,7 +315,7 @@ window.Quarto = {
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_kingngh901sy9yy8mn1u');
+        var table = document.getElementById('tinytable_bq95xfeirjevwpf0hq69');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -323,8 +323,8 @@ window.Quarto = {
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_kingngh901sy9yy8mn1u(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_kingngh901sy9yy8mn1u");
+      function spanCell_bq95xfeirjevwpf0hq69(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_bq95xfeirjevwpf0hq69");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -354,15 +354,15 @@ window.Quarto = {
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 17, j: 0 }, { i: 17, j: 1 }, { i: 17, j: 4 }, { i: 17, j: 3 }, { i: 17, j: 2 }, { i: 17, j: 5 },  ], css_id: 'tinytable_css_hmwp3s7d5lm02b04miib',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_d8tzphwhoranvp615lmw',}, 
-          { positions: [ { i: 15, j: 0 }, { i: 15, j: 3 }, { i: 15, j: 1 }, { i: 15, j: 4 }, { i: 15, j: 2 }, { i: 15, j: 5 },  ], css_id: 'tinytable_css_1ojd6se7n7z2fxrr11pq',}, 
+          { positions: [ { i: 15, j: 0 }, { i: 15, j: 3 }, { i: 15, j: 1 }, { i: 15, j: 4 }, { i: 15, j: 2 }, { i: 15, j: 5 },  ], css_id: 'tinytable_css_vd0qxyfpfgx40x19qeza',}, 
+          { positions: [ { i: 17, j: 0 }, { i: 17, j: 1 }, { i: 17, j: 4 }, { i: 17, j: 3 }, { i: 17, j: 2 }, { i: 17, j: 5 },  ], css_id: 'tinytable_css_b3x0sw7h6t7kjvusnybw',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_71c1xjuigrouwtdszoz5',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_kingngh901sy9yy8mn1u(cell.i, cell.j, group.css_id);
+                  styleCell_bq95xfeirjevwpf0hq69(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -370,12 +370,12 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_hmwp3s7d5lm02b04miib, .table th.tinytable_css_hmwp3s7d5lm02b04miib { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_d8tzphwhoranvp615lmw, .table th.tinytable_css_d8tzphwhoranvp615lmw { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_1ojd6se7n7z2fxrr11pq, .table th.tinytable_css_1ojd6se7n7z2fxrr11pq { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_vd0qxyfpfgx40x19qeza, .table th.tinytable_css_vd0qxyfpfgx40x19qeza { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_b3x0sw7h6t7kjvusnybw, .table th.tinytable_css_b3x0sw7h6t7kjvusnybw { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_71c1xjuigrouwtdszoz5, .table th.tinytable_css_71c1xjuigrouwtdszoz5 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_kingngh901sy9yy8mn1u" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_bq95xfeirjevwpf0hq69" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -556,8 +556,8 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_6sr1u78pnu67r0wh0hje(i, j, css_id) {
-          var table = document.getElementById("tinytable_6sr1u78pnu67r0wh0hje");
+      function styleCell_f77oz4gkxwscp3fps9y6(i, j, css_id) {
+          var table = document.getElementById("tinytable_f77oz4gkxwscp3fps9y6");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -567,7 +567,7 @@ window.Quarto = {
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_6sr1u78pnu67r0wh0hje');
+        var table = document.getElementById('tinytable_f77oz4gkxwscp3fps9y6');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -575,8 +575,8 @@ window.Quarto = {
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_6sr1u78pnu67r0wh0hje(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_6sr1u78pnu67r0wh0hje");
+      function spanCell_f77oz4gkxwscp3fps9y6(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_f77oz4gkxwscp3fps9y6");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -606,15 +606,15 @@ window.Quarto = {
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 18, j: 0 }, { i: 18, j: 3 }, { i: 18, j: 1 }, { i: 18, j: 4 }, { i: 18, j: 2 }, { i: 18, j: 5 },  ], css_id: 'tinytable_css_qfl02ls9hwytvm5940zx',}, 
-          { positions: [ { i: 20, j: 0 }, { i: 20, j: 1 }, { i: 20, j: 4 }, { i: 20, j: 3 }, { i: 20, j: 2 }, { i: 20, j: 5 },  ], css_id: 'tinytable_css_ncxlesr36ph4muw870v4',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_c1qqsnz80nnb68yjm6m9',}, 
+          { positions: [ { i: 20, j: 0 }, { i: 20, j: 1 }, { i: 20, j: 4 }, { i: 20, j: 3 }, { i: 20, j: 2 }, { i: 20, j: 5 },  ], css_id: 'tinytable_css_wwq1qkmfd3evg00ymf11',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_uc3gnh1rtirp9x23jj8i',}, 
+          { positions: [ { i: 18, j: 0 }, { i: 18, j: 3 }, { i: 18, j: 1 }, { i: 18, j: 4 }, { i: 18, j: 2 }, { i: 18, j: 5 },  ], css_id: 'tinytable_css_mtsr3c3o27muh30opocm',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_6sr1u78pnu67r0wh0hje(cell.i, cell.j, group.css_id);
+                  styleCell_f77oz4gkxwscp3fps9y6(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -622,12 +622,12 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_qfl02ls9hwytvm5940zx, .table th.tinytable_css_qfl02ls9hwytvm5940zx { border-bottom: solid black 0.1em; }
-      .table td.tinytable_css_ncxlesr36ph4muw870v4, .table th.tinytable_css_ncxlesr36ph4muw870v4 { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_c1qqsnz80nnb68yjm6m9, .table th.tinytable_css_c1qqsnz80nnb68yjm6m9 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_wwq1qkmfd3evg00ymf11, .table th.tinytable_css_wwq1qkmfd3evg00ymf11 { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_uc3gnh1rtirp9x23jj8i, .table th.tinytable_css_uc3gnh1rtirp9x23jj8i { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_mtsr3c3o27muh30opocm, .table th.tinytable_css_mtsr3c3o27muh30opocm { border-bottom: solid black 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_6sr1u78pnu67r0wh0hje" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_f77oz4gkxwscp3fps9y6" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -816,8 +816,9 @@ window.Quarto = {
 <section id="приводит-ли-наличие-высшего-образования-к-большей-отдаче-от-некогнитивных-навыков" class="level3" data-number="5.3.3">
 <h3 data-number="5.3.3" class="anchored" data-anchor-id="приводит-ли-наличие-высшего-образования-к-большей-отдаче-от-некогнитивных-навыков"><span class="header-section-number">5.3.3</span> Приводит ли наличие высшего образования к большей отдаче от некогнитивных навыков?</h3>
 <p>Для изоляции эффекта образования как на уровень заработной платы, так и на некогнитивные навыки, были оценены отдельные регрессионные модели для каждой категории уровня образования. В связи с небольшим размером выборки, респонденты с полным средним образованием и те, кто не окончил среднюю школу, были объединены в одну категорию под названием «среднее и ниже». Такой подход позволяет более чётко сравнить отдачу от некогнитивных навыков по разным уровням образования, устраняя потенциальные искажения, вызванные взаимосвязью между образованием и заработной платой, а также между образованием и личностными характеристиками.</p>
-<p>Коэффициенты отдачи от некогнитивных навыков по уровням образования, оценённые с использованием модели с обратными вероятностными весами, представлены на графике <a href="#fig-edu-ncs" class="quarto-xref">Рисунок&nbsp;<span>5.1</span></a>. Результаты показывают, что работники без образовательных квалификаций (т.е. со «средним и ниже» уровнем образования) практически не получают выгоды от своих некогнитивных навыков. Единственный выявленный эффект — эмоциональная стабильность на 10-м процентиле распределения заработной платы (6.4%, p&lt;0.1). Также ограниченная продуктивность наблюдается и среди молодёжи с высшим образованием: добросовестность в этом случае оказывает положительное влияние только на 25-м перцентиле (7.2%, p&lt;0.1).</p>
-<p>В то же время у респондентов со средним профессиональным образованием наблюдается более выразительная картина. Так, статистически значимый положительный эффект открытости зафиксирован почти на всех выбранных процентилях, за исключением 10-го. При этом на 75-м процентиле экстраверсия увеличивает почасовую оплату труда на 3.9%. Важно отметить, что доброжелательность снижает заработную плату на 90-м процентиле на 4.2%, что подчёркивает важность межличностных навыков для работников со средним и выше уровнем заработка, занятых в профессиональных и технических ролях. Однако избыточная уступчивость, как показывают данные, не приводит к позитивным результатам на верхнем уровне шкалы доходов.</p>
+<p>Коэффициенты отдачи от некогнитивных навыков по уровням образования, оценённые с использованием модели с обратными вероятностными весами, представлены на графике <a href="#fig-edu-ncs" class="quarto-xref">Рисунок&nbsp;<span>5.1</span></a>. Результаты показывают, что молодые работники с высшим образованием практически не получают выгоды от своих некогнитивных навыков. Единственный выявленный эффект — добросовестность на 25-м процентиле заработной платы, которая оказывает положительную и статистически значимую отдачу.</p>
+<p>В то же время у индивидов с образованием на уровне средней школы или ниже, а также молодежи со средним профессиональным образованием наблюдается более выразительная картина. Так, статистически значимый положительный эффект открытости зафиксирован почти на всех выбранных процентилях, за исключением 25-го. При этом интересно, как он варьируется: на 10-м процентиле он составляет 7,8%, теряет значимость на 25-м, на уровне медианы новь появляется с 5,5% премией и вновь начинает расти, достигая пика в 8,8% на 90-м процентиле.</p>
+<p>Наконец, для индивидов с образованием на уровне средней школы или ниже, ключевую роль на разных уровнях оплаты труда показали такие характеристики как эмоциональная стабильность и доброжелательность. При этом эмоциональная стабильность имеет отдачу на 10-м процентиле, подчеркивая важность устойчивости к стрессу для людей с низким образованием и низкой оплатой труда. При этом, для молодежи с низким уровнем образования характерна возрастающая отдача от доброжелательности на уровнях оплаты труда выше медианы.</p>
 <p>Таким образом, несмотря на то что некогнитивные навыки вносят вклад в вариативность заработной платы на всех уровнях образования, их влияние опосредовано как самим уровнем образования, так и позицией работников в распределении заработка.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -837,8 +838,8 @@ window.Quarto = {
 <section id="взаимодействие-некогнитивных-навыков-и-пола" class="level3" data-number="5.3.4">
 <h3 data-number="5.3.4" class="anchored" data-anchor-id="взаимодействие-некогнитивных-навыков-и-пола"><span class="header-section-number">5.3.4</span> Взаимодействие некогнитивных навыков и пола</h3>
 <p>Современные экономические исследования последовательно указывают на наличие существенной гендерной дискриминации на российском рынке труда, демонстрируя, что женщины сталкиваются с выраженными трудностями в получении справедливого вознаграждения. Это поднимает важные вопросы — могут ли некогнитивные навыки способствовать сокращению гендерного разрыва в оплате труда. Для анализа данной гипотезы была построена модель с переменными взаимодействия между полом и некогнитивными характеристиками. Модель оценивалась для заработной платы на медианном уровне и выше. Результаты представлены в таблице <a href="#tbl-reg-gndr" class="quarto-xref">Таблица&nbsp;<span>5.3</span></a>.</p>
-<p>Среди всех рассматриваемых некогнитивных навыков именно доброжелательность выделяется как единственная характеристика, статистически значимо сокращающая гендерный разрыв в заработной плате — эффект наблюдается на медианном уровне оплаты. При использовании женщины как базовой категории переменная доброжелательности демонстрирует положительный эффект, увеличивая заработную плату на 3.7% (p&lt;0.1). В то же время переменная взаимодействия «мужчина × доброжелательность» показывает отрицательный статистически значимый эффект в размере -3.2% на 50-м процентиле (p&lt;0.1). Это означает, что доброжелательность оказывает негативное влияние на заработную плату молодых мужчин по сравнению с женщинами.</p>
-<p>Однако данный результат не следует интерпретировать как прямое указание на то, что развитие доброжелательности в женской аудитории приведёт к справедливой оплате труда при выходе на рынок. Скорее, он подчёркивает, что для молодых мужчин избыточная выраженность данной черты снижает уровень заработной платы относительно женщин, обладающих схожим уровнем доброжелательности.</p>
+<p>Среди всех рассматриваемых некогнитивных навыков именно доброжелательность выделяется как единственная характеристика, статистически значимо сокращающая гендерный разрыв в заработной плате — эффект наблюдается на медианном уровне оплаты. При использовании женщины как базовой категории переменная доброжелательности демонстрирует положительный эффект, увеличивая заработную плату на 3.7% (p&lt;0.1). В то же время переменная взаимодействия «мужчина × доброжелательность» показывает отрицательный статистически значимый эффект в размере -3.2% на 50-м процентиле (p&lt;0.1). Это означает, что доброжелательность обладает гендерной гетерогенностью в отдаче, производя премию для женщин и почти не имея эффекта для мужчин.</p>
+<p>Однако данный результат не следует интерпретировать как прямое указание на то, что развитие доброжелательности среди женщин само по себе приведёт к справедливой оплате труда. Скорее, он подчёркивает существование гендерной асимметрии в отдаче на этот навык: у женщин доброжелательность ассоциируется с заработной премией, тогда как у мужчин — её практически нет. Это может отражать различия в социальном восприятии и оценке личностных качеств и моделей поведения на рынке труда в зависимости от пола.</p>
 <div class="cell">
 <div id="tbl-reg-gndr" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -851,8 +852,8 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_fki91b03w7jruf2c7auv(i, j, css_id) {
-          var table = document.getElementById("tinytable_fki91b03w7jruf2c7auv");
+      function styleCell_xlegxunsyxqpalidgml0(i, j, css_id) {
+          var table = document.getElementById("tinytable_xlegxunsyxqpalidgml0");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -862,7 +863,7 @@ window.Quarto = {
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_fki91b03w7jruf2c7auv');
+        var table = document.getElementById('tinytable_xlegxunsyxqpalidgml0');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -870,8 +871,8 @@ window.Quarto = {
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_fki91b03w7jruf2c7auv(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_fki91b03w7jruf2c7auv");
+      function spanCell_xlegxunsyxqpalidgml0(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_xlegxunsyxqpalidgml0");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -901,15 +902,15 @@ window.Quarto = {
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_qngl2ca5mjl7g08qjnuy',}, 
-          { positions: [ { i: 20, j: 1 }, { i: 20, j: 0 }, { i: 20, j: 3 }, { i: 20, j: 2 },  ], css_id: 'tinytable_css_lp0hm7r6vufafdnq2pj4',}, 
-          { positions: [ { i: 22, j: 2 }, { i: 22, j: 1 }, { i: 22, j: 0 }, { i: 22, j: 3 },  ], css_id: 'tinytable_css_h7vnpi90thxre366go3r',}, 
+          { positions: [ { i: 22, j: 2 }, { i: 22, j: 1 }, { i: 22, j: 0 }, { i: 22, j: 3 },  ], css_id: 'tinytable_css_wqnjogrefikniidjvez1',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_swd7p8lhl5a61cfwozz5',}, 
+          { positions: [ { i: 20, j: 1 }, { i: 20, j: 0 }, { i: 20, j: 3 }, { i: 20, j: 2 },  ], css_id: 'tinytable_css_abrt9lmywxvjrhwxtzb2',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_fki91b03w7jruf2c7auv(cell.i, cell.j, group.css_id);
+                  styleCell_xlegxunsyxqpalidgml0(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -917,12 +918,12 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_qngl2ca5mjl7g08qjnuy, .table th.tinytable_css_qngl2ca5mjl7g08qjnuy { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_lp0hm7r6vufafdnq2pj4, .table th.tinytable_css_lp0hm7r6vufafdnq2pj4 { border-bottom: solid black 0.1em; }
-      .table td.tinytable_css_h7vnpi90thxre366go3r, .table th.tinytable_css_h7vnpi90thxre366go3r { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_wqnjogrefikniidjvez1, .table th.tinytable_css_wqnjogrefikniidjvez1 { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_swd7p8lhl5a61cfwozz5, .table th.tinytable_css_swd7p8lhl5a61cfwozz5 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_abrt9lmywxvjrhwxtzb2, .table th.tinytable_css_abrt9lmywxvjrhwxtzb2 { border-bottom: solid black 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_fki91b03w7jruf2c7auv" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_xlegxunsyxqpalidgml0" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1099,13 +1100,13 @@ window.Quarto = {
 </div>
 <p>На графике представлен сглаженный эффект переменной возраста, полученный с использованием сплайнов. Он отражает, как эффект возраста на логарифм заработной платы отклоняется от базового уровня, рассчитанного моделью. Ось Y показывает частичный эффект возраста при прочих равных условиях. Эти частичные эффекты выражены в той же шкале, что и зависимая переменная, но центрированы относительно нуля для облегчения интерпретации. Пунктирные линии обозначают доверительные интервалы, отражающие неопределённость оценки.</p>
 <p>График демонстрирует U-образную форму зависимости между возрастом и логарифмом заработной платы: доходы ниже у самых молодых работников, растут с возрастом, достигая пика примерно в 40–50 лет, а затем начинают снижаться после 50 лет. Отрицательные значения на графике означают, что эффект возраста на оплату труда ниже среднего уровня. Это соответствует диапазону рассматриваемой возрастной группы, так как до 35 лет — условного возрастного порога молодёжи в России — эффект остаётся отрицательным, лишь незначительно превышая ноль около этого рубежа. Таким образом, модель прогнозирует более низкую, чем в среднем по населению, заработную плату для лиц моложе 35 лет при прочих равных условиях.</p>
-<p>В дальнейшем анализ оценивает отдачу от некогнитивных навыков (NCS) как для всего трудоспособного населения в возрасте 16–65 лет, так и отдельно по возрастным когортам: 30–39, 40–49 и 50–65 лет. Результаты приведены в таблице <a href="#tbl-reg-lc" class="quarto-xref">Таблица&nbsp;<span>5.4</span></a>. В целом, полученные результаты подтверждают, что с возрастом и прохождением различных стадий профессионального пути характер вознаграждения за некогнитивные качества изменяется, отражая сдвиги как в ожиданиях работодателей, так и в поведенческих стратегиях работников. В этом контексте закономерности, выявленные в когорте молодых работников 18–29 лет, действительно обладают уникальными особенностями по сравнению с остальными возрастными группами.</p>
-<p>Из всех некогнитивных черт именно открытость демонстрирует устойчиво положительное и статистически значимое влияние на заработную плату во всех возрастных группах. У молодых работников 18–29 лет открытость обеспечивает премию к заработной плате на уровне 6.8% (p&lt;0.001) при медианном значении. Этот эффект подтверждает важность данной черты в период вхождения в рынок труда, когда адаптивность и креативность способствуют трудоустройству на более качественные позиции. Данный эффект сохраняется и в более старших когортах: 8.5% (p&lt;0.001) у 30–40-летних, 9.8% (p&lt;0.001) у 40–50-летних и 8.7% (p&lt;0.001) у 50–65-летних. Такая стабильность делает открытость универсально значимой характеристикой, востребованной на всех этапах профессионального пути.</p>
-<p>В отличие от открытости, остальные некогнитивные навыки демонстрируют выраженную изменчивость влияния в зависимости от возраста, что подтверждает динамический характер их эффекта. Так, добросовестность (conscientiousness) не оказывает статистически значимого влияния на заработную плату у молодёжи (1.6%, p&gt;0.05), что может быть связано с ограниченными возможностями карьерного роста на начальных этапах трудовой биографии. Однако у работников 50–65 лет эта черта приносит премию в размере 3.8% (p&lt;0.05), что подчеркивает значимость организованности и надёжности на поздних стадиях профессионального пути.</p>
-<p>Экстраверсия оказывается значимой для группы 30–40 лет (3.8%, p&lt;0.01), но теряет значимость в более старших возрастах, что, возможно, отражает роль социальных навыков в построении профессиональных связей и карьерного продвижения в среднем возрасте.</p>
-<p>Эмоциональная стабильность незначима для молодых работников, но становится значимой у более зрелых возрастных групп: 4.3% (p&lt;0.01) у 30–40 лет, 3.4% (p&lt;0.05) у 40–50 лет и 2.4% (p&lt;0.1) у 50–65 лет, что свидетельствует о возрастающей ценности устойчивости к стрессу по мере усложнения профессиональных и жизненных задач.</p>
+<p>В дальнейшем анализ оценивает отдачу от некогнитивных навыков (NCS) как для всего трудоспособного населения в возрасте 16–65 лет, так и отдельно по возрастным когортам: 30–39, 40–49 и 50–65 лет. Результаты приведены в таблице <a href="#tbl-reg-lc" class="quarto-xref">Таблица&nbsp;<span>5.4</span></a>. В целом, полученные результаты подтверждают, что с возрастом и прохождением различных стадий профессионального пути характер вознаграждения за некогнитивные качества изменяется, отражая сдвиги как в ожиданиях работодателей, так и в поведенческих стратегиях работников. В этом контексте закономерности, выявленные в когорте молодых работников 16–29 лет, действительно обладают уникальными особенностями по сравнению с остальными возрастными группами.</p>
+<p>Из всех некогнитивных черт именно открытость демонстрирует устойчиво положительное и статистически значимое влияние на заработную плату во всех возрастных группах. Как было показано в <a href="#tbl-baseline-reg-ipw" class="quarto-xref">Таблица&nbsp;<span>5.1</span></a>, у молодых работников 16–29 лет открытость обеспечивает премию к заработной плате на уровне 5.7% (p&lt;0.001) при медианном значении. Этот эффект подтверждает важность данной черты в период вхождения в рынок труда, когда адаптивность и креативность способствуют трудоустройству на более качественные позиции. Более того, он сохраняется и в более старших когортах: 9.3% (p&lt;0.001) у 30–39-летних, 8.7% (p&lt;0.001) у 40–49-летних и 10.2% (p&lt;0.001) у 50–65-летних. Такая стабильность делает открытость универсально значимой характеристикой, востребованной на всех этапах профессионального пути. При среднем эффекте для населения в трудовом возрасте в 9.4%, интересно отметить, что больше всего от открытости выигрывают люди в зрелом трудовом возрасте.</p>
+<p>В отличие от открытости, остальные некогнитивные навыки демонстрируют выраженную изменчивость влияния в зависимости от возраста, что подтверждает динамический характер их эффекта. Так, добросовестность, которая оказывает статистически значимый эффект только для низко-оплачиваемых молодых работников, производит отдачу на уровне медианной зарплаты населения в трудоспособном возрасте. Данный эффект является слабо выраженным (1.7%) и наблюдается ввиду особой производственной ценности добросовестности среди работников 50–65 лет, когда эта черта приносит премию в размере 4.2% (p&lt;0.05), что подчеркивает значимость организованности и надёжности на поздних стадиях профессионального пути.</p>
+<p>Экстраверсия оказывается значимой для группы 30–39 лет (2.3%, p&lt;0.01), но теряет значимость в более старших возрастах, что, возможно, отражает роль социальных навыков в построении профессиональных связей и карьерного продвижения в среднем возрасте.</p>
+<p>Эмоциональная стабильность, производящая статистически значимую прибавку к зарплате молодых работников на 25-м и 50-м процентилях, на медианном уровне оплаты труда показывает статистически значимые положительные эффекты от 3% до 4% во всех возрастных группах.</p>
 <p>Доброжелательность не оказывает значимого влияния на заработную плату ни в одной возрастной группе, включая молодёжь, что может свидетельствовать о системной недооценке качеств, связанных с кооперацией и эмпатией, в контексте материального вознаграждения.</p>
-<p>Полученные результаты подчеркивают важность использования перспективы жизненного цикла при анализе влияния некогнитивных навыков на результаты на рынке труда. Открытость выступает универсально полезным качеством, тогда как эффект других черт — добросовестности, экстраверсии и эмоциональной устойчивости — зависит от возраста и карьерного этапа. Это подчёркивает необходимость разработки целевых политик и программ по развитию навыков, учитывающих особенности различных возрастных когорт, с целью обеспечения устойчивого успеха на рынке труда в течение всей жизни.</p>
+<p>Полученные результаты подчеркивают важность использования перспективы жизненного цикла при анализе влияния некогнитивных навыков на результаты на рынке труда. Открытость выступает универсально полезным качеством, тогда как эффект других черт — добросовестности, экстраверсии и эмоциональной стабильности — зависит от возраста и карьерного этапа. Это подчёркивает необходимость разработки целевых политик и программ по развитию навыков, учитывающих особенности различных возрастных когорт, с целью обеспечения устойчивого успеха на рынке труда в течение всей жизни.</p>
 <div class="cell">
 <div id="tbl-reg-lc" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1118,8 +1119,8 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_qlh9bcc0lobm45m33mq1(i, j, css_id) {
-          var table = document.getElementById("tinytable_qlh9bcc0lobm45m33mq1");
+      function styleCell_wl088gmx8r7ybqbhm35y(i, j, css_id) {
+          var table = document.getElementById("tinytable_wl088gmx8r7ybqbhm35y");
           var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
@@ -1129,7 +1130,7 @@ window.Quarto = {
           }
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_qlh9bcc0lobm45m33mq1');
+        var table = document.getElementById('tinytable_wl088gmx8r7ybqbhm35y');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1137,8 +1138,8 @@ window.Quarto = {
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_qlh9bcc0lobm45m33mq1(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_qlh9bcc0lobm45m33mq1");
+      function spanCell_wl088gmx8r7ybqbhm35y(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_wl088gmx8r7ybqbhm35y");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1168,15 +1169,15 @@ window.Quarto = {
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 15, j: 0 }, { i: 15, j: 3 }, { i: 15, j: 2 }, { i: 15, j: 1 }, { i: 15, j: 4 },  ], css_id: 'tinytable_css_xif9s2yzanaa1zdzf9lf',}, 
-          { positions: [ { i: 17, j: 0 }, { i: 17, j: 3 }, { i: 17, j: 2 }, { i: 17, j: 1 }, { i: 17, j: 4 },  ], css_id: 'tinytable_css_wrvwpr7sp1e1qsuthpp4',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_f71qjm49aabci10ak07a',}, 
+          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_q9ri2asmr0cddhw9pm05',}, 
+          { positions: [ { i: 15, j: 0 }, { i: 15, j: 3 }, { i: 15, j: 2 }, { i: 15, j: 1 }, { i: 15, j: 4 },  ], css_id: 'tinytable_css_mxr768yxopmassin86l2',}, 
+          { positions: [ { i: 17, j: 0 }, { i: 17, j: 3 }, { i: 17, j: 2 }, { i: 17, j: 1 }, { i: 17, j: 4 },  ], css_id: 'tinytable_css_2kphabfbdwjvgua60z53',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_qlh9bcc0lobm45m33mq1(cell.i, cell.j, group.css_id);
+                  styleCell_wl088gmx8r7ybqbhm35y(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1184,12 +1185,12 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_xif9s2yzanaa1zdzf9lf, .table th.tinytable_css_xif9s2yzanaa1zdzf9lf { border-bottom: solid black 0.1em; }
-      .table td.tinytable_css_wrvwpr7sp1e1qsuthpp4, .table th.tinytable_css_wrvwpr7sp1e1qsuthpp4 { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_f71qjm49aabci10ak07a, .table th.tinytable_css_f71qjm49aabci10ak07a { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_q9ri2asmr0cddhw9pm05, .table th.tinytable_css_q9ri2asmr0cddhw9pm05 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_mxr768yxopmassin86l2, .table th.tinytable_css_mxr768yxopmassin86l2 { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_2kphabfbdwjvgua60z53, .table th.tinytable_css_2kphabfbdwjvgua60z53 { border-bottom: solid #d3d8dc 0.1em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_qlh9bcc0lobm45m33mq1" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_wl088gmx8r7ybqbhm35y" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1336,15 +1337,14 @@ window.Quarto = {
 </section>
 <section id="обсуждение" class="level2" data-number="5.4">
 <h2 data-number="5.4" class="anchored" data-anchor-id="обсуждение"><span class="header-section-number">5.4</span> Обсуждение</h2>
-<p>Результаты данной главы подтверждают, что некогнитивные навыки производят неоднородные доходы на российском рынке труда среди молодежи, переходящей от учебы к работе, что позволяет предположить нелинейный характер влияния этих навыков не только в контексте заработной платы, но и, возможно, по отношению к другим социально-экономическим результатам. Анализ подчеркивает дифференцированное влияние отдельных личностных характеристик на распределение заработной платы с учетом социально-демографических факторов.</p>
+<p>Результаты данной главы подтверждают, что некогнитивные навыки производят неоднородную отдачу на российском рынке труда среди молодежи, переходящей от учебы к работе, что позволяет предположить нелинейный характер влияния этих навыков не только в контексте заработной платы, но и, возможно, по отношению к другим социально-экономическим результатам. Анализ подчеркивает дифференцированное влияние отдельных личностных характеристик на распределение заработной платы с учетом социально-демографических факторов вроде уровня образования, пола и возраста.</p>
 <p>Несмотря на то, что лишь ограниченное число исследований оценивало отдачу от некогнитивных навыков с использованием квантильной регрессии, полученные ими результаты единообразно указывают на гетерогенность эффектов по всему распределению заработной платы. Настоящее исследование согласуется с выводами работ, выявивших более высокую отдачу от некогнитивных навыков у высокооплачиваемых работников (например, <span class="citation" data-cites="collischon2019">Collischon (<a href="references.html#ref-collischon2019" role="doc-biblioref">2019</a>)</span>; <span class="citation" data-cites="edin2022">Edin и др. (<a href="references.html#ref-edin2022" role="doc-biblioref">2022</a>)</span>), поскольку базовая модель демонстрирует постепенное усиление эффекта открытости по мере увеличения уровня оплаты труда.</p>
-<p>Особенно выделяется открытость новому опыту как наиболее продуктивный некогнитивный навык. С заметным отрывом за ним следуют эмоциональная стабильность и добросовестность. Хотя степень влияния каждого навыка варьируется, их значимость сохраняется по всему спектру заработной платы, подчеркивая универсальность этих характеристик в повышении производительности.</p>
-<p>Сильный эффект открытости подтверждает выводы двух предыдущих исследований, изучавших отдачу от некогнитивных навыков на российском рынке труда <span class="citation" data-cites="maksimova2019 rozhkova2019">(<a href="references.html#ref-maksimova2019" role="doc-biblioref">Maksimova, 2019</a>; <a href="references.html#ref-rozhkova2019" role="doc-biblioref">Рожкова, 2019</a>)</span>. Однако международные данные остаются неоднозначными: существуют как свидетельства положительного <span class="citation" data-cites="seibert2001">(<a href="references.html#ref-seibert2001" role="doc-biblioref">Seibert &amp; Kraimer, 2001</a>)</span>, так и отрицательного <span class="citation" data-cites="mueller2006">(<a href="references.html#ref-mueller2006" role="doc-biblioref">Mueller &amp; Plug, 2006</a>)</span> влияния открытости на заработную плату.</p>
-<p>В противоположность этому экстраверсия не оказывает значимого влияния на заработки низкооплачиваемых работников, но показывает значительный эффект в средне- и высокооплачиваемых сегментах, что свидетельствует о более высокой ценности межличностных навыков в должностях, предполагающих большую ответственность или сложность.</p>
-<p>В этой связи были построены несколько моделей, как с учетом уровня образования, так и без него. Принципиально важно, что даже при включении образовательного уровня в модель, некогнитивные навыки продолжают демонстрировать статистически значимую отдачу. Эти результаты соответствуют экономической литературе, подчеркивающей устойчивость вклада некогнитивных навыков в объяснение различий в заработной плате. Таким образом, полученные данные подтверждают уникальный вклад некогнитивных характеристик в формирование доходов, дополняющий эффект формального образования. Этот результат также согласуется с альтернативным подходом, при котором после учета вклада образования включение некогнитивных навыков существенно снижает оценку отдачи от образования <span class="citation" data-cites="bowles2001">(<a href="references.html#ref-bowles2001" role="doc-biblioref">Bowles и др., 2001</a>)</span>.</p>
-<p>Факт того, что среди молодежи без профессиональной квалификации (то есть окончивших только среднюю школу или менее) некогнитивные навыки практически не приносят значимой отдачи, подчеркивает уязвимое положение этой группы на рынке труда: их интеграция в трудовую сферу не опосредуется личностными характеристиками. Похожая ситуация наблюдается и среди молодежи с высшим образованием, что свидетельствует об ограниченной роли некогнитивных навыков в трудоустройстве выпускников вузов.</p>
-<p>Интересным открытием стало то, что наиболее выраженный эффект некогнитивных навыков наблюдается у молодежи со средним профессиональным образованием. Хотя такой результат может показаться неожиданным, он имеет теоретическое обоснование. Высшее образование, как правило, связано с развитием когнитивных способностей, которые сами по себе повышают производительность, снижая зависимость от личностных характеристик. В то же время для молодежи с менее высоким уровнем образования некогнитивные навыки могут компенсировать дефицит формальной квалификации и играть ключевую роль в трудовой успешности. Кроме того, такие навыки особенно важны в профессиях, где важны личностные и поведенческие качества, а не академическая подготовка. Например, в сферах, где адаптивность и межличностная компетентность определяют эффективность работы, такие работники могут полагаться именно на эти навыки. Также немаловажную роль может играть и спрос со стороны работодателей, которые при найме на должности, не требующие высшего образования, отдают предпочтение кандидатам с выраженными личностными характеристиками, такими как стойкость, трудолюбие и гибкость.</p>
-<p>С целью более глубокого понимания гендерных различий в доходах были оценены модели с взаимодействием между полом и некогнитивными навыками. Анализ показал, что лишь открытость демонстрирует значительно более высокую отдачу для женщин, но с учетом отсутствия статистически значимого коэффициента между открытостью и мужским полом говорить об отличии в эффекте у мужчин и женщин не приходится. Тем не менее, большая доброжелательность среди мужчин незначительно пенализирует заработную плату. В целом эти выводы соответствует существующей в России и за ее пределами научной повестке, утверждающей, что различия в личностных характеристиках не являются основным фактором гендерного разрыва в заработной плате <span class="citation" data-cites="rozhkova2021b tognatta2018 nordman2015">(<a href="references.html#ref-nordman2015" role="doc-biblioref">Nordman и др., 2015</a>; <a href="references.html#ref-rozhkova2021b" role="doc-biblioref">Rozhkova и др., 2021</a>; <a href="references.html#ref-tognatta2018" role="doc-biblioref">Tognatta и др., 2018</a>)</span>. В то же время различия в эффекте некогнитивных навыков у мужчин и женщин могут отражать влияние гендерных норм на структуру вознаграждения <span class="citation" data-cites="glewwe2022">(<a href="references.html#ref-glewwe2022" role="doc-biblioref">Glewwe и др., 2022</a>)</span>.</p>
+<p>Особенно выделяется открытость новому опыту как наиболее продуктивный некогнитивный навык. С заметным отрывом за ним следуют эмоциональная стабильность и добросовестность. Сильный эффект открытости подтверждает выводы двух предыдущих исследований, изучавших отдачу от некогнитивных навыков на российском рынке труда <span class="citation" data-cites="maksimova2019 rozhkova2019">(<a href="references.html#ref-maksimova2019" role="doc-biblioref">Maksimova, 2019</a>; <a href="references.html#ref-rozhkova2019" role="doc-biblioref">Рожкова, 2019</a>)</span>. Однако международные данные остаются неоднозначными: существуют как свидетельства положительного <span class="citation" data-cites="seibert2001">(<a href="references.html#ref-seibert2001" role="doc-biblioref">Seibert &amp; Kraimer, 2001</a>)</span>, так и отрицательного <span class="citation" data-cites="mueller2006">(<a href="references.html#ref-mueller2006" role="doc-biblioref">Mueller &amp; Plug, 2006</a>)</span> влияния открытости на заработную плату.</p>
+<p>В противоположность этому экстраверсия не оказывает значимого влияния на заработки низкооплачиваемых работников, но показывает значительный эффект в высокооплачиваемом сегменте (Q75), что свидетельствует о более высокой ценности межличностных навыков в должностях, предполагающих большую ответственность или сложность.</p>
+<p>В этой связи были построены несколько моделей, как с учетом уровня образования, так и без него. Принципиально важно, что даже при включении образования в модель, некогнитивные навыки продолжают демонстрировать статистически значимую отдачу. Эти результаты соответствуют экономической литературе, подчеркивающей устойчивость вклада некогнитивных навыков в объяснение различий в заработной плате. Таким образом, полученные данные подтверждают уникальный вклад некогнитивных характеристик в формирование доходов, дополняющий эффект формального образования. Этот результат также согласуется с альтернативным подходом, при котором после учета вклада образования включение некогнитивных навыков существенно снижает оценку отдачи от образования <span class="citation" data-cites="bowles2001">(<a href="references.html#ref-bowles2001" role="doc-biblioref">Bowles и др., 2001</a>)</span>.</p>
+<p>Интересным открытием стало то, что наиболее выраженный эффект некогнитивных навыков наблюдается у молодежи со средним профессиональным образованием. Хотя такой результат может показаться неожиданным, он имеет теоретическое обоснование. Высшее образование, как правило, связано с развитием когнитивных способностей, которые сами по себе повышают производительность, снижая зависимость от личностных характеристик. Отсутствие эффектов некогнитивных навыков в группе молодых работников с высшим образованием во многом объясняется тем, что высшее образование уже сигнализирует о наличии необходимых некогнитивных навыков. Данный вывод подтверждается данными исследований российских экономистов относительно роли некогнитивных навыков в принятии решений о получении высшего образования и выбора профессии <span class="citation" data-cites="rozhkova2021a rozhkova2021c">(<a href="references.html#ref-rozhkova2021a" role="doc-biblioref">Рожкова &amp; Рощин, 2021b</a>, <a href="references.html#ref-rozhkova2021c" role="doc-biblioref">2021a</a>)</span>. Само окончание ВУЗа требует определённой добросовестности, целеустремлённости и открытости к обучению, и рынок труда это вознаграждает. Другими словами, эффект некогнитивных навыков уже “встроен” в премию за диплом.</p>
+<p>В то же время для молодежи с менее высоким уровнем образования некогнитивные навыки могут компенсировать дефицит формальной квалификации и играть ключевую роль в трудовой успешности. Кроме того, такие навыки особенно важны в профессиях, где важны личностные и поведенческие качества, а не академическая подготовка. Например, в сферах, где адаптивность и межличностная компетентность определяют эффективность труда, такие работники могут полагаться именно на эти навыки. Также немаловажную роль может играть и спрос со стороны работодателей, которые при найме на должности, не требующие высшего образования, отдают предпочтение кандидатам с выраженными личностными характеристиками, такими как стойкость, трудолюбие и гибкость.</p>
+<p>За исключением эффекта доброжелательности, отсутствие многочисленных отличий в отдаче от некогнитивных навыков в зависимости от пола также соответствует существующей в России и за ее пределами научной повестке, утверждающей, что различия в личностных характеристиках не являются основным фактором гендерного разрыва в заработной плате <span class="citation" data-cites="rozhkova2021b tognatta2018 nordman2015">(<a href="references.html#ref-nordman2015" role="doc-biblioref">Nordman и др., 2015</a>; <a href="references.html#ref-rozhkova2021b" role="doc-biblioref">Rozhkova и др., 2021</a>; <a href="references.html#ref-tognatta2018" role="doc-biblioref">Tognatta и др., 2018</a>)</span>. В то же время различия в эффекте некогнитивных навыков у мужчин и женщин могут отражать влияние гендерных норм на структуру вознаграждения <span class="citation" data-cites="glewwe2022">(<a href="references.html#ref-glewwe2022" role="doc-biblioref">Glewwe и др., 2022</a>)</span>.</p>
 <p>Наконец, исследование рассматривает роль некогнитивных навыков в обеспечении устойчивого трудоустройства молодежи. Полученные данные свидетельствуют о том, что отдача от личностных характеристик у лиц в возрасте 18–29 лет существенно отличается от общей рабочей популяции. Это различие, вероятно, связано с особыми трудностями, с которыми сталкивается молодежь при выходе на рынок труда и стремлении к стабильной занятости. В более широком контексте это указывает на то, что продуктивность некогнитивных навыков изменяется в течение жизни, адаптируясь к различным этапам жизненного пути. Такой подход – рассматривать влияние некогнитивных навыков в рамках жизненного цикла – является новым применительно к анализу трудовых результатов. Хотя значительное количество работ рассматривает их влияние на здоровье <span class="citation" data-cites="carter2019 chiteji2010">(<a href="references.html#ref-carter2019" role="doc-biblioref">Carter и др., 2019</a>; <a href="references.html#ref-chiteji2010" role="doc-biblioref">Chiteji, 2010</a>)</span>, образование <span class="citation" data-cites="hsin2017 elkins2020">(<a href="references.html#ref-elkins2020" role="doc-biblioref">Elkins &amp; Schurer, 2020</a>; <a href="references.html#ref-hsin2017" role="doc-biblioref">Hsin &amp; Xie, 2017</a>)</span> и даже межпоколенческую мобильность <span class="citation" data-cites="kröger2024">(<a href="references.html#ref-kröger2024" role="doc-biblioref">Kröger и др., 2024</a>)</span>, подобный подход может обогатить и исследования в области занятости.</p>
 </section>
 <section id="ограничения" class="level2" data-number="5.5">
@@ -1354,7 +1354,7 @@ window.Quarto = {
 </section>
 <section id="заключение" class="level2" data-number="5.6">
 <h2 data-number="5.6" class="anchored" data-anchor-id="заключение"><span class="header-section-number">5.6</span> Заключение</h2>
-<p>Результаты данного исследования подчеркивают неоднородное влияние некогнитивных навыков на уровень заработной платы, выявляя сложные и нелинейные взаимосвязи между личностными чертами и доходами. Это подтверждает необходимость дальнейшего изучения нелинейных эффектов некогнитивных навыков не только в отношении заработной платы, но и других социально-экономических показателей.</p>
+<p>Результаты данного этапа исследования подчеркивают неоднородное влияние некогнитивных навыков на уровень заработной платы, выявляя сложные и нелинейные взаимосвязи между личностными чертами и доходами. Это подтверждает необходимость дальнейшего изучения нелинейных эффектов некогнитивных навыков не только в отношении заработной платы, но и других социально-экономических показателей.</p>
 <p>Одним из ключевых выводов является то, что некогнитивные навыки демонстрируют значимую отдачу даже при контроле за уровнем образования. Это подчеркивает их уникальный вклад в экономические результаты, дополняющий и усиливающий эффект формального образования. Таким образом, некогнитивные навыки влияют на доход не только косвенно, через образовательный выбор, но и напрямую, формируя личную продуктивность и профессиональный успех.</p>
 <p>Кроме того, исследование показало, что некогнитивные навыки особенно важны для лиц с низким уровнем образования, где они выступают компенсаторным механизмом, способствующим успешной интеграции на рынок труда. Это имеет практическое значение для разработки политики в области занятости и образования, направленной на поддержку уязвимых групп населения.</p>
 <p>Наконец, установлено, что отдача от некогнитивных навыков у молодежи существенно отличается от общей рабочей силы, что подчеркивает важность учета жизненного этапа при анализе влияния личностных характеристик на экономические исходы. Для молодых людей именно эти навыки играют критическую роль в успешном вхождении на рынок труда и обеспечении устойчивого трудоустройства.</p>
@@ -1457,6 +1457,12 @@ Wood, S. N. (2011). <em>Fast stable restricted maximum likelihood and marginal l
 </div>
 <div id="ref-rozhkova2019" class="csl-entry" role="listitem">
 Рожкова, К. В. (2019). Отдача от некогнитивных характеристик на российском рынке труда. <em>Вопросы экономики</em>, <em>11</em>, 81–107. <a href="https://doi.org/10.32609/0042-8736-2019-11-81-107">https://doi.org/10.32609/0042-8736-2019-11-81-107</a>
+</div>
+<div id="ref-rozhkova2021c" class="csl-entry" role="listitem">
+Рожкова, К. В., &amp; Рощин, С. Ю. (2021a). Влияние некогнитивных характеристик на выбор траекторий в высшем образовании: взгляд экономистов. <em>Вопросы образования / Educational Studies Moscow</em>, <em>3</em>, 138–167. <a href="https://doi.org/10.17323/1814-9545-2021-3-138-167">https://doi.org/10.17323/1814-9545-2021-3-138-167</a>
+</div>
+<div id="ref-rozhkova2021a" class="csl-entry" role="listitem">
+Рожкова, К. В., &amp; Рощин, С. Ю. (2021b). Некогнитивные характеристики и выбор в сфере высшего образования. <em>Вопросы образования / Educational Studies Moscow</em>, <em>4</em>, 35–73. <a href="https://doi.org/10.17323/1814-9545-2021-4-35-73">https://doi.org/10.17323/1814-9545-2021-4-35-73</a>
 </div>
 </div>
 </section>
