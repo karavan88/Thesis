@@ -1,0 +1,9 @@
+project:
+  type: default
+
+format:
+  revealjs:
+    theme: [default, custom.scss]
+
+lang: ru-RU
+citeproc: true

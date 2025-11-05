@@ -9,6 +9,10 @@
 !docs/
 !docs/**
 
+# Exception for presentations folder and its contents
+!presentations/
+!presentations/**
+
 # Exception for specific file types
 !*.qmd
 !*.yml
@@ -39,3 +43,6 @@
 .ncs_terra_economicus.qmd
 
 *.docx
+
+# all files in presentations folder - COMMENTED OUT
+# presentations/*

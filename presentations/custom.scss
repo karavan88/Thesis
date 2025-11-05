@@ -1,0 +1,443 @@
+/*-- scss:defaults --*/
+
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+// Color palette
+$primary-color: #2c3e50;
+$secondary-color: #34495e;
+$accent-color: #3498db;
+$warning-color: #e74c3c;
+$success-color: #27ae60;
+$light-gray: #ecf0f1;
+$dark-gray: #7f8c8d;
+
+// Fonts
+$font-family-sans-serif: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$presentation-heading-font: 'Fira Sans', sans-serif;
+$presentation-font-size-root: 28px;
+
+/*-- scss:rules --*/
+
+// Global styles
+.reveal {
+  font-family: $font-family-sans-serif;
+  color: #2c3e50;
+  background: white;
+}
+
+// Slide backgrounds - truly seamless design with minimal margins
+.reveal .slides section {
+  text-align: left;
+  background: white;
+  border-radius: 0;
+  padding: 10px 10px;
+  margin: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  width: 100%;
+  height: 100%;
+}
+
+// Section slides with dark background - COMPLETELY override all layering
+.reveal .slides section[data-background-color="#2c3e50"],
+.reveal .slides section[data-background-color="#34495e"] {
+  background: var(--r-background-color) !important;
+  color: white !important;
+  text-align: center;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  left: 0 !important;
+  top: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  position: absolute !important;
+}
+
+// Section slide titles - FORCE positioning close to left margin
+.reveal .slides section[data-background-color="#2c3e50"] h1,
+.reveal .slides section[data-background-color="#34495e"] h1 {
+  font-size: 2.5em !important;
+  color: white !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin: 0 !important;
+  padding: 30px 0 !important;
+  border-bottom: 4px solid rgba(255, 255, 255, 0.8);
+  text-align: left !important;
+  position: absolute !important;
+  left: 40px !important;
+  right: 40px !important;
+  background: transparent !important;
+  line-height: 1.2;
+  word-wrap: break-word;
+  hyphens: auto;
+  transform: none !important;
+}
+
+// Completely remove the slides container layering for section slides
+.reveal .slides section[data-background-color="#2c3e50"]::before,
+.reveal .slides section[data-background-color="#34495e"]::before,
+.reveal .slides section[data-background-color="#2c3e50"]::after,
+.reveal .slides section[data-background-color="#34495e"]::after {
+  display: none !important;
+}
+
+// Remove any child elements that might create white space
+.reveal .slides section[data-background-color="#2c3e50"] *,
+.reveal .slides section[data-background-color="#34495e"] * {
+  background: transparent !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+// Section slide titles - centered with proper margins and line breaks
+.reveal .slides section[data-background-color="#2c3e50"] h1,
+.reveal .slides section[data-background-color="#34495e"] h1 {
+  font-size: 2.5em !important;
+  color: white !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin: 0 !important;
+  padding: 30px 20px !important;
+  border-bottom: 4px solid rgba(255, 255, 255, 0.8);
+  text-align: center;
+  position: relative;
+  background: transparent !important;
+  width: calc(100% - 40px) !important;
+  max-width: 900px !important;
+  line-height: 1.2;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+// Add a decorative line above the title
+.reveal .slides section[data-background-color="#2c3e50"] h1::before,
+.reveal .slides section[data-background-color="#34495e"] h1::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+// Headings
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: $presentation-heading-font;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 1em;
+}
+
+.reveal h1 {
+  font-size: 2.2em;
+  color: $primary-color;
+  text-shadow: none;
+}
+
+.reveal h2 {
+  font-size: 1.8em;
+  color: $primary-color;
+  border-bottom: 3px solid $accent-color;
+  padding-bottom: 0.3em;
+}
+
+.reveal h3 {
+  font-size: 1.4em;
+  color: $secondary-color;
+}
+
+// Center alignment utility
+.center {
+  text-align: center !important;
+}
+
+.center h1, .center h2, .center h3 {
+  text-align: center;
+}
+
+// Smaller text utility
+.smaller {
+  font-size: 0.9em;
+}
+
+.smaller ul li {
+  margin-bottom: 0.5em;
+}
+
+// Lists
+.reveal ul {
+  margin-left: 0;
+}
+
+.reveal ul li {
+  margin-bottom: 0.8em;
+  list-style-type: none;
+  position: relative;
+  padding-left: 2em;
+}
+
+.reveal ul li::before {
+  content: "▶";
+  color: $accent-color;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.reveal ol li {
+  margin-bottom: 0.8em;
+  padding-left: 0.5em;
+}
+
+// Simple numbered lists without any custom styling
+.reveal ol {
+  list-style: decimal !important;
+  padding-left: 1.5em !important;
+}
+
+.reveal ol li {
+  margin-bottom: 0.3em !important;
+  padding-left: 0 !important;
+  position: static !important;
+}
+
+.reveal ol li::marker {
+  color: #2c3e50 !important;
+  font-weight: bold !important;
+}
+
+// Callouts
+.callout {
+  padding: 1em 1.5em;
+  margin: 1.5em 0;
+  border-radius: 10px;
+  border-left: 5px solid;
+}
+
+.callout-note {
+  background-color: rgba(52, 152, 219, 0.1);
+  border-left-color: #3498db;
+}
+
+.callout-tip {
+  background-color: rgba(39, 174, 96, 0.1);
+  border-left-color: #27ae60;
+}
+
+.callout-warning {
+  background-color: rgba(241, 196, 15, 0.1);
+  border-left-color: #f1c40f;
+}
+
+.callout-important {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-left-color: #e74c3c;
+}
+
+// Columns
+.columns {
+  display: flex;
+  gap: 2em;
+  align-items: flex-start;
+}
+
+.column {
+  flex: 1;
+}
+
+// Panel tabset
+.panel-tabset .nav-tabs {
+  border-bottom: 2px solid $accent-color;
+  margin-bottom: 1em;
+}
+
+.panel-tabset .nav-tabs .nav-link {
+  color: $primary-color;
+  border: none;
+  border-radius: 0;
+  padding: 0.5em 1em;
+  margin-right: 1em;
+  background: transparent;
+}
+
+.panel-tabset .nav-tabs .nav-link.active {
+  background: $accent-color;
+  color: white;
+  border-radius: 5px 5px 0 0;
+}
+
+// Timeline
+.timeline {
+  position: relative;
+  padding-left: 2em;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 1em;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: $accent-color;
+}
+
+.timeline > * {
+  position: relative;
+  margin-bottom: 2em;
+  background: white;
+  padding: 1em;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.timeline > *::before {
+  content: '';
+  position: absolute;
+  left: -1.75em;
+  top: 1em;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: $accent-color;
+  border: 3px solid white;
+  box-shadow: 0 0 0 3px $accent-color;
+}
+
+// Strong text
+.reveal strong {
+  color: $primary-color;
+  font-weight: 600;
+}
+
+// Blockquotes
+.reveal blockquote {
+  font-style: italic;
+  background: rgba(52, 152, 219, 0.1);
+  border-left: 5px solid $accent-color;
+  padding: 1em 2em;
+  margin: 1.5em 0;
+  border-radius: 0 10px 10px 0;
+}
+
+// Incremental animations
+.reveal .slides section .fragment.fade-in-then-out {
+  opacity: 0;
+}
+
+.reveal .slides section .fragment.fade-in-then-out.visible {
+  opacity: 1;
+}
+
+// Progress bar
+.reveal .progress {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.reveal .progress span {
+  background: $accent-color;
+  border-radius: 3px;
+}
+
+// Slide numbers
+.reveal .slide-number {
+  background: rgba(44, 62, 80, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 14px;
+}
+
+// Footer
+.reveal .footer {
+  position: absolute;
+  bottom: 1em;
+  left: 1em;
+  font-size: 0.6em;
+  color: rgba(44, 62, 80, 0.7);
+}
+
+// Title slide specific styles
+.reveal .slides section[data-background-color="#2c3e50"] {
+  background: $primary-color !important;
+  color: white;
+}
+
+.reveal .slides section[data-background-color="#34495e"] {
+  background: $secondary-color !important;
+  color: white;
+}
+
+// Code highlighting
+.reveal pre code {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1em;
+  font-size: 0.8em;
+}
+
+// Tables
+.reveal table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.reveal table th,
+.reveal table td {
+  padding: 0.8em;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.reveal table th {
+  background: $accent-color;
+  color: white;
+  font-weight: 600;
+}
+
+// Mermaid diagrams
+.mermaid {
+  text-align: center;
+  margin: 2em 0;
+}
+
+// Title slide positioning - move content down
+.reveal .title-slide .reveal .slide-background {
+  top: 20% !important;
+}
+
+.reveal .title-slide h1.title {
+  margin-top: 2em !important;
+  padding-top: 1em !important;
+}
+
+.reveal .title-slide .subtitle {
+  margin-top: 1em !important;
+}
+
+.reveal .title-slide .author,
+.reveal .title-slide .date {
+  margin-top: 0.5em !important;
+}
+
+// Print styles
+@media print {
+  .reveal .slides section {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}
