@@ -160,7 +160,7 @@ div.csl-indent {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./04_ncs_empl.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Путь от учебы к работе: способствуют ли некогнитивные навыки трудоустройству молодежи?</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cпособствуют ли некогнитивные навыки трудовой занятости молодежи?</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -289,9 +289,9 @@ div.csl-indent {
 
     <script>
 
-      function styleCell_6jnj02izspamobcwfww6(i, j, css_id) {
-          var table = document.getElementById("tinytable_6jnj02izspamobcwfww6");
-          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+      function styleCell_14kkrp6keyxby4ilngqn(i, j, css_id) {
+          var table = document.getElementById("tinytable_14kkrp6keyxby4ilngqn");
+          var cell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
               cell.classList.add(css_id);
@@ -299,54 +299,46 @@ div.csl-indent {
               console.warn(`Cell at (${i}, ${j}) not found.`);
           }
       }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_6jnj02izspamobcwfww6');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_6jnj02izspamobcwfww6(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_6jnj02izspamobcwfww6");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
+      function spanCell_14kkrp6keyxby4ilngqn(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_14kkrp6keyxby4ilngqn");
+        const targetCell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+        if (!targetCell) {
+          console.warn(`Cell at (${i}, ${j}) not found.`);
+        }
+
+        // Get all cells that need to be removed
+        const cellsToRemove = [];
         for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
+          for (let c = 0; c < colspan; c++) {
+            if (r === 0 && c === 0) continue; // Skip the target cell
+            const cell = table.querySelector(`[data-row="${i + r}"][data-col="${j + c}"]`);
+            if (cell) {
+              cellsToRemove.push(cell);
             }
           }
         }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
+
+        // Remove all cells
+        cellsToRemove.forEach(cell => cell.remove());
+
+        // Set rowspan and colspan of the target cell if it exists
+        if (targetCell) {
+          targetCell.rowSpan = rowspan;
+          targetCell.colSpan = colspan;
+        }
       }
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_v0ko2vyr6htfjc7mmm9d',}, 
-          { positions: [ { i: 4, j: 0 }, { i: 4, j: 1 },  ], css_id: 'tinytable_css_2kny5gya902dyeb3d2ex',}, 
+          { positions: [ { i: '4', j: 0 }, { i: '4', j: 1 },  ], css_id: 'tinytable_css_8515aa6gg4ccaqfm9ybb',}, 
+          { positions: [ { i: '0', j: 0 }, { i: '0', j: 1 },  ], css_id: 'tinytable_css_85gn98d216xmkiymrsfy',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_6jnj02izspamobcwfww6(cell.i, cell.j, group.css_id);
+                  styleCell_14kkrp6keyxby4ilngqn(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -354,35 +346,35 @@ div.csl-indent {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_v0ko2vyr6htfjc7mmm9d, .table th.tinytable_css_v0ko2vyr6htfjc7mmm9d { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_2kny5gya902dyeb3d2ex, .table th.tinytable_css_2kny5gya902dyeb3d2ex { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_8515aa6gg4ccaqfm9ybb, .table th.tinytable_css_8515aa6gg4ccaqfm9ybb { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_85gn98d216xmkiymrsfy, .table th.tinytable_css_85gn98d216xmkiymrsfy { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_6jnj02izspamobcwfww6" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_14kkrp6keyxby4ilngqn" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
-                <th scope="col">Group</th>
-                <th scope="col">ICC</th>
+                <th scope="col" data-row="0" data-col="0">Group</th>
+                <th scope="col" data-row="0" data-col="1">ICC</th>
               </tr>
         </thead>
         <tfoot><tr><td colspan="2">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Individual ID</td>
-                  <td>0.226</td>
+                  <td data-row="1" data-col="0">Individual ID</td>
+                  <td data-row="1" data-col="1">0.226</td>
                 </tr>
                 <tr>
-                  <td>Region</td>
-                  <td>0.02</td>
+                  <td data-row="2" data-col="0">Region</td>
+                  <td data-row="2" data-col="1">0.02</td>
                 </tr>
                 <tr>
-                  <td>Occupation</td>
-                  <td>0.034</td>
+                  <td data-row="3" data-col="0">Occupation</td>
+                  <td data-row="3" data-col="1">0.034</td>
                 </tr>
                 <tr>
-                  <td>Hourly Wage Quintile</td>
-                  <td>0.033</td>
+                  <td data-row="4" data-col="0">Hourly Wage Quintile</td>
+                  <td data-row="4" data-col="1">0.033</td>
                 </tr>
         </tbody>
       </table>
@@ -398,8 +390,8 @@ div.csl-indent {
 <section id="некогнитивные-навыки-и-удовлетворённость-работой" class="level3" data-number="6.3.3">
 <h3 data-number="6.3.3" class="anchored" data-anchor-id="некогнитивные-навыки-и-удовлетворённость-работой"><span class="header-section-number">6.3.3</span> Некогнитивные навыки и удовлетворённость работой</h3>
 <p>Анализ влияния социодемографических предикторов, включённых в смешанные модели, приведённые в <a href="#tbl-mem-ncs" class="quarto-xref">Таблица&nbsp;<span>6.2</span></a>, показывает, что ни один из них не оказывает статистически значимого влияния на удовлетворённость работой среди молодёжи. Коэффициенты возрастных переменных (возраст и его квадрат) показывают, что в рассматриваемых возрастных группах возраст не влияет на удовлетворённость. Также не выявлено статистически значимого влияния пола, уровня образования и типа населённого пункта.</p>
-<p>Однако как модель с социоэкономическими переменными, так и модель с добавленными некогнитивными навыками выявили статистически значимые эффекты заработной платы и количества рабочих часов. В соответствии с экономическим подходом, заработная плата положительно влияет на удовлетворённость, а количество рабочих часов — отрицательно, поскольку индивиды стремятся максимизировать полезность при минимальных затратах. Так, рост почасовой зарплаты на 10% увеличивает вероятность быть удовлетворённым работой почти на 1%. Интересно, что эффект заработной платы немного снижается при добавлении некогнитивных навыков, что может свидетельствовать о частичном опосредовании эффекта заработной платы через некогнитивные характеристики. В то же время увеличение продолжительности рабочей недели на 10 часов снижает вероятность удовлетворённости на 1% (пограничная значимость на уровне p&lt;0.1), и этот эффект устойчив в обеих моделях.</p>
-<p>Среди пяти некогнитивных характеристик положительное и статистически значимое влияние оказали три: добросовестность, экстраверсия и эмоциональная стабильность. Наибольший эффект наблюдается у экстраверсии: увеличение на 1 стандартное отклонение увеличивает вероятность удовлетворённости на 4%. За ней следует эмоциональная стабильность (почти +3%), и добросовестность (+2.6%).</p>
+<p>Однако как модель с социоэкономическими переменными, так и модель с добавленными некогнитивными навыками выявили статистически значимые эффекты заработной платы и количества рабочих часов. В соответствии с экономическим подходом, заработная плата положительно влияет на удовлетворённость, а количество рабочих часов — отрицательно, поскольку индивиды стремятся максимизировать полезность при минимальных затратах. Так, рост почасовой зарплаты на 10% увеличивает вероятность быть удовлетворённым работой почти на 1 п.п.. Интересно, что эффект заработной платы немного снижается при добавлении некогнитивных навыков, что может свидетельствовать о частичном опосредовании эффекта заработной платы через некогнитивные характеристики. В то же время увеличение продолжительности рабочей недели на 10 часов снижает вероятность удовлетворённости на 1 п.п. (пограничная значимость на уровне p&lt;0.1), и этот эффект устойчив в обеих моделях.</p>
+<p>Среди пяти некогнитивных характеристик положительное и статистически значимое влияние оказали три: добросовестность, экстраверсия и эмоциональная стабильность. Наибольший эффект наблюдается у экстраверсии: увеличение на 1 стандартное отклонение увеличивает вероятность удовлетворённости на 4 п.п.. За ней следует эмоциональная стабильность (почти +3 п.п.), и добросовестность (+2.6 п.п.).</p>
 <div class="cell">
 <div id="tbl-mem-ncs" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -412,9 +404,9 @@ div.csl-indent {
 
     <script>
 
-      function styleCell_brrvkg2i0pfv78lmswe6(i, j, css_id) {
-          var table = document.getElementById("tinytable_brrvkg2i0pfv78lmswe6");
-          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+      function styleCell_huhvbztrf3tcpo0i457y(i, j, css_id) {
+          var table = document.getElementById("tinytable_huhvbztrf3tcpo0i457y");
+          var cell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
               cell.classList.add(css_id);
@@ -422,60 +414,52 @@ div.csl-indent {
               console.warn(`Cell at (${i}, ${j}) not found.`);
           }
       }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_brrvkg2i0pfv78lmswe6');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_brrvkg2i0pfv78lmswe6(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_brrvkg2i0pfv78lmswe6");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
+      function spanCell_huhvbztrf3tcpo0i457y(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_huhvbztrf3tcpo0i457y");
+        const targetCell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+        if (!targetCell) {
+          console.warn(`Cell at (${i}, ${j}) not found.`);
+        }
+
+        // Get all cells that need to be removed
+        const cellsToRemove = [];
         for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
+          for (let c = 0; c < colspan; c++) {
+            if (r === 0 && c === 0) continue; // Skip the target cell
+            const cell = table.querySelector(`[data-row="${i + r}"][data-col="${j + c}"]`);
+            if (cell) {
+              cellsToRemove.push(cell);
             }
           }
         }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
+
+        // Remove all cells
+        cellsToRemove.forEach(cell => cell.remove());
+
+        // Set rowspan and colspan of the target cell if it exists
+        if (targetCell) {
+          targetCell.rowSpan = rowspan;
+          targetCell.colSpan = colspan;
+        }
       }
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 34, j: 0 },  ], css_id: 'tinytable_css_rkpxmmriy4r2fg8l1lmq',}, 
-          { positions: [ { i: 37, j: 0 },  ], css_id: 'tinytable_css_rhmj2lb1ca3g9ilx4rxs',}, 
-          { positions: [ { i: 34, j: 1 }, { i: 34, j: 3 }, { i: 34, j: 2 },  ], css_id: 'tinytable_css_plx0jrhxfkf8x5sgesx4',}, 
-          { positions: [ { i: 37, j: 2 }, { i: 37, j: 1 }, { i: 37, j: 3 },  ], css_id: 'tinytable_css_p3wk4u5hxp75jmyt9pvq',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 16, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 19, j: 0 }, { i: 20, j: 0 }, { i: 21, j: 0 }, { i: 22, j: 0 }, { i: 23, j: 0 }, { i: 24, j: 0 }, { i: 25, j: 0 }, { i: 26, j: 0 }, { i: 27, j: 0 }, { i: 28, j: 0 }, { i: 29, j: 0 }, { i: 30, j: 0 }, { i: 31, j: 0 }, { i: 32, j: 0 }, { i: 33, j: 0 }, { i: 35, j: 0 }, { i: 36, j: 0 },  ], css_id: 'tinytable_css_mfmzbharrew6vymu1wka',}, 
-          { positions: [ { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_f94a31izdkfs41qde7ff',}, 
-          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_c0337vjfk09q70wtq0cs',}, 
-          { positions: [ { i: 1, j: 1 }, { i: 3, j: 1 }, { i: 5, j: 1 }, { i: 2, j: 1 }, { i: 7, j: 1 }, { i: 4, j: 1 }, { i: 9, j: 1 }, { i: 6, j: 1 }, { i: 11, j: 1 }, { i: 8, j: 1 }, { i: 13, j: 1 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 19, j: 1 }, { i: 20, j: 1 }, { i: 21, j: 1 }, { i: 22, j: 1 }, { i: 10, j: 1 }, { i: 24, j: 1 }, { i: 12, j: 1 }, { i: 26, j: 1 }, { i: 27, j: 1 }, { i: 28, j: 1 }, { i: 29, j: 1 }, { i: 30, j: 1 }, { i: 31, j: 1 }, { i: 32, j: 1 }, { i: 33, j: 1 }, { i: 36, j: 2 }, { i: 35, j: 1 }, { i: 23, j: 1 }, { i: 1, j: 3 }, { i: 25, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 6, j: 2 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 12, j: 2 }, { i: 13, j: 2 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 18, j: 2 }, { i: 19, j: 2 }, { i: 20, j: 2 }, { i: 21, j: 2 }, { i: 22, j: 2 }, { i: 23, j: 2 }, { i: 24, j: 2 }, { i: 25, j: 2 }, { i: 26, j: 2 }, { i: 27, j: 2 }, { i: 28, j: 2 }, { i: 29, j: 2 }, { i: 30, j: 2 }, { i: 31, j: 2 }, { i: 32, j: 2 }, { i: 33, j: 2 }, { i: 36, j: 3 }, { i: 35, j: 2 }, { i: 11, j: 3 }, { i: 12, j: 3 }, { i: 36, j: 1 }, { i: 14, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 5, j: 3 }, { i: 6, j: 3 }, { i: 7, j: 3 }, { i: 8, j: 3 }, { i: 9, j: 3 }, { i: 10, j: 3 }, { i: 24, j: 3 }, { i: 25, j: 3 }, { i: 13, j: 3 }, { i: 27, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 18, j: 3 }, { i: 19, j: 3 }, { i: 20, j: 3 }, { i: 21, j: 3 }, { i: 22, j: 3 }, { i: 23, j: 3 }, { i: 28, j: 3 }, { i: 29, j: 3 }, { i: 26, j: 3 }, { i: 31, j: 3 }, { i: 32, j: 3 }, { i: 33, j: 3 }, { i: 30, j: 3 }, { i: 35, j: 3 },  ], css_id: 'tinytable_css_9xzum5g6np7rzkwjm04o',}, 
+          { positions: [ { i: '37', j: 2 }, { i: '37', j: 1 }, { i: '37', j: 3 },  ], css_id: 'tinytable_css_bev04zn0kwfxmzjys85f',}, 
+          { positions: [ { i: '34', j: 1 }, { i: '34', j: 3 }, { i: '34', j: 2 },  ], css_id: 'tinytable_css_5pxc7rjs7b8xmgidra6k',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '3', j: 1 }, { i: '5', j: 1 }, { i: '2', j: 1 }, { i: '7', j: 1 }, { i: '4', j: 1 }, { i: '9', j: 1 }, { i: '6', j: 1 }, { i: '11', j: 1 }, { i: '8', j: 1 }, { i: '13', j: 1 }, { i: '14', j: 1 }, { i: '15', j: 1 }, { i: '16', j: 1 }, { i: '17', j: 1 }, { i: '18', j: 1 }, { i: '19', j: 1 }, { i: '20', j: 1 }, { i: '21', j: 1 }, { i: '22', j: 1 }, { i: '10', j: 1 }, { i: '24', j: 1 }, { i: '12', j: 1 }, { i: '26', j: 1 }, { i: '27', j: 1 }, { i: '28', j: 1 }, { i: '29', j: 1 }, { i: '30', j: 1 }, { i: '31', j: 1 }, { i: '32', j: 1 }, { i: '33', j: 1 }, { i: '36', j: 2 }, { i: '35', j: 1 }, { i: '23', j: 1 }, { i: '1', j: 3 }, { i: '25', j: 1 }, { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '6', j: 2 }, { i: '7', j: 2 }, { i: '8', j: 2 }, { i: '9', j: 2 }, { i: '10', j: 2 }, { i: '11', j: 2 }, { i: '12', j: 2 }, { i: '13', j: 2 }, { i: '14', j: 2 }, { i: '15', j: 2 }, { i: '16', j: 2 }, { i: '17', j: 2 }, { i: '18', j: 2 }, { i: '19', j: 2 }, { i: '20', j: 2 }, { i: '21', j: 2 }, { i: '22', j: 2 }, { i: '23', j: 2 }, { i: '24', j: 2 }, { i: '25', j: 2 }, { i: '26', j: 2 }, { i: '27', j: 2 }, { i: '28', j: 2 }, { i: '29', j: 2 }, { i: '30', j: 2 }, { i: '31', j: 2 }, { i: '32', j: 2 }, { i: '33', j: 2 }, { i: '36', j: 3 }, { i: '35', j: 2 }, { i: '11', j: 3 }, { i: '12', j: 3 }, { i: '36', j: 1 }, { i: '14', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '6', j: 3 }, { i: '7', j: 3 }, { i: '8', j: 3 }, { i: '9', j: 3 }, { i: '10', j: 3 }, { i: '24', j: 3 }, { i: '25', j: 3 }, { i: '13', j: 3 }, { i: '27', j: 3 }, { i: '15', j: 3 }, { i: '16', j: 3 }, { i: '17', j: 3 }, { i: '18', j: 3 }, { i: '19', j: 3 }, { i: '20', j: 3 }, { i: '21', j: 3 }, { i: '22', j: 3 }, { i: '23', j: 3 }, { i: '28', j: 3 }, { i: '29', j: 3 }, { i: '26', j: 3 }, { i: '31', j: 3 }, { i: '32', j: 3 }, { i: '33', j: 3 }, { i: '30', j: 3 }, { i: '35', j: 3 },  ], css_id: 'tinytable_css_evkkdfxlbz6ak9t29lzw',}, 
+          { positions: [ { i: '0', j: 1 }, { i: '0', j: 3 }, { i: '0', j: 2 },  ], css_id: 'tinytable_css_ixox6hbylgvi0m463z1g',}, 
+          { positions: [ { i: '37', j: 0 },  ], css_id: 'tinytable_css_j3s628f3hn7w5rbwnpfx',}, 
+          { positions: [ { i: '34', j: 0 },  ], css_id: 'tinytable_css_pf5wzlddetjgntiemuy7',}, 
+          { positions: [ { i: '1', j: 0 }, { i: '2', j: 0 }, { i: '3', j: 0 }, { i: '4', j: 0 }, { i: '5', j: 0 }, { i: '6', j: 0 }, { i: '7', j: 0 }, { i: '8', j: 0 }, { i: '9', j: 0 }, { i: '10', j: 0 }, { i: '11', j: 0 }, { i: '12', j: 0 }, { i: '13', j: 0 }, { i: '14', j: 0 }, { i: '15', j: 0 }, { i: '16', j: 0 }, { i: '17', j: 0 }, { i: '18', j: 0 }, { i: '19', j: 0 }, { i: '20', j: 0 }, { i: '21', j: 0 }, { i: '22', j: 0 }, { i: '23', j: 0 }, { i: '24', j: 0 }, { i: '25', j: 0 }, { i: '26', j: 0 }, { i: '27', j: 0 }, { i: '28', j: 0 }, { i: '29', j: 0 }, { i: '30', j: 0 }, { i: '31', j: 0 }, { i: '32', j: 0 }, { i: '33', j: 0 }, { i: '35', j: 0 }, { i: '36', j: 0 },  ], css_id: 'tinytable_css_87omocvn4s2jte51oq6h',}, 
+          { positions: [ { i: '0', j: 0 },  ], css_id: 'tinytable_css_5p57l9ek2kyz5z3pzcb3',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_brrvkg2i0pfv78lmswe6(cell.i, cell.j, group.css_id);
+                  styleCell_huhvbztrf3tcpo0i457y(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -483,249 +467,249 @@ div.csl-indent {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_rkpxmmriy4r2fg8l1lmq, .table th.tinytable_css_rkpxmmriy4r2fg8l1lmq { text-align: left; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_rhmj2lb1ca3g9ilx4rxs, .table th.tinytable_css_rhmj2lb1ca3g9ilx4rxs { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_plx0jrhxfkf8x5sgesx4, .table th.tinytable_css_plx0jrhxfkf8x5sgesx4 { text-align: center; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_p3wk4u5hxp75jmyt9pvq, .table th.tinytable_css_p3wk4u5hxp75jmyt9pvq { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_mfmzbharrew6vymu1wka, .table th.tinytable_css_mfmzbharrew6vymu1wka { text-align: left; }
-      .table td.tinytable_css_f94a31izdkfs41qde7ff, .table th.tinytable_css_f94a31izdkfs41qde7ff { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_c0337vjfk09q70wtq0cs, .table th.tinytable_css_c0337vjfk09q70wtq0cs { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_9xzum5g6np7rzkwjm04o, .table th.tinytable_css_9xzum5g6np7rzkwjm04o { text-align: center; }
+      .table td.tinytable_css_bev04zn0kwfxmzjys85f, .table th.tinytable_css_bev04zn0kwfxmzjys85f { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_5pxc7rjs7b8xmgidra6k, .table th.tinytable_css_5pxc7rjs7b8xmgidra6k { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_evkkdfxlbz6ak9t29lzw, .table th.tinytable_css_evkkdfxlbz6ak9t29lzw { text-align: center; }
+      .table td.tinytable_css_ixox6hbylgvi0m463z1g, .table th.tinytable_css_ixox6hbylgvi0m463z1g { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_j3s628f3hn7w5rbwnpfx, .table th.tinytable_css_j3s628f3hn7w5rbwnpfx { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_pf5wzlddetjgntiemuy7, .table th.tinytable_css_pf5wzlddetjgntiemuy7 { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_87omocvn4s2jte51oq6h, .table th.tinytable_css_87omocvn4s2jte51oq6h { text-align: left; }
+      .table td.tinytable_css_5p57l9ek2kyz5z3pzcb3, .table th.tinytable_css_5p57l9ek2kyz5z3pzcb3 { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_brrvkg2i0pfv78lmswe6" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_huhvbztrf3tcpo0i457y" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
-                <th scope="col"> </th>
-                <th scope="col">M1</th>
-                <th scope="col">M2</th>
-                <th scope="col">M3</th>
+                <th scope="col" data-row="0" data-col="0"> </th>
+                <th scope="col" data-row="0" data-col="1">M1</th>
+                <th scope="col" data-row="0" data-col="2">M2</th>
+                <th scope="col" data-row="0" data-col="3">M3</th>
               </tr>
         </thead>
         <tfoot><tr><td colspan="4">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Intercept                  </td>
-                  <td>-0.546     </td>
-                  <td>-0.471     </td>
-                  <td>0.322      </td>
+                  <td data-row="1" data-col="0">Intercept</td>
+                  <td data-row="1" data-col="1">-0.546</td>
+                  <td data-row="1" data-col="2">-0.471</td>
+                  <td data-row="1" data-col="3">0.322</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.539)    </td>
-                  <td>(0.537)    </td>
-                  <td>(0.534)    </td>
+                  <td data-row="2" data-col="0"></td>
+                  <td data-row="2" data-col="1">(0.539)</td>
+                  <td data-row="2" data-col="2">(0.537)</td>
+                  <td data-row="2" data-col="3">(0.534)</td>
                 </tr>
                 <tr>
-                  <td>Age                        </td>
-                  <td>0.036      </td>
-                  <td>0.032      </td>
-                  <td>0.036      </td>
+                  <td data-row="3" data-col="0">Age</td>
+                  <td data-row="3" data-col="1">0.036</td>
+                  <td data-row="3" data-col="2">0.032</td>
+                  <td data-row="3" data-col="3">0.036</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.044)    </td>
-                  <td>(0.043)    </td>
-                  <td>(0.043)    </td>
+                  <td data-row="4" data-col="0"></td>
+                  <td data-row="4" data-col="1">(0.044)</td>
+                  <td data-row="4" data-col="2">(0.043)</td>
+                  <td data-row="4" data-col="3">(0.043)</td>
                 </tr>
                 <tr>
-                  <td>Age Squared                </td>
-                  <td>-0.001     </td>
-                  <td>-0.001     </td>
-                  <td>-0.001     </td>
+                  <td data-row="5" data-col="0">Age Squared</td>
+                  <td data-row="5" data-col="1">-0.001</td>
+                  <td data-row="5" data-col="2">-0.001</td>
+                  <td data-row="5" data-col="3">-0.001</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.001)    </td>
-                  <td>(0.001)    </td>
-                  <td>(0.001)    </td>
+                  <td data-row="6" data-col="0"></td>
+                  <td data-row="6" data-col="1">(0.001)</td>
+                  <td data-row="6" data-col="2">(0.001)</td>
+                  <td data-row="6" data-col="3">(0.001)</td>
                 </tr>
                 <tr>
-                  <td>Sex: Male                  </td>
-                  <td>-0.016     </td>
-                  <td>-0.022     </td>
-                  <td>-0.029     </td>
+                  <td data-row="7" data-col="0">Sex: Male</td>
+                  <td data-row="7" data-col="1">-0.016</td>
+                  <td data-row="7" data-col="2">-0.022</td>
+                  <td data-row="7" data-col="3">-0.029</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.021)    </td>
-                  <td>(0.021)    </td>
-                  <td>(0.021)    </td>
+                  <td data-row="8" data-col="0"></td>
+                  <td data-row="8" data-col="1">(0.021)</td>
+                  <td data-row="8" data-col="2">(0.021)</td>
+                  <td data-row="8" data-col="3">(0.021)</td>
                 </tr>
                 <tr>
-                  <td>Education: No School       </td>
-                  <td>0.037      </td>
-                  <td>0.037      </td>
-                  <td>0.046      </td>
+                  <td data-row="9" data-col="0">Education: No School</td>
+                  <td data-row="9" data-col="1">0.037</td>
+                  <td data-row="9" data-col="2">0.037</td>
+                  <td data-row="9" data-col="3">0.046</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.033)    </td>
-                  <td>(0.033)    </td>
-                  <td>(0.033)    </td>
+                  <td data-row="10" data-col="0"></td>
+                  <td data-row="10" data-col="1">(0.033)</td>
+                  <td data-row="10" data-col="2">(0.033)</td>
+                  <td data-row="10" data-col="3">(0.033)</td>
                 </tr>
                 <tr>
-                  <td>Education: Secondary       </td>
-                  <td>-0.035     </td>
-                  <td>-0.038     </td>
-                  <td>-0.030     </td>
+                  <td data-row="11" data-col="0">Education: Secondary</td>
+                  <td data-row="11" data-col="1">-0.035</td>
+                  <td data-row="11" data-col="2">-0.038</td>
+                  <td data-row="11" data-col="3">-0.030</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.027)    </td>
-                  <td>(0.027)    </td>
-                  <td>(0.027)    </td>
+                  <td data-row="12" data-col="0"></td>
+                  <td data-row="12" data-col="1">(0.027)</td>
+                  <td data-row="12" data-col="2">(0.027)</td>
+                  <td data-row="12" data-col="3">(0.027)</td>
                 </tr>
                 <tr>
-                  <td>Education: Vocational      </td>
-                  <td>-0.026     </td>
-                  <td>-0.027     </td>
-                  <td>-0.022     </td>
+                  <td data-row="13" data-col="0">Education: Vocational</td>
+                  <td data-row="13" data-col="1">-0.026</td>
+                  <td data-row="13" data-col="2">-0.027</td>
+                  <td data-row="13" data-col="3">-0.022</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.024)    </td>
-                  <td>(0.023)    </td>
-                  <td>(0.023)    </td>
+                  <td data-row="14" data-col="0"></td>
+                  <td data-row="14" data-col="1">(0.024)</td>
+                  <td data-row="14" data-col="2">(0.023)</td>
+                  <td data-row="14" data-col="3">(0.023)</td>
                 </tr>
                 <tr>
-                  <td>Area: Urban-Type Settlement</td>
-                  <td>0.037      </td>
-                  <td>0.043      </td>
-                  <td>0.042      </td>
+                  <td data-row="15" data-col="0">Area: Urban-Type Settlement</td>
+                  <td data-row="15" data-col="1">0.037</td>
+                  <td data-row="15" data-col="2">0.043</td>
+                  <td data-row="15" data-col="3">0.042</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.043)    </td>
-                  <td>(0.043)    </td>
-                  <td>(0.043)    </td>
+                  <td data-row="16" data-col="0"></td>
+                  <td data-row="16" data-col="1">(0.043)</td>
+                  <td data-row="16" data-col="2">(0.043)</td>
+                  <td data-row="16" data-col="3">(0.043)</td>
                 </tr>
                 <tr>
-                  <td>Area: City                 </td>
-                  <td>0.032      </td>
-                  <td>0.034      </td>
-                  <td>0.033      </td>
+                  <td data-row="17" data-col="0">Area: City</td>
+                  <td data-row="17" data-col="1">0.032</td>
+                  <td data-row="17" data-col="2">0.034</td>
+                  <td data-row="17" data-col="3">0.033</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.032)    </td>
-                  <td>(0.032)    </td>
-                  <td>(0.032)    </td>
+                  <td data-row="18" data-col="0"></td>
+                  <td data-row="18" data-col="1">(0.032)</td>
+                  <td data-row="18" data-col="2">(0.032)</td>
+                  <td data-row="18" data-col="3">(0.032)</td>
                 </tr>
                 <tr>
-                  <td>Area: Regional Center      </td>
-                  <td>-0.046     </td>
-                  <td>-0.047     </td>
-                  <td>-0.057     </td>
+                  <td data-row="19" data-col="0">Area: Regional Center</td>
+                  <td data-row="19" data-col="1">-0.046</td>
+                  <td data-row="19" data-col="2">-0.047</td>
+                  <td data-row="19" data-col="3">-0.057</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.034)    </td>
-                  <td>(0.035)    </td>
-                  <td>(0.036)    </td>
+                  <td data-row="20" data-col="0"></td>
+                  <td data-row="20" data-col="1">(0.034)</td>
+                  <td data-row="20" data-col="2">(0.035)</td>
+                  <td data-row="20" data-col="3">(0.036)</td>
                 </tr>
                 <tr>
-                  <td>Hourly Wage (Log)          </td>
-                  <td>0.095      </td>
-                  <td>0.092      </td>
-                  <td>           </td>
+                  <td data-row="21" data-col="0">Hourly Wage (Log)</td>
+                  <td data-row="21" data-col="1">0.095</td>
+                  <td data-row="21" data-col="2">0.092</td>
+                  <td data-row="21" data-col="3"></td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.013) ***</td>
-                  <td>(0.013) ***</td>
-                  <td>           </td>
+                  <td data-row="22" data-col="0"></td>
+                  <td data-row="22" data-col="1">(0.013) ***</td>
+                  <td data-row="22" data-col="2">(0.013) ***</td>
+                  <td data-row="22" data-col="3"></td>
                 </tr>
                 <tr>
-                  <td>Working Hours Per Week     </td>
-                  <td>-0.001     </td>
-                  <td>-0.001     </td>
-                  <td>0.001      </td>
+                  <td data-row="23" data-col="0">Working Hours Per Week</td>
+                  <td data-row="23" data-col="1">-0.001</td>
+                  <td data-row="23" data-col="2">-0.001</td>
+                  <td data-row="23" data-col="3">0.001</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.001) +  </td>
-                  <td>(0.001) +  </td>
-                  <td>(0.001)    </td>
+                  <td data-row="24" data-col="0"></td>
+                  <td data-row="24" data-col="1">(0.001) +</td>
+                  <td data-row="24" data-col="2">(0.001) +</td>
+                  <td data-row="24" data-col="3">(0.001)</td>
                 </tr>
                 <tr>
-                  <td>Openness                   </td>
-                  <td>           </td>
-                  <td>-0.008     </td>
-                  <td>-0.011     </td>
+                  <td data-row="25" data-col="0">Openness</td>
+                  <td data-row="25" data-col="1"></td>
+                  <td data-row="25" data-col="2">-0.008</td>
+                  <td data-row="25" data-col="3">-0.011</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>           </td>
-                  <td>(0.011)    </td>
-                  <td>(0.014)    </td>
+                  <td data-row="26" data-col="0"></td>
+                  <td data-row="26" data-col="1"></td>
+                  <td data-row="26" data-col="2">(0.011)</td>
+                  <td data-row="26" data-col="3">(0.014)</td>
                 </tr>
                 <tr>
-                  <td>Conscientiousness          </td>
-                  <td>           </td>
-                  <td>0.026      </td>
-                  <td>0.026      </td>
+                  <td data-row="27" data-col="0">Conscientiousness</td>
+                  <td data-row="27" data-col="1"></td>
+                  <td data-row="27" data-col="2">0.026</td>
+                  <td data-row="27" data-col="3">0.026</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>           </td>
-                  <td>(0.010) ** </td>
-                  <td>(0.010) *  </td>
+                  <td data-row="28" data-col="0"></td>
+                  <td data-row="28" data-col="1"></td>
+                  <td data-row="28" data-col="2">(0.010) **</td>
+                  <td data-row="28" data-col="3">(0.010) *</td>
                 </tr>
                 <tr>
-                  <td>Extraversion               </td>
-                  <td>           </td>
-                  <td>0.040      </td>
-                  <td>0.038      </td>
+                  <td data-row="29" data-col="0">Extraversion</td>
+                  <td data-row="29" data-col="1"></td>
+                  <td data-row="29" data-col="2">0.040</td>
+                  <td data-row="29" data-col="3">0.038</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>           </td>
-                  <td>(0.009) ***</td>
-                  <td>(0.010) ***</td>
+                  <td data-row="30" data-col="0"></td>
+                  <td data-row="30" data-col="1"></td>
+                  <td data-row="30" data-col="2">(0.009) ***</td>
+                  <td data-row="30" data-col="3">(0.010) ***</td>
                 </tr>
                 <tr>
-                  <td>Agreeableness              </td>
-                  <td>           </td>
-                  <td>0.002      </td>
-                  <td>0.002      </td>
+                  <td data-row="31" data-col="0">Agreeableness</td>
+                  <td data-row="31" data-col="1"></td>
+                  <td data-row="31" data-col="2">0.002</td>
+                  <td data-row="31" data-col="3">0.002</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>           </td>
-                  <td>(0.010)    </td>
-                  <td>(0.017)    </td>
+                  <td data-row="32" data-col="0"></td>
+                  <td data-row="32" data-col="1"></td>
+                  <td data-row="32" data-col="2">(0.010)</td>
+                  <td data-row="32" data-col="3">(0.017)</td>
                 </tr>
                 <tr>
-                  <td>Emotional Stability        </td>
-                  <td>           </td>
-                  <td>0.028      </td>
-                  <td>0.027      </td>
+                  <td data-row="33" data-col="0">Emotional Stability</td>
+                  <td data-row="33" data-col="1"></td>
+                  <td data-row="33" data-col="2">0.028</td>
+                  <td data-row="33" data-col="3">0.027</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>           </td>
-                  <td>(0.009) ** </td>
-                  <td>(0.011) *  </td>
+                  <td data-row="34" data-col="0"></td>
+                  <td data-row="34" data-col="1"></td>
+                  <td data-row="34" data-col="2">(0.009) **</td>
+                  <td data-row="34" data-col="3">(0.011) *</td>
                 </tr>
                 <tr>
-                  <td>Num.Obs.                   </td>
-                  <td>2937       </td>
-                  <td>2937       </td>
-                  <td>2937       </td>
+                  <td data-row="35" data-col="0">Num.Obs.</td>
+                  <td data-row="35" data-col="1">2937</td>
+                  <td data-row="35" data-col="2">2937</td>
+                  <td data-row="35" data-col="3">2937</td>
                 </tr>
                 <tr>
-                  <td>R2 Marg.                   </td>
-                  <td>0.021      </td>
-                  <td>0.032      </td>
-                  <td>0.025      </td>
+                  <td data-row="36" data-col="0">R2 Marg.</td>
+                  <td data-row="36" data-col="1">0.021</td>
+                  <td data-row="36" data-col="2">0.032</td>
+                  <td data-row="36" data-col="3">0.025</td>
                 </tr>
                 <tr>
-                  <td>R2 Cond.                   </td>
-                  <td>0.275      </td>
-                  <td>0.278      </td>
-                  <td>           </td>
+                  <td data-row="37" data-col="0">R2 Cond.</td>
+                  <td data-row="37" data-col="1">0.275</td>
+                  <td data-row="37" data-col="2">0.278</td>
+                  <td data-row="37" data-col="3"></td>
                 </tr>
         </tbody>
       </table>
@@ -740,8 +724,8 @@ div.csl-indent {
 <section id="варьируются-ли-эффекты-некогнитивных-навыков-в-зависимости-от-квинтиля-заработной-платы" class="level3" data-number="6.3.4">
 <h3 data-number="6.3.4" class="anchored" data-anchor-id="варьируются-ли-эффекты-некогнитивных-навыков-в-зависимости-от-квинтиля-заработной-платы"><span class="header-section-number">6.3.4</span> Варьируются ли эффекты некогнитивных навыков в зависимости от квинтиля заработной платы?</h3>
 <p>Для изучения взаимодействия между удовлетворённостью работой, заработной платой и некогнитивными навыками была построена третья модель, в которой логарифм почасовой зарплаты исключён из фиксированной части, а наклоны некогнитивных навыков варьируются по квинтилям зарплаты. Коэффициенты фиксированной части приведены в третьем столбце <a href="#tbl-mem-ncs" class="quarto-xref">Таблица&nbsp;<span>6.2</span></a>, а результаты случайной части визуализированы на <a href="#fig-wages-ncs" class="quarto-xref">Рисунок&nbsp;<span>6.2</span></a>.</p>
-<p>Наиболее интересный паттерн выявлен для экстраверсии: чем ниже уровень заработной платы, тем выше эффект экстраверсии на удовлетворённость работой. Так, для молодёжи из нижнего квинтиля заработной платы экстраверсия увеличивает вероятность удовлетворённости более чем на 5%. По мере роста квинтиля коэффициент снижается, достигая 2.38% для верхнего квинтиля. Схожий, хотя и менее выраженный паттерн наблюдается для добросовестности: её эффект также выше в нижних квинтилях, но в целом можно сказать, что более добросовестные индивиды — более удовлетворены работой вне зависимости от зарплаты. Наибольший эффект добросовестности — в 3.39% — наблюдается во втором квинтиле, наименьший — в пятом (2.02%).</p>
-<p>Интересно, что наибольший эффект эмоциональной стабильности наблюдается во втором квинтиле зарплаты (почти 5%), то есть среди молодёжи с доходом ниже медианного, но не на самом дне распределения. За ним следует четвёртый квинтиль (2.8%).</p>
+<p>Наиболее интересный паттерн выявлен для экстраверсии: чем ниже уровень заработной платы, тем выше эффект экстраверсии на удовлетворённость работой. Так, для молодёжи из нижнего квинтиля заработной платы экстраверсия увеличивает вероятность удовлетворённости более чем на 5 п.п.. По мере роста квинтиля коэффициент снижается, достигая 2.38 п.п. для верхнего квинтиля. Схожий, хотя и менее выраженный паттерн наблюдается для добросовестности: её эффект также выше в нижних квинтилях, но в целом можно сказать, что более добросовестные индивиды — более удовлетворены работой вне зависимости от зарплаты. Наибольший эффект добросовестности — в 3.39 п.п. — наблюдается во втором квинтиле, наименьший — в пятом (2.02 п.п.).</p>
+<p>Интересно, что наибольший эффект эмоциональной стабильности наблюдается во втором квинтиле зарплаты (почти 5 п.п.), то есть среди молодёжи с доходом ниже медианного, но не на самом дне распределения. За ним следует четвёртый квинтиль (2.8 п.п.).</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-wages-ncs" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -772,9 +756,9 @@ div.csl-indent {
 
     <script>
 
-      function styleCell_exp259ip3egy4t8uieyi(i, j, css_id) {
-          var table = document.getElementById("tinytable_exp259ip3egy4t8uieyi");
-          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+      function styleCell_puiehe8edagh02wjawgi(i, j, css_id) {
+          var table = document.getElementById("tinytable_puiehe8edagh02wjawgi");
+          var cell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
               cell.classList.add(css_id);
@@ -782,60 +766,52 @@ div.csl-indent {
               console.warn(`Cell at (${i}, ${j}) not found.`);
           }
       }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_exp259ip3egy4t8uieyi');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_exp259ip3egy4t8uieyi(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_exp259ip3egy4t8uieyi");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
+      function spanCell_puiehe8edagh02wjawgi(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_puiehe8edagh02wjawgi");
+        const targetCell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+        if (!targetCell) {
+          console.warn(`Cell at (${i}, ${j}) not found.`);
+        }
+
+        // Get all cells that need to be removed
+        const cellsToRemove = [];
         for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
+          for (let c = 0; c < colspan; c++) {
+            if (r === 0 && c === 0) continue; // Skip the target cell
+            const cell = table.querySelector(`[data-row="${i + r}"][data-col="${j + c}"]`);
+            if (cell) {
+              cellsToRemove.push(cell);
             }
           }
         }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
+
+        // Remove all cells
+        cellsToRemove.forEach(cell => cell.remove());
+
+        // Set rowspan and colspan of the target cell if it exists
+        if (targetCell) {
+          targetCell.rowSpan = rowspan;
+          targetCell.colSpan = colspan;
+        }
       }
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 33, j: 0 },  ], css_id: 'tinytable_css_r1q7fi4n9sijj2kaj9ns',}, 
-          { positions: [ { i: 0, j: 0 },  ], css_id: 'tinytable_css_pwpnnunfnsqptsep8n1r',}, 
-          { positions: [ { i: 0, j: 1 }, { i: 0, j: 3 }, { i: 0, j: 2 },  ], css_id: 'tinytable_css_o7j7gtvlzbvfo3tciyw8',}, 
-          { positions: [ { i: 37, j: 0 },  ], css_id: 'tinytable_css_ktajtr7fhz6mqm4wpz69',}, 
-          { positions: [ { i: 37, j: 2 }, { i: 37, j: 1 }, { i: 37, j: 3 },  ], css_id: 'tinytable_css_cevfj5vesfvgcqhbrsun',}, 
-          { positions: [ { i: 1, j: 0 }, { i: 2, j: 0 }, { i: 3, j: 0 }, { i: 4, j: 0 }, { i: 5, j: 0 }, { i: 6, j: 0 }, { i: 7, j: 0 }, { i: 8, j: 0 }, { i: 9, j: 0 }, { i: 10, j: 0 }, { i: 11, j: 0 }, { i: 12, j: 0 }, { i: 13, j: 0 }, { i: 14, j: 0 }, { i: 15, j: 0 }, { i: 16, j: 0 }, { i: 17, j: 0 }, { i: 18, j: 0 }, { i: 19, j: 0 }, { i: 20, j: 0 }, { i: 21, j: 0 }, { i: 22, j: 0 }, { i: 23, j: 0 }, { i: 24, j: 0 }, { i: 25, j: 0 }, { i: 26, j: 0 }, { i: 27, j: 0 }, { i: 28, j: 0 }, { i: 29, j: 0 }, { i: 30, j: 0 }, { i: 31, j: 0 }, { i: 32, j: 0 }, { i: 34, j: 0 }, { i: 35, j: 0 }, { i: 36, j: 0 },  ], css_id: 'tinytable_css_62siwzwwducslap0kofg',}, 
-          { positions: [ { i: 1, j: 1 }, { i: 3, j: 1 }, { i: 5, j: 1 }, { i: 2, j: 1 }, { i: 7, j: 1 }, { i: 4, j: 1 }, { i: 9, j: 1 }, { i: 6, j: 1 }, { i: 11, j: 1 }, { i: 8, j: 1 }, { i: 13, j: 1 }, { i: 14, j: 1 }, { i: 15, j: 1 }, { i: 16, j: 1 }, { i: 17, j: 1 }, { i: 18, j: 1 }, { i: 19, j: 1 }, { i: 20, j: 1 }, { i: 21, j: 1 }, { i: 22, j: 1 }, { i: 10, j: 1 }, { i: 24, j: 1 }, { i: 12, j: 1 }, { i: 26, j: 1 }, { i: 27, j: 1 }, { i: 28, j: 1 }, { i: 29, j: 1 }, { i: 30, j: 1 }, { i: 31, j: 1 }, { i: 32, j: 1 }, { i: 35, j: 2 }, { i: 34, j: 1 }, { i: 35, j: 1 }, { i: 23, j: 1 }, { i: 1, j: 3 }, { i: 25, j: 1 }, { i: 1, j: 2 }, { i: 2, j: 2 }, { i: 3, j: 2 }, { i: 4, j: 2 }, { i: 5, j: 2 }, { i: 6, j: 2 }, { i: 7, j: 2 }, { i: 8, j: 2 }, { i: 9, j: 2 }, { i: 10, j: 2 }, { i: 11, j: 2 }, { i: 12, j: 2 }, { i: 13, j: 2 }, { i: 14, j: 2 }, { i: 15, j: 2 }, { i: 16, j: 2 }, { i: 17, j: 2 }, { i: 18, j: 2 }, { i: 19, j: 2 }, { i: 20, j: 2 }, { i: 21, j: 2 }, { i: 22, j: 2 }, { i: 23, j: 2 }, { i: 24, j: 2 }, { i: 25, j: 2 }, { i: 26, j: 2 }, { i: 27, j: 2 }, { i: 28, j: 2 }, { i: 29, j: 2 }, { i: 30, j: 2 }, { i: 31, j: 2 }, { i: 32, j: 2 }, { i: 35, j: 3 }, { i: 34, j: 2 }, { i: 10, j: 3 }, { i: 36, j: 2 }, { i: 12, j: 3 }, { i: 36, j: 1 }, { i: 14, j: 3 }, { i: 2, j: 3 }, { i: 3, j: 3 }, { i: 4, j: 3 }, { i: 5, j: 3 }, { i: 6, j: 3 }, { i: 7, j: 3 }, { i: 8, j: 3 }, { i: 9, j: 3 }, { i: 23, j: 3 }, { i: 11, j: 3 }, { i: 25, j: 3 }, { i: 13, j: 3 }, { i: 27, j: 3 }, { i: 15, j: 3 }, { i: 16, j: 3 }, { i: 17, j: 3 }, { i: 18, j: 3 }, { i: 19, j: 3 }, { i: 20, j: 3 }, { i: 21, j: 3 }, { i: 22, j: 3 }, { i: 36, j: 3 }, { i: 24, j: 3 }, { i: 29, j: 3 }, { i: 26, j: 3 }, { i: 31, j: 3 }, { i: 28, j: 3 }, { i: 30, j: 3 }, { i: 32, j: 3 }, { i: 34, j: 3 },  ], css_id: 'tinytable_css_2ujwyhj6lnjpzxx4dwyu',}, 
-          { positions: [ { i: 33, j: 3 }, { i: 33, j: 2 }, { i: 33, j: 1 },  ], css_id: 'tinytable_css_17eoicythd95og614h0m',}, 
+          { positions: [ { i: '37', j: 2 }, { i: '37', j: 1 }, { i: '37', j: 3 },  ], css_id: 'tinytable_css_iko0yr9q2i31g5t508cj',}, 
+          { positions: [ { i: '33', j: 3 }, { i: '33', j: 2 }, { i: '33', j: 1 },  ], css_id: 'tinytable_css_1rvk3yzv11fdawj2kuzr',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '3', j: 1 }, { i: '5', j: 1 }, { i: '2', j: 1 }, { i: '7', j: 1 }, { i: '4', j: 1 }, { i: '9', j: 1 }, { i: '6', j: 1 }, { i: '11', j: 1 }, { i: '8', j: 1 }, { i: '13', j: 1 }, { i: '14', j: 1 }, { i: '15', j: 1 }, { i: '16', j: 1 }, { i: '17', j: 1 }, { i: '18', j: 1 }, { i: '19', j: 1 }, { i: '20', j: 1 }, { i: '21', j: 1 }, { i: '22', j: 1 }, { i: '10', j: 1 }, { i: '24', j: 1 }, { i: '12', j: 1 }, { i: '26', j: 1 }, { i: '27', j: 1 }, { i: '28', j: 1 }, { i: '29', j: 1 }, { i: '30', j: 1 }, { i: '31', j: 1 }, { i: '32', j: 1 }, { i: '35', j: 2 }, { i: '34', j: 1 }, { i: '35', j: 1 }, { i: '23', j: 1 }, { i: '1', j: 3 }, { i: '25', j: 1 }, { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '6', j: 2 }, { i: '7', j: 2 }, { i: '8', j: 2 }, { i: '9', j: 2 }, { i: '10', j: 2 }, { i: '11', j: 2 }, { i: '12', j: 2 }, { i: '13', j: 2 }, { i: '14', j: 2 }, { i: '15', j: 2 }, { i: '16', j: 2 }, { i: '17', j: 2 }, { i: '18', j: 2 }, { i: '19', j: 2 }, { i: '20', j: 2 }, { i: '21', j: 2 }, { i: '22', j: 2 }, { i: '23', j: 2 }, { i: '24', j: 2 }, { i: '25', j: 2 }, { i: '26', j: 2 }, { i: '27', j: 2 }, { i: '28', j: 2 }, { i: '29', j: 2 }, { i: '30', j: 2 }, { i: '31', j: 2 }, { i: '32', j: 2 }, { i: '35', j: 3 }, { i: '34', j: 2 }, { i: '10', j: 3 }, { i: '36', j: 2 }, { i: '12', j: 3 }, { i: '36', j: 1 }, { i: '14', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '6', j: 3 }, { i: '7', j: 3 }, { i: '8', j: 3 }, { i: '9', j: 3 }, { i: '23', j: 3 }, { i: '11', j: 3 }, { i: '25', j: 3 }, { i: '13', j: 3 }, { i: '27', j: 3 }, { i: '15', j: 3 }, { i: '16', j: 3 }, { i: '17', j: 3 }, { i: '18', j: 3 }, { i: '19', j: 3 }, { i: '20', j: 3 }, { i: '21', j: 3 }, { i: '22', j: 3 }, { i: '36', j: 3 }, { i: '24', j: 3 }, { i: '29', j: 3 }, { i: '26', j: 3 }, { i: '31', j: 3 }, { i: '28', j: 3 }, { i: '30', j: 3 }, { i: '32', j: 3 }, { i: '34', j: 3 },  ], css_id: 'tinytable_css_owhsfx3wktkpq41rmnzx',}, 
+          { positions: [ { i: '0', j: 1 }, { i: '0', j: 3 }, { i: '0', j: 2 },  ], css_id: 'tinytable_css_cmyv1e73ap90fc284bxh',}, 
+          { positions: [ { i: '37', j: 0 },  ], css_id: 'tinytable_css_5j8hxbe4e1wcvph1l32u',}, 
+          { positions: [ { i: '33', j: 0 },  ], css_id: 'tinytable_css_1j9m6dvusjvqnwoudhpw',}, 
+          { positions: [ { i: '1', j: 0 }, { i: '2', j: 0 }, { i: '3', j: 0 }, { i: '4', j: 0 }, { i: '5', j: 0 }, { i: '6', j: 0 }, { i: '7', j: 0 }, { i: '8', j: 0 }, { i: '9', j: 0 }, { i: '10', j: 0 }, { i: '11', j: 0 }, { i: '12', j: 0 }, { i: '13', j: 0 }, { i: '14', j: 0 }, { i: '15', j: 0 }, { i: '16', j: 0 }, { i: '17', j: 0 }, { i: '18', j: 0 }, { i: '19', j: 0 }, { i: '20', j: 0 }, { i: '21', j: 0 }, { i: '22', j: 0 }, { i: '23', j: 0 }, { i: '24', j: 0 }, { i: '25', j: 0 }, { i: '26', j: 0 }, { i: '27', j: 0 }, { i: '28', j: 0 }, { i: '29', j: 0 }, { i: '30', j: 0 }, { i: '31', j: 0 }, { i: '32', j: 0 }, { i: '34', j: 0 }, { i: '35', j: 0 }, { i: '36', j: 0 },  ], css_id: 'tinytable_css_p5omld1b2groqcinpihk',}, 
+          { positions: [ { i: '0', j: 0 },  ], css_id: 'tinytable_css_5k70hynbycb404u7rngv',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_exp259ip3egy4t8uieyi(cell.i, cell.j, group.css_id);
+                  styleCell_puiehe8edagh02wjawgi(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -843,250 +819,250 @@ div.csl-indent {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_r1q7fi4n9sijj2kaj9ns, .table th.tinytable_css_r1q7fi4n9sijj2kaj9ns { text-align: left; border-bottom: solid black 0.05em; }
-      .table td.tinytable_css_pwpnnunfnsqptsep8n1r, .table th.tinytable_css_pwpnnunfnsqptsep8n1r { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_o7j7gtvlzbvfo3tciyw8, .table th.tinytable_css_o7j7gtvlzbvfo3tciyw8 { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_ktajtr7fhz6mqm4wpz69, .table th.tinytable_css_ktajtr7fhz6mqm4wpz69 { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_cevfj5vesfvgcqhbrsun, .table th.tinytable_css_cevfj5vesfvgcqhbrsun { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_62siwzwwducslap0kofg, .table th.tinytable_css_62siwzwwducslap0kofg { text-align: left; }
-      .table td.tinytable_css_2ujwyhj6lnjpzxx4dwyu, .table th.tinytable_css_2ujwyhj6lnjpzxx4dwyu { text-align: center; }
-      .table td.tinytable_css_17eoicythd95og614h0m, .table th.tinytable_css_17eoicythd95og614h0m { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_iko0yr9q2i31g5t508cj, .table th.tinytable_css_iko0yr9q2i31g5t508cj { text-align: center; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_1rvk3yzv11fdawj2kuzr, .table th.tinytable_css_1rvk3yzv11fdawj2kuzr { text-align: center; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_owhsfx3wktkpq41rmnzx, .table th.tinytable_css_owhsfx3wktkpq41rmnzx { text-align: center; }
+      .table td.tinytable_css_cmyv1e73ap90fc284bxh, .table th.tinytable_css_cmyv1e73ap90fc284bxh { text-align: center; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_5j8hxbe4e1wcvph1l32u, .table th.tinytable_css_5j8hxbe4e1wcvph1l32u { text-align: left; border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_1j9m6dvusjvqnwoudhpw, .table th.tinytable_css_1j9m6dvusjvqnwoudhpw { text-align: left; border-bottom: solid black 0.05em; }
+      .table td.tinytable_css_p5omld1b2groqcinpihk, .table th.tinytable_css_p5omld1b2groqcinpihk { text-align: left; }
+      .table td.tinytable_css_5k70hynbycb404u7rngv, .table th.tinytable_css_5k70hynbycb404u7rngv { text-align: left; border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_exp259ip3egy4t8uieyi" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_puiehe8edagh02wjawgi" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
-                <th scope="col"> </th>
-                <th scope="col">Career</th>
-                <th scope="col">Working Conditions</th>
-                <th scope="col">Wages</th>
+                <th scope="col" data-row="0" data-col="0"> </th>
+                <th scope="col" data-row="0" data-col="1">Career</th>
+                <th scope="col" data-row="0" data-col="2">Working Conditions</th>
+                <th scope="col" data-row="0" data-col="3">Wages</th>
               </tr>
         </thead>
         <tfoot><tr><td colspan="4">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr>
 <tr><td colspan="4">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Age                        </td>
-                  <td>-0.081+ </td>
-                  <td>-0.024  </td>
-                  <td>-0.130**</td>
+                  <td data-row="1" data-col="0">Age</td>
+                  <td data-row="1" data-col="1">-0.081+</td>
+                  <td data-row="1" data-col="2">-0.024</td>
+                  <td data-row="1" data-col="3">-0.130**</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.047) </td>
-                  <td>(0.044) </td>
-                  <td>(0.045) </td>
+                  <td data-row="2" data-col="0"></td>
+                  <td data-row="2" data-col="1">(0.047)</td>
+                  <td data-row="2" data-col="2">(0.044)</td>
+                  <td data-row="2" data-col="3">(0.045)</td>
                 </tr>
                 <tr>
-                  <td>Age Squared                </td>
-                  <td>0.002+  </td>
-                  <td>0.000   </td>
-                  <td>0.002** </td>
+                  <td data-row="3" data-col="0">Age Squared</td>
+                  <td data-row="3" data-col="1">0.002+</td>
+                  <td data-row="3" data-col="2">0.000</td>
+                  <td data-row="3" data-col="3">0.002**</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.001) </td>
-                  <td>(0.001) </td>
-                  <td>(0.001) </td>
+                  <td data-row="4" data-col="0"></td>
+                  <td data-row="4" data-col="1">(0.001)</td>
+                  <td data-row="4" data-col="2">(0.001)</td>
+                  <td data-row="4" data-col="3">(0.001)</td>
                 </tr>
                 <tr>
-                  <td>Sex: Male                  </td>
-                  <td>-0.020  </td>
-                  <td>-0.035+ </td>
-                  <td>-0.028  </td>
+                  <td data-row="5" data-col="0">Sex: Male</td>
+                  <td data-row="5" data-col="1">-0.020</td>
+                  <td data-row="5" data-col="2">-0.035+</td>
+                  <td data-row="5" data-col="3">-0.028</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.023) </td>
-                  <td>(0.021) </td>
-                  <td>(0.020) </td>
+                  <td data-row="6" data-col="0"></td>
+                  <td data-row="6" data-col="1">(0.023)</td>
+                  <td data-row="6" data-col="2">(0.021)</td>
+                  <td data-row="6" data-col="3">(0.020)</td>
                 </tr>
                 <tr>
-                  <td>Education: No School       </td>
-                  <td>-0.048  </td>
-                  <td>0.001   </td>
-                  <td>-0.021  </td>
+                  <td data-row="7" data-col="0">Education: No School</td>
+                  <td data-row="7" data-col="1">-0.048</td>
+                  <td data-row="7" data-col="2">0.001</td>
+                  <td data-row="7" data-col="3">-0.021</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.036) </td>
-                  <td>(0.033) </td>
-                  <td>(0.033) </td>
+                  <td data-row="8" data-col="0"></td>
+                  <td data-row="8" data-col="1">(0.036)</td>
+                  <td data-row="8" data-col="2">(0.033)</td>
+                  <td data-row="8" data-col="3">(0.033)</td>
                 </tr>
                 <tr>
-                  <td>Education: Secondary       </td>
-                  <td>-0.056+ </td>
-                  <td>-0.039  </td>
-                  <td>-0.056* </td>
+                  <td data-row="9" data-col="0">Education: Secondary</td>
+                  <td data-row="9" data-col="1">-0.056+</td>
+                  <td data-row="9" data-col="2">-0.039</td>
+                  <td data-row="9" data-col="3">-0.056*</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.029) </td>
-                  <td>(0.028) </td>
-                  <td>(0.026) </td>
+                  <td data-row="10" data-col="0"></td>
+                  <td data-row="10" data-col="1">(0.029)</td>
+                  <td data-row="10" data-col="2">(0.028)</td>
+                  <td data-row="10" data-col="3">(0.026)</td>
                 </tr>
                 <tr>
-                  <td>Education: Vocational      </td>
-                  <td>0.007   </td>
-                  <td>-0.023  </td>
-                  <td>-0.026  </td>
+                  <td data-row="11" data-col="0">Education: Vocational</td>
+                  <td data-row="11" data-col="1">0.007</td>
+                  <td data-row="11" data-col="2">-0.023</td>
+                  <td data-row="11" data-col="3">-0.026</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.025) </td>
-                  <td>(0.024) </td>
-                  <td>(0.024) </td>
+                  <td data-row="12" data-col="0"></td>
+                  <td data-row="12" data-col="1">(0.025)</td>
+                  <td data-row="12" data-col="2">(0.024)</td>
+                  <td data-row="12" data-col="3">(0.024)</td>
                 </tr>
                 <tr>
-                  <td>Area: Urban-Type Settlement</td>
-                  <td>-0.027  </td>
-                  <td>0.105*  </td>
-                  <td>0.034   </td>
+                  <td data-row="13" data-col="0">Area: Urban-Type Settlement</td>
+                  <td data-row="13" data-col="1">-0.027</td>
+                  <td data-row="13" data-col="2">0.105*</td>
+                  <td data-row="13" data-col="3">0.034</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.047) </td>
-                  <td>(0.044) </td>
-                  <td>(0.046) </td>
+                  <td data-row="14" data-col="0"></td>
+                  <td data-row="14" data-col="1">(0.047)</td>
+                  <td data-row="14" data-col="2">(0.044)</td>
+                  <td data-row="14" data-col="3">(0.046)</td>
                 </tr>
                 <tr>
-                  <td>Area: City                 </td>
-                  <td>-0.032  </td>
-                  <td>0.078*  </td>
-                  <td>0.021   </td>
+                  <td data-row="15" data-col="0">Area: City</td>
+                  <td data-row="15" data-col="1">-0.032</td>
+                  <td data-row="15" data-col="2">0.078*</td>
+                  <td data-row="15" data-col="3">0.021</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.035) </td>
-                  <td>(0.034) </td>
-                  <td>(0.036) </td>
+                  <td data-row="16" data-col="0"></td>
+                  <td data-row="16" data-col="1">(0.035)</td>
+                  <td data-row="16" data-col="2">(0.034)</td>
+                  <td data-row="16" data-col="3">(0.036)</td>
                 </tr>
                 <tr>
-                  <td>Area: Regional Center      </td>
-                  <td>-0.097* </td>
-                  <td>0.004   </td>
-                  <td>-0.046  </td>
+                  <td data-row="17" data-col="0">Area: Regional Center</td>
+                  <td data-row="17" data-col="1">-0.097*</td>
+                  <td data-row="17" data-col="2">0.004</td>
+                  <td data-row="17" data-col="3">-0.046</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.039) </td>
-                  <td>(0.038) </td>
-                  <td>(0.042) </td>
+                  <td data-row="18" data-col="0"></td>
+                  <td data-row="18" data-col="1">(0.039)</td>
+                  <td data-row="18" data-col="2">(0.038)</td>
+                  <td data-row="18" data-col="3">(0.042)</td>
                 </tr>
                 <tr>
-                  <td>Hourly Wage (Log)          </td>
-                  <td>0.087***</td>
-                  <td>0.064***</td>
-                  <td>0.143***</td>
+                  <td data-row="19" data-col="0">Hourly Wage (Log)</td>
+                  <td data-row="19" data-col="1">0.087***</td>
+                  <td data-row="19" data-col="2">0.064***</td>
+                  <td data-row="19" data-col="3">0.143***</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.014) </td>
-                  <td>(0.013) </td>
-                  <td>(0.013) </td>
+                  <td data-row="20" data-col="0"></td>
+                  <td data-row="20" data-col="1">(0.014)</td>
+                  <td data-row="20" data-col="2">(0.013)</td>
+                  <td data-row="20" data-col="3">(0.013)</td>
                 </tr>
                 <tr>
-                  <td>Working Hours Per Week     </td>
-                  <td>0.000   </td>
-                  <td>-0.002* </td>
-                  <td>0.000   </td>
+                  <td data-row="21" data-col="0">Working Hours Per Week</td>
+                  <td data-row="21" data-col="1">-0.000</td>
+                  <td data-row="21" data-col="2">-0.002*</td>
+                  <td data-row="21" data-col="3">-0.000</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.001) </td>
-                  <td>(0.001) </td>
-                  <td>(0.001) </td>
+                  <td data-row="22" data-col="0"></td>
+                  <td data-row="22" data-col="1">(0.001)</td>
+                  <td data-row="22" data-col="2">(0.001)</td>
+                  <td data-row="22" data-col="3">(0.001)</td>
                 </tr>
                 <tr>
-                  <td>Openness                   </td>
-                  <td>-0.003  </td>
-                  <td>-0.002  </td>
-                  <td>-0.004  </td>
+                  <td data-row="23" data-col="0">Openness</td>
+                  <td data-row="23" data-col="1">-0.003</td>
+                  <td data-row="23" data-col="2">-0.002</td>
+                  <td data-row="23" data-col="3">-0.004</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.012) </td>
-                  <td>(0.011) </td>
-                  <td>(0.011) </td>
+                  <td data-row="24" data-col="0"></td>
+                  <td data-row="24" data-col="1">(0.012)</td>
+                  <td data-row="24" data-col="2">(0.011)</td>
+                  <td data-row="24" data-col="3">(0.011)</td>
                 </tr>
                 <tr>
-                  <td>Conscientiousness          </td>
-                  <td>0.045***</td>
-                  <td>0.022*  </td>
-                  <td>0.032** </td>
+                  <td data-row="25" data-col="0">Conscientiousness</td>
+                  <td data-row="25" data-col="1">0.045***</td>
+                  <td data-row="25" data-col="2">0.022*</td>
+                  <td data-row="25" data-col="3">0.032**</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.011) </td>
-                  <td>(0.010) </td>
-                  <td>(0.010) </td>
+                  <td data-row="26" data-col="0"></td>
+                  <td data-row="26" data-col="1">(0.011)</td>
+                  <td data-row="26" data-col="2">(0.010)</td>
+                  <td data-row="26" data-col="3">(0.010)</td>
                 </tr>
                 <tr>
-                  <td>Extraversion               </td>
-                  <td>0.043***</td>
-                  <td>0.030** </td>
-                  <td>0.028** </td>
+                  <td data-row="27" data-col="0">Extraversion</td>
+                  <td data-row="27" data-col="1">0.043***</td>
+                  <td data-row="27" data-col="2">0.030**</td>
+                  <td data-row="27" data-col="3">0.028**</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.010) </td>
-                  <td>(0.009) </td>
-                  <td>(0.010) </td>
+                  <td data-row="28" data-col="0"></td>
+                  <td data-row="28" data-col="1">(0.010)</td>
+                  <td data-row="28" data-col="2">(0.009)</td>
+                  <td data-row="28" data-col="3">(0.010)</td>
                 </tr>
                 <tr>
-                  <td>Agreeableness              </td>
-                  <td>0.015   </td>
-                  <td>0.020*  </td>
-                  <td>0.004   </td>
+                  <td data-row="29" data-col="0">Agreeableness</td>
+                  <td data-row="29" data-col="1">0.015</td>
+                  <td data-row="29" data-col="2">0.020*</td>
+                  <td data-row="29" data-col="3">0.004</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.010) </td>
-                  <td>(0.010) </td>
-                  <td>(0.010) </td>
+                  <td data-row="30" data-col="0"></td>
+                  <td data-row="30" data-col="1">(0.010)</td>
+                  <td data-row="30" data-col="2">(0.010)</td>
+                  <td data-row="30" data-col="3">(0.010)</td>
                 </tr>
                 <tr>
-                  <td>Emotional Stability        </td>
-                  <td>0.026** </td>
-                  <td>0.024** </td>
-                  <td>0.013   </td>
+                  <td data-row="31" data-col="0">Emotional Stability</td>
+                  <td data-row="31" data-col="1">0.026**</td>
+                  <td data-row="31" data-col="2">0.024**</td>
+                  <td data-row="31" data-col="3">0.013</td>
                 </tr>
                 <tr>
-                  <td>                           </td>
-                  <td>(0.010) </td>
-                  <td>(0.009) </td>
-                  <td>(0.010) </td>
+                  <td data-row="32" data-col="0"></td>
+                  <td data-row="32" data-col="1">(0.010)</td>
+                  <td data-row="32" data-col="2">(0.009)</td>
+                  <td data-row="32" data-col="3">(0.010)</td>
                 </tr>
                 <tr>
-                  <td>SD (Observations)          </td>
-                  <td>0.491   </td>
-                  <td>0.465   </td>
-                  <td>0.464   </td>
+                  <td data-row="33" data-col="0">SD (Observations)</td>
+                  <td data-row="33" data-col="1">0.491</td>
+                  <td data-row="33" data-col="2">0.465</td>
+                  <td data-row="33" data-col="3">0.464</td>
                 </tr>
                 <tr>
-                  <td>Num.Obs.                   </td>
-                  <td>2937    </td>
-                  <td>2937    </td>
-                  <td>2937    </td>
+                  <td data-row="34" data-col="0">Num.Obs.</td>
+                  <td data-row="34" data-col="1">2937</td>
+                  <td data-row="34" data-col="2">2937</td>
+                  <td data-row="34" data-col="3">2937</td>
                 </tr>
                 <tr>
-                  <td>R2 Marg.                   </td>
-                  <td>0.034   </td>
-                  <td>0.025   </td>
-                  <td>0.062   </td>
+                  <td data-row="35" data-col="0">R2 Marg.</td>
+                  <td data-row="35" data-col="1">0.034</td>
+                  <td data-row="35" data-col="2">0.025</td>
+                  <td data-row="35" data-col="3">0.062</td>
                 </tr>
                 <tr>
-                  <td>R2 Cond.                   </td>
-                  <td>0.270   </td>
-                  <td>0.256   </td>
-                  <td>        </td>
+                  <td data-row="36" data-col="0">R2 Cond.</td>
+                  <td data-row="36" data-col="1">0.270</td>
+                  <td data-row="36" data-col="2">0.256</td>
+                  <td data-row="36" data-col="3"></td>
                 </tr>
                 <tr>
-                  <td>RMSE                       </td>
-                  <td>0.35    </td>
-                  <td>0.34    </td>
-                  <td>0.33    </td>
+                  <td data-row="37" data-col="0">RMSE</td>
+                  <td data-row="37" data-col="1">0.35</td>
+                  <td data-row="37" data-col="2">0.34</td>
+                  <td data-row="37" data-col="3">0.33</td>
                 </tr>
         </tbody>
       </table>
@@ -1097,9 +1073,9 @@ div.csl-indent {
 </figure>
 </div>
 </div>
-<p>Полученные результаты по трем аспектам удовлетворенности работой в значительной степени подтверждают выводы общей модели удовлетворенности. Черты личности «добросовестность» и «экстраверсия» демонстрируют положительное и статистически значимое влияние во всех трех проанализированных областях. Эффект добросовестности наиболее выражен в контексте удовлетворенности карьерными перспективами: увеличение данной характеристики на одну стандартную девиацию повышает вероятность быть удовлетворенным возможностями карьерного роста на 4.5%. Кроме того, добросовестность ассоциируется с увеличением вероятности удовлетворенности заработной платой на 3.2% и условиями труда — на 2.2%.</p>
-<p>Аналогично, экстраверсия оказывает наибольшее влияние на удовлетворенность карьерным развитием, увеличивая вероятность удовлетворенности профессиональными перспективами на 4.3%. Также экстраверсия связана с ростом удовлетворенности условиями труда на 3.0% и заработной платой на 2.8%.</p>
-<p>Эмоциональная стабильность оказывает статистически значимое положительное влияние на удовлетворенность как карьерным ростом, так и условиями труда, повышая вероятность удовлетворенности на 2.6% и 2.4% соответственно. Наконец, анализ показывает, что индивиды с более высоким уровнем уживчивости чаще выражают удовлетворенность условиями труда: рост вероятности удовлетворенности составляет 2.0%.</p>
+<p>Полученные результаты по трем аспектам удовлетворенности работой в значительной степени подтверждают выводы общей модели удовлетворенности. Черты личности «добросовестность» и «экстраверсия» демонстрируют положительное и статистически значимое влияние во всех трех проанализированных областях. Эффект добросовестности наиболее выражен в контексте удовлетворенности карьерными перспективами: увеличение данной характеристики на одну стандартную девиацию повышает вероятность быть удовлетворенным возможностями карьерного роста на 4.5 п.п.. Кроме того, добросовестность ассоциируется с увеличением вероятности удовлетворенности заработной платой на 3.2 п.п. и условиями труда — на 2.2 п.п..</p>
+<p>Аналогично, экстраверсия оказывает наибольшее влияние на удовлетворенность карьерным развитием, увеличивая вероятность удовлетворенности профессиональными перспективами на 4.3 п.п.. Также экстраверсия связана с ростом удовлетворенности условиями труда на 3.0 п.п. и заработной платой на 2.8 п.п..</p>
+<p>Эмоциональная стабильность оказывает статистически значимое положительное влияние на удовлетворенность как карьерным ростом, так и условиями труда, повышая вероятность удовлетворенности на 2.6 п.п. и 2.4 п.п. соответственно. Наконец, анализ показывает, что индивиды с более высоким уровнем уживчивости чаще выражают удовлетворенность условиями труда: рост вероятности удовлетворенности составляет 2.0 п.п..</p>
 </section>
 </section>
 <section id="ограничения" class="level2" data-number="6.4">
@@ -1127,11 +1103,11 @@ div.csl-indent {
 </section>
 <section id="заключение" class="level2" data-number="6.7">
 <h2 data-number="6.7" class="anchored" data-anchor-id="заключение"><span class="header-section-number">6.7</span> Заключение</h2>
-<p>Настоящая глава была посвящена оценке влияния некогнитивных навыков на удовлетворённость работой среди российской молодёжи в возрасте 15–29 лет на основе национально репрезентативных лонгитюдных данных РМЭЗ-ВШЭ (RLMS-HSE), собранных в 2016 и 2019 годах. Используя смешанные модели (mixed-effects models), учитывающие вариации, связанные с уровнем заработной платы посредством включения случайного коэффициента наклона (random slope), анализ позволил изолировать уникальный вклад черт личности по модели «Большой пятёрки» как в общую, так и в аспектную (доменно-специфичную) удовлетворённость работой.</p>
+<p>Настоящая глава была посвящена оценке влияния некогнитивных навыков на удовлетворённость работой среди российской молодёжи в возрасте 15–29 лет на основе национально репрезентативных лонгитюдных данных РМЭЗ-ВШЭ (RLMS-HSE), собранных в 2016 и 2019 годах. Используя смешанные модели, учитывающие вариации, связанные с уровнем заработной платы посредством включения случайного коэффициента наклона, анализ позволил изолировать уникальный вклад черт личности по модели «Большой пятёрки» как в общую, так и в аспектную удовлетворённость работой.</p>
 <p>Результаты показывают, что экстраверсия, добросовестность и эмоциональная стабильность оказывают статистически значимое положительное влияние на удовлетворённость работой, даже при контроле заработной платы и других социально-демографических факторов. Важно отметить, что эффект этих черт варьируется в зависимости от квинтиля заработной платы, причём экстраверсия демонстрирует наибольшее влияние среди низкооплачиваемых работников. Кроме того, значение каждого некогнитивного навыка зависит от конкретного аспекта удовлетворённости работой, что подчеркивает многомерную природу данного феномена.</p>
-<p>Полученные результаты расширяют существующую литературу в области экономики труда, показывая, что некогнитивные навыки влияют не только на экзогенные параметры трудового успеха, такие как занятость или заработная плата, но и на его эндогенную составляющую — субъективную удовлетворённость, которая может рассматриваться как внутренняя награда за труд. Хотя экономические стимулы остаются важными, данное исследование демонстрирует, что развитие некогнитивных навыков представляет собой альтернативный и значимый канал повышения удовлетворённости трудом и удержания молодых сотрудников — группы, особенно уязвимой к профессиональной дезориентации на раннем этапе карьеры.</p>
-<p>С точки зрения политики занятости и внутриорганизационного управления, результаты подчёркивают важность интеграции развития некогнитивных навыков в стратегии трудоустройства молодёжи. Интервенции, направленные на формирование эмоциональной стабильности, межличностных навыков и добросовестного отношения к работе, могут дать значительные результаты, особенно если они адаптированы к уровню дохода и особенностям конкретной рабочей среды.</p>
-<p>Объединяя подходы психологии личности и экономики труда, данная глава вносит новые эмпирические данные в литературу по молодёжной занятости и предлагает практические рекомендации по повышению удовлетворённости работой немонетарными способами. Тем самым подтверждается ключевая роль личностных характеристик в формировании устойчивого и осмысленного участия молодёжи в рынке труда.</p>
+<p>Полученные результаты расширяют существующую литературу в области экономики труда, показывая, что некогнитивные навыки влияют не только на экстринсивные антецеденты трудового успеха, такие как занятость или заработная плата, но и на его интринсивную составляющую — удовлетворённость работой, которая может рассматриваться как субъективная награда за труд. Хотя экономические стимулы остаются важными, данное исследование демонстрирует, что развитие некогнитивных навыков представляет собой альтернативный и значимый канал повышения удовлетворённости работой и удержания молодых сотрудников — группы, особенно уязвимой к профессиональной дезориентации на раннем этапе карьеры.</p>
+<p>С точки зрения политики занятости и корпоративного управления, результаты подчёркивают важность интеграции развития некогнитивных навыков в стратегии трудоустройства молодёжи. Интервенции, направленные на формирование эмоциональной стабильности, межличностных навыков и добросовестного отношения к работе, могут дать значительные результаты, особенно если они адаптированы к уровню заработной платы и особенностям конкретной рабочей среды.</p>
+<p>Объединяя подходы психологии личности и экономики труда, данная глава вносит новые эмпирические данные в литературу по молодёжной занятости и предлагает практические рекомендации по повышению удовлетворённости работой немонетарными способами. Тем самым подтверждается ключевая роль личностных характеристик в формировании устойчивого и осмысленного участия молодёжи на рынке труда.</p>
 <div style="page-break-after: always;"></div>
 
 

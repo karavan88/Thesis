@@ -79,7 +79,7 @@ plot(gam_job_satisf, col = "blue")
 # Calculate ICC values
 icc_results <- 
     icc(m0_satisf, by_group = TRUE) %>%
-    as.data.frame %> п.п.
+    as.data.frame %>%
     mutate(Group = case_when(Group == "idind" ~ "Individual ID",
                             Group == "region" ~ "Region",
                             Group == "occupation" ~ "Occupation",
