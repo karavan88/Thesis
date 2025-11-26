@@ -49,6 +49,7 @@ format:
     toc: true                            # ← enable automatic TOC
     lof: true                            # ← enable automatic list of figures
     lot: true                            # ← enable automatic list of tables
+    dpi: 300
 
 
 lang: ru-RU

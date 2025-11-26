@@ -304,9 +304,9 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_bq95xfeirjevwpf0hq69(i, j, css_id) {
-          var table = document.getElementById("tinytable_bq95xfeirjevwpf0hq69");
-          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+      function styleCell_zyxpmw7kogbwhybtpktn(i, j, css_id) {
+          var table = document.getElementById("tinytable_zyxpmw7kogbwhybtpktn");
+          var cell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
               cell.classList.add(css_id);
@@ -314,55 +314,47 @@ window.Quarto = {
               console.warn(`Cell at (${i}, ${j}) not found.`);
           }
       }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_bq95xfeirjevwpf0hq69');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_bq95xfeirjevwpf0hq69(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_bq95xfeirjevwpf0hq69");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
+      function spanCell_zyxpmw7kogbwhybtpktn(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_zyxpmw7kogbwhybtpktn");
+        const targetCell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+        if (!targetCell) {
+          console.warn(`Cell at (${i}, ${j}) not found.`);
+        }
+
+        // Get all cells that need to be removed
+        const cellsToRemove = [];
         for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
+          for (let c = 0; c < colspan; c++) {
+            if (r === 0 && c === 0) continue; // Skip the target cell
+            const cell = table.querySelector(`[data-row="${i + r}"][data-col="${j + c}"]`);
+            if (cell) {
+              cellsToRemove.push(cell);
             }
           }
         }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
+
+        // Remove all cells
+        cellsToRemove.forEach(cell => cell.remove());
+
+        // Set rowspan and colspan of the target cell if it exists
+        if (targetCell) {
+          targetCell.rowSpan = rowspan;
+          targetCell.colSpan = colspan;
+        }
       }
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 15, j: 0 }, { i: 15, j: 3 }, { i: 15, j: 1 }, { i: 15, j: 4 }, { i: 15, j: 2 }, { i: 15, j: 5 },  ], css_id: 'tinytable_css_vd0qxyfpfgx40x19qeza',}, 
-          { positions: [ { i: 17, j: 0 }, { i: 17, j: 1 }, { i: 17, j: 4 }, { i: 17, j: 3 }, { i: 17, j: 2 }, { i: 17, j: 5 },  ], css_id: 'tinytable_css_b3x0sw7h6t7kjvusnybw',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_71c1xjuigrouwtdszoz5',}, 
+          { positions: [ { i: '17', j: 0 }, { i: '17', j: 1 }, { i: '17', j: 4 }, { i: '17', j: 3 }, { i: '17', j: 2 }, { i: '17', j: 5 },  ], css_id: 'tinytable_css_xb6sudip9mw83oxvjcgu',}, 
+          { positions: [ { i: '15', j: 0 }, { i: '15', j: 3 }, { i: '15', j: 1 }, { i: '15', j: 4 }, { i: '15', j: 2 }, { i: '15', j: 5 },  ], css_id: 'tinytable_css_0kpd84uqsx0jrq06bcl5',}, 
+          { positions: [ { i: '0', j: 0 }, { i: '0', j: 3 }, { i: '0', j: 2 }, { i: '0', j: 1 }, { i: '0', j: 4 }, { i: '0', j: 5 },  ], css_id: 'tinytable_css_ueq0hxlf8nafdi3m17cn',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_bq95xfeirjevwpf0hq69(cell.i, cell.j, group.css_id);
+                  styleCell_zyxpmw7kogbwhybtpktn(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -370,21 +362,21 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_vd0qxyfpfgx40x19qeza, .table th.tinytable_css_vd0qxyfpfgx40x19qeza { border-bottom: solid black 0.1em; }
-      .table td.tinytable_css_b3x0sw7h6t7kjvusnybw, .table th.tinytable_css_b3x0sw7h6t7kjvusnybw { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_71c1xjuigrouwtdszoz5, .table th.tinytable_css_71c1xjuigrouwtdszoz5 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
+      .table td.tinytable_css_xb6sudip9mw83oxvjcgu, .table th.tinytable_css_xb6sudip9mw83oxvjcgu { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_0kpd84uqsx0jrq06bcl5, .table th.tinytable_css_0kpd84uqsx0jrq06bcl5 { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_ueq0hxlf8nafdi3m17cn, .table th.tinytable_css_ueq0hxlf8nafdi3m17cn { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_bq95xfeirjevwpf0hq69" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_zyxpmw7kogbwhybtpktn" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
-                <th scope="col">variable</th>
-                <th scope="col">Q10</th>
-                <th scope="col">Q25</th>
-                <th scope="col">Q50</th>
-                <th scope="col">Q75</th>
-                <th scope="col">Q90</th>
+                <th scope="col" data-row="0" data-col="0">variable</th>
+                <th scope="col" data-row="0" data-col="1">Q10</th>
+                <th scope="col" data-row="0" data-col="2">Q25</th>
+                <th scope="col" data-row="0" data-col="3">Q50</th>
+                <th scope="col" data-row="0" data-col="4">Q75</th>
+                <th scope="col" data-row="0" data-col="5">Q90</th>
               </tr>
         </thead>
         <tfoot><tr><td colspan="6">Note: p&lt;0.001 (***); p&lt;0.01 (**); p&lt;0.05 (*); p&lt;0.1 (.)</td></tr>
@@ -392,140 +384,140 @@ window.Quarto = {
 <tr><td colspan="6">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Константа                 </td>
-                  <td>4.459 (0.18)***</td>
-                  <td>4.416 (0.09)***</td>
-                  <td>4.659 (0.07)***</td>
-                  <td>4.805 (0.08)***</td>
-                  <td>5.087 (0.09)***</td>
+                  <td data-row="1" data-col="0">Константа</td>
+                  <td data-row="1" data-col="1">4.459 (0.18)***</td>
+                  <td data-row="1" data-col="2">4.416 (0.09)***</td>
+                  <td data-row="1" data-col="3">4.659 (0.07)***</td>
+                  <td data-row="1" data-col="4">4.805 (0.08)***</td>
+                  <td data-row="1" data-col="5">5.087 (0.09)***</td>
                 </tr>
                 <tr>
-                  <td>Опыт                      </td>
-                  <td>0.019 (0.02)   </td>
-                  <td>0.058 (0.02)***</td>
-                  <td>0.062 (0.01)***</td>
-                  <td>0.081 (0.01)***</td>
-                  <td>0.033 (0.03)   </td>
+                  <td data-row="2" data-col="0">Опыт</td>
+                  <td data-row="2" data-col="1">0.019 (0.02)</td>
+                  <td data-row="2" data-col="2">0.058 (0.02)***</td>
+                  <td data-row="2" data-col="3">0.062 (0.01)***</td>
+                  <td data-row="2" data-col="4">0.081 (0.01)***</td>
+                  <td data-row="2" data-col="5">0.033 (0.03)</td>
                 </tr>
                 <tr>
-                  <td>Опыт²                     </td>
-                  <td>-0.001 (0)     </td>
-                  <td>-0.003 (0)*    </td>
-                  <td>-0.004 (0)***  </td>
-                  <td>-0.005 (0)***  </td>
-                  <td>-0.001 (0)     </td>
+                  <td data-row="3" data-col="0">Опыт²</td>
+                  <td data-row="3" data-col="1">-0.001 (0)</td>
+                  <td data-row="3" data-col="2">-0.003 (0)*</td>
+                  <td data-row="3" data-col="3">-0.004 (0)***</td>
+                  <td data-row="3" data-col="4">-0.005 (0)***</td>
+                  <td data-row="3" data-col="5">-0.001 (0)</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: ПГТ        </td>
-                  <td>-0.038 (0.1)   </td>
-                  <td>-0.036 (0.06)  </td>
-                  <td>-0.028 (0.06)  </td>
-                  <td>0.017 (0.07)   </td>
-                  <td>0.111 (0.07)   </td>
+                  <td data-row="4" data-col="0">Тип поселения: ПГТ</td>
+                  <td data-row="4" data-col="1">-0.038 (0.1)</td>
+                  <td data-row="4" data-col="2">-0.036 (0.06)</td>
+                  <td data-row="4" data-col="3">-0.028 (0.06)</td>
+                  <td data-row="4" data-col="4">0.017 (0.07)</td>
+                  <td data-row="4" data-col="5">0.111 (0.07)</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: Город      </td>
-                  <td>0.054 (0.1)    </td>
-                  <td>0.058 (0.07)   </td>
-                  <td>0.148 (0.05)** </td>
-                  <td>0.248 (0.05)***</td>
-                  <td>0.26 (0.06)*** </td>
+                  <td data-row="5" data-col="0">Тип поселения: Город</td>
+                  <td data-row="5" data-col="1">0.054 (0.1)</td>
+                  <td data-row="5" data-col="2">0.058 (0.07)</td>
+                  <td data-row="5" data-col="3">0.148 (0.05)**</td>
+                  <td data-row="5" data-col="4">0.248 (0.05)***</td>
+                  <td data-row="5" data-col="5">0.26 (0.06)***</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: Райцентр   </td>
-                  <td>0.094 (0.26)   </td>
-                  <td>0.118 (0.27)   </td>
-                  <td>0.205 (0.27)   </td>
-                  <td>0.227 (0.27)   </td>
-                  <td>0.277 (0.26)   </td>
+                  <td data-row="6" data-col="0">Тип поселения: Райцентр</td>
+                  <td data-row="6" data-col="1">0.094 (0.26)</td>
+                  <td data-row="6" data-col="2">0.118 (0.27)</td>
+                  <td data-row="6" data-col="3">0.205 (0.27)</td>
+                  <td data-row="6" data-col="4">0.227 (0.27)</td>
+                  <td data-row="6" data-col="5">0.277 (0.26)</td>
                 </tr>
                 <tr>
-                  <td>Пол: Мужской              </td>
-                  <td>0.224 (0.08)** </td>
-                  <td>0.251 (0.04)***</td>
-                  <td>0.243 (0.03)***</td>
-                  <td>0.271 (0.03)***</td>
-                  <td>0.24 (0.04)*** </td>
+                  <td data-row="7" data-col="0">Пол: Мужской</td>
+                  <td data-row="7" data-col="1">0.224 (0.08)**</td>
+                  <td data-row="7" data-col="2">0.251 (0.04)***</td>
+                  <td data-row="7" data-col="3">0.243 (0.03)***</td>
+                  <td data-row="7" data-col="4">0.271 (0.03)***</td>
+                  <td data-row="7" data-col="5">0.24 (0.04)***</td>
                 </tr>
                 <tr>
-                  <td>Семья: Женат/замужем      </td>
-                  <td>-0.138 (0.05)* </td>
-                  <td>-0.054 (0.03). </td>
-                  <td>0.009 (0.02)   </td>
-                  <td>-0.016 (0.03)  </td>
-                  <td>0.013 (0.04)   </td>
+                  <td data-row="8" data-col="0">Семья: Женат/замужем</td>
+                  <td data-row="8" data-col="1">-0.138 (0.05)*</td>
+                  <td data-row="8" data-col="2">-0.054 (0.03).</td>
+                  <td data-row="8" data-col="3">0.009 (0.02)</td>
+                  <td data-row="8" data-col="4">-0.016 (0.03)</td>
+                  <td data-row="8" data-col="5">0.013 (0.04)</td>
                 </tr>
                 <tr>
-                  <td>Семья: Разведен/вдовец    </td>
-                  <td>0.029 (0.11)   </td>
-                  <td>-0.013 (0.06)  </td>
-                  <td>-0.001 (0.05)  </td>
-                  <td>-0.008 (0.07)  </td>
-                  <td>0.017 (0.08)   </td>
+                  <td data-row="9" data-col="0">Семья: Разведен/вдовец</td>
+                  <td data-row="9" data-col="1">0.029 (0.11)</td>
+                  <td data-row="9" data-col="2">-0.013 (0.06)</td>
+                  <td data-row="9" data-col="3">-0.001 (0.05)</td>
+                  <td data-row="9" data-col="4">-0.008 (0.07)</td>
+                  <td data-row="9" data-col="5">0.017 (0.08)</td>
                 </tr>
                 <tr>
-                  <td>Открытость                </td>
-                  <td>0.038 (0.03)   </td>
-                  <td>0.048 (0.02)** </td>
-                  <td>0.057 (0.01)***</td>
-                  <td>0.068 (0.01)***</td>
-                  <td>0.086 (0.02)***</td>
+                  <td data-row="10" data-col="0">Открытость</td>
+                  <td data-row="10" data-col="1">0.038 (0.03)</td>
+                  <td data-row="10" data-col="2">0.048 (0.02)**</td>
+                  <td data-row="10" data-col="3">0.057 (0.01)***</td>
+                  <td data-row="10" data-col="4">0.068 (0.01)***</td>
+                  <td data-row="10" data-col="5">0.086 (0.02)***</td>
                 </tr>
                 <tr>
-                  <td>Добросовестность          </td>
-                  <td>0.043 (0.02)*  </td>
-                  <td>0.017 (0.02)   </td>
-                  <td>0.007 (0.01)   </td>
-                  <td>-0.01 (0.02)   </td>
-                  <td>-0.025 (0.02)  </td>
+                  <td data-row="11" data-col="0">Добросовестность</td>
+                  <td data-row="11" data-col="1">0.043 (0.02)*</td>
+                  <td data-row="11" data-col="2">0.017 (0.02)</td>
+                  <td data-row="11" data-col="3">0.007 (0.01)</td>
+                  <td data-row="11" data-col="4">-0.01 (0.02)</td>
+                  <td data-row="11" data-col="5">-0.025 (0.02)</td>
                 </tr>
                 <tr>
-                  <td>Экстраверсия              </td>
-                  <td>-0.001 (0.02)  </td>
-                  <td>0.006 (0.02)   </td>
-                  <td>0.017 (0.01)   </td>
-                  <td>0.031 (0.02).  </td>
-                  <td>0.016 (0.02)   </td>
+                  <td data-row="12" data-col="0">Экстраверсия</td>
+                  <td data-row="12" data-col="1">-0.001 (0.02)</td>
+                  <td data-row="12" data-col="2">0.006 (0.02)</td>
+                  <td data-row="12" data-col="3">0.017 (0.01)</td>
+                  <td data-row="12" data-col="4">0.031 (0.02).</td>
+                  <td data-row="12" data-col="5">0.016 (0.02)</td>
                 </tr>
                 <tr>
-                  <td>Доброжелательность        </td>
-                  <td>0.006 (0.02)   </td>
-                  <td>0.015 (0.01)   </td>
-                  <td>0.019 (0.01)   </td>
-                  <td>0.006 (0.01)   </td>
-                  <td>0.002 (0.02)   </td>
+                  <td data-row="13" data-col="0">Доброжелательность</td>
+                  <td data-row="13" data-col="1">0.006 (0.02)</td>
+                  <td data-row="13" data-col="2">0.015 (0.01)</td>
+                  <td data-row="13" data-col="3">0.019 (0.01)</td>
+                  <td data-row="13" data-col="4">0.006 (0.01)</td>
+                  <td data-row="13" data-col="5">0.002 (0.02)</td>
                 </tr>
                 <tr>
-                  <td>Эмоциональная стабильность</td>
-                  <td>0.039 (0.02)   </td>
-                  <td>0.029 (0.01)*  </td>
-                  <td>0.021 (0.01).  </td>
-                  <td>0 (0.01)       </td>
-                  <td>-0.022 (0.01)  </td>
+                  <td data-row="14" data-col="0">Эмоциональная стабильность</td>
+                  <td data-row="14" data-col="1">0.039 (0.02)</td>
+                  <td data-row="14" data-col="2">0.029 (0.01)*</td>
+                  <td data-row="14" data-col="3">0.021 (0.01).</td>
+                  <td data-row="14" data-col="4">0 (0.01)</td>
+                  <td data-row="14" data-col="5">-0.022 (0.01)</td>
                 </tr>
                 <tr>
-                  <td>Регион                    </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
+                  <td data-row="15" data-col="0">Регион</td>
+                  <td data-row="15" data-col="1">Контролируется</td>
+                  <td data-row="15" data-col="2">Контролируется</td>
+                  <td data-row="15" data-col="3">Контролируется</td>
+                  <td data-row="15" data-col="4">Контролируется</td>
+                  <td data-row="15" data-col="5">Контролируется</td>
                 </tr>
                 <tr>
-                  <td>Кол-во групп              </td>
-                  <td>2170           </td>
-                  <td>2170           </td>
-                  <td>2170           </td>
-                  <td>2170           </td>
-                  <td>2170           </td>
+                  <td data-row="16" data-col="0">Кол-во групп</td>
+                  <td data-row="16" data-col="1">2170</td>
+                  <td data-row="16" data-col="2">2170</td>
+                  <td data-row="16" data-col="3">2170</td>
+                  <td data-row="16" data-col="4">2170</td>
+                  <td data-row="16" data-col="5">2170</td>
                 </tr>
                 <tr>
-                  <td>Кол-во наблюдений         </td>
-                  <td>2673           </td>
-                  <td>2673           </td>
-                  <td>2673           </td>
-                  <td>2673           </td>
-                  <td>2673           </td>
+                  <td data-row="17" data-col="0">Кол-во наблюдений</td>
+                  <td data-row="17" data-col="1">2673</td>
+                  <td data-row="17" data-col="2">2673</td>
+                  <td data-row="17" data-col="3">2673</td>
+                  <td data-row="17" data-col="4">2673</td>
+                  <td data-row="17" data-col="5">2673</td>
                 </tr>
         </tbody>
       </table>
@@ -556,9 +548,9 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_f77oz4gkxwscp3fps9y6(i, j, css_id) {
-          var table = document.getElementById("tinytable_f77oz4gkxwscp3fps9y6");
-          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+      function styleCell_gae8blkahytdozc7s5k9(i, j, css_id) {
+          var table = document.getElementById("tinytable_gae8blkahytdozc7s5k9");
+          var cell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
               cell.classList.add(css_id);
@@ -566,55 +558,47 @@ window.Quarto = {
               console.warn(`Cell at (${i}, ${j}) not found.`);
           }
       }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_f77oz4gkxwscp3fps9y6');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_f77oz4gkxwscp3fps9y6(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_f77oz4gkxwscp3fps9y6");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
+      function spanCell_gae8blkahytdozc7s5k9(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_gae8blkahytdozc7s5k9");
+        const targetCell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+        if (!targetCell) {
+          console.warn(`Cell at (${i}, ${j}) not found.`);
+        }
+
+        // Get all cells that need to be removed
+        const cellsToRemove = [];
         for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
+          for (let c = 0; c < colspan; c++) {
+            if (r === 0 && c === 0) continue; // Skip the target cell
+            const cell = table.querySelector(`[data-row="${i + r}"][data-col="${j + c}"]`);
+            if (cell) {
+              cellsToRemove.push(cell);
             }
           }
         }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
+
+        // Remove all cells
+        cellsToRemove.forEach(cell => cell.remove());
+
+        // Set rowspan and colspan of the target cell if it exists
+        if (targetCell) {
+          targetCell.rowSpan = rowspan;
+          targetCell.colSpan = colspan;
+        }
       }
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 20, j: 0 }, { i: 20, j: 1 }, { i: 20, j: 4 }, { i: 20, j: 3 }, { i: 20, j: 2 }, { i: 20, j: 5 },  ], css_id: 'tinytable_css_wwq1qkmfd3evg00ymf11',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 }, { i: 0, j: 5 },  ], css_id: 'tinytable_css_uc3gnh1rtirp9x23jj8i',}, 
-          { positions: [ { i: 18, j: 0 }, { i: 18, j: 3 }, { i: 18, j: 1 }, { i: 18, j: 4 }, { i: 18, j: 2 }, { i: 18, j: 5 },  ], css_id: 'tinytable_css_mtsr3c3o27muh30opocm',}, 
+          { positions: [ { i: '20', j: 0 }, { i: '20', j: 1 }, { i: '20', j: 4 }, { i: '20', j: 3 }, { i: '20', j: 2 }, { i: '20', j: 5 },  ], css_id: 'tinytable_css_foro0l9jmdoxvsem1yic',}, 
+          { positions: [ { i: '18', j: 0 }, { i: '18', j: 3 }, { i: '18', j: 1 }, { i: '18', j: 4 }, { i: '18', j: 2 }, { i: '18', j: 5 },  ], css_id: 'tinytable_css_ydmszbvq8d50beb8fj1c',}, 
+          { positions: [ { i: '0', j: 0 }, { i: '0', j: 3 }, { i: '0', j: 2 }, { i: '0', j: 1 }, { i: '0', j: 4 }, { i: '0', j: 5 },  ], css_id: 'tinytable_css_n5px6pqp0loznktl3f6y',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_f77oz4gkxwscp3fps9y6(cell.i, cell.j, group.css_id);
+                  styleCell_gae8blkahytdozc7s5k9(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -622,21 +606,21 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_wwq1qkmfd3evg00ymf11, .table th.tinytable_css_wwq1qkmfd3evg00ymf11 { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_uc3gnh1rtirp9x23jj8i, .table th.tinytable_css_uc3gnh1rtirp9x23jj8i { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_mtsr3c3o27muh30opocm, .table th.tinytable_css_mtsr3c3o27muh30opocm { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_foro0l9jmdoxvsem1yic, .table th.tinytable_css_foro0l9jmdoxvsem1yic { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_ydmszbvq8d50beb8fj1c, .table th.tinytable_css_ydmszbvq8d50beb8fj1c { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_n5px6pqp0loznktl3f6y, .table th.tinytable_css_n5px6pqp0loznktl3f6y { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_f77oz4gkxwscp3fps9y6" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_gae8blkahytdozc7s5k9" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
-                <th scope="col">variable</th>
-                <th scope="col">Q10</th>
-                <th scope="col">Q25</th>
-                <th scope="col">Q50</th>
-                <th scope="col">Q75</th>
-                <th scope="col">Q90</th>
+                <th scope="col" data-row="0" data-col="0">variable</th>
+                <th scope="col" data-row="0" data-col="1">Q10</th>
+                <th scope="col" data-row="0" data-col="2">Q25</th>
+                <th scope="col" data-row="0" data-col="3">Q50</th>
+                <th scope="col" data-row="0" data-col="4">Q75</th>
+                <th scope="col" data-row="0" data-col="5">Q90</th>
               </tr>
         </thead>
         <tfoot><tr><td colspan="6">Note: p&lt;0.001 (***); p&lt;0.01 (**); p&lt;0.05 (*); p&lt;0.1 (.)</td></tr>
@@ -644,164 +628,164 @@ window.Quarto = {
 <tr><td colspan="6">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Константа                 </td>
-                  <td>4.096 (0.17)***</td>
-                  <td>4.425 (0.1)*** </td>
-                  <td>4.573 (0.09)***</td>
-                  <td>4.71 (0.1)***  </td>
-                  <td>4.809 (0.11)***</td>
+                  <td data-row="1" data-col="0">Константа</td>
+                  <td data-row="1" data-col="1">4.096 (0.17)***</td>
+                  <td data-row="1" data-col="2">4.425 (0.1)***</td>
+                  <td data-row="1" data-col="3">4.573 (0.09)***</td>
+                  <td data-row="1" data-col="4">4.71 (0.1)***</td>
+                  <td data-row="1" data-col="5">4.809 (0.11)***</td>
                 </tr>
                 <tr>
-                  <td>Образование: Среднее      </td>
-                  <td>0.04 (0.07)    </td>
-                  <td>0.023 (0.06)   </td>
-                  <td>0.03 (0.05)    </td>
-                  <td>0.143 (0.05)*  </td>
-                  <td>0.192 (0.05)** </td>
+                  <td data-row="2" data-col="0">Образование: Среднее</td>
+                  <td data-row="2" data-col="1">0.04 (0.07)</td>
+                  <td data-row="2" data-col="2">0.023 (0.06)</td>
+                  <td data-row="2" data-col="3">0.03 (0.05)</td>
+                  <td data-row="2" data-col="4">0.143 (0.05)*</td>
+                  <td data-row="2" data-col="5">0.192 (0.05)**</td>
                 </tr>
                 <tr>
-                  <td>Образование: Среднее проф.</td>
-                  <td>0.146 (0.07)*  </td>
-                  <td>0.107 (0.04)*  </td>
-                  <td>0.137 (0.04)** </td>
-                  <td>0.232 (0.04)***</td>
-                  <td>0.299 (0.05)***</td>
+                  <td data-row="3" data-col="0">Образование: Среднее проф.</td>
+                  <td data-row="3" data-col="1">0.146 (0.07)*</td>
+                  <td data-row="3" data-col="2">0.107 (0.04)*</td>
+                  <td data-row="3" data-col="3">0.137 (0.04)**</td>
+                  <td data-row="3" data-col="4">0.232 (0.04)***</td>
+                  <td data-row="3" data-col="5">0.299 (0.05)***</td>
                 </tr>
                 <tr>
-                  <td>Образование: Высшее       </td>
-                  <td>0.265 (0.06)***</td>
-                  <td>0.264 (0.04)***</td>
-                  <td>0.295 (0.04)***</td>
-                  <td>0.399 (0.04)***</td>
-                  <td>0.436 (0.04)***</td>
+                  <td data-row="4" data-col="0">Образование: Высшее</td>
+                  <td data-row="4" data-col="1">0.265 (0.06)***</td>
+                  <td data-row="4" data-col="2">0.264 (0.04)***</td>
+                  <td data-row="4" data-col="3">0.295 (0.04)***</td>
+                  <td data-row="4" data-col="4">0.399 (0.04)***</td>
+                  <td data-row="4" data-col="5">0.436 (0.04)***</td>
                 </tr>
                 <tr>
-                  <td>Опыт                      </td>
-                  <td>0.058 (0.01)***</td>
-                  <td>0.025 (0.02)   </td>
-                  <td>0.06 (0.01)*** </td>
-                  <td>0.063 (0.01)***</td>
-                  <td>0.025 (0.02)   </td>
+                  <td data-row="5" data-col="0">Опыт</td>
+                  <td data-row="5" data-col="1">0.058 (0.01)***</td>
+                  <td data-row="5" data-col="2">0.025 (0.02)</td>
+                  <td data-row="5" data-col="3">0.06 (0.01)***</td>
+                  <td data-row="5" data-col="4">0.063 (0.01)***</td>
+                  <td data-row="5" data-col="5">0.025 (0.02)</td>
                 </tr>
                 <tr>
-                  <td>Опыт²                     </td>
-                  <td>-0.003 (0)**   </td>
-                  <td>-0.001 (0)     </td>
-                  <td>-0.003 (0)***  </td>
-                  <td>-0.003 (0)**   </td>
-                  <td>0 (0)          </td>
+                  <td data-row="6" data-col="0">Опыт²</td>
+                  <td data-row="6" data-col="1">-0.003 (0)**</td>
+                  <td data-row="6" data-col="2">-0.001 (0)</td>
+                  <td data-row="6" data-col="3">-0.003 (0)***</td>
+                  <td data-row="6" data-col="4">-0.003 (0)**</td>
+                  <td data-row="6" data-col="5">0 (0)</td>
                 </tr>
                 <tr>
-                  <td>Пол: Мужской              </td>
-                  <td>0.364 (0.05)***</td>
-                  <td>0.298 (0.03)***</td>
-                  <td>0.273 (0.03)***</td>
-                  <td>0.307 (0.03)***</td>
-                  <td>0.312 (0.04)***</td>
+                  <td data-row="7" data-col="0">Пол: Мужской</td>
+                  <td data-row="7" data-col="1">0.364 (0.05)***</td>
+                  <td data-row="7" data-col="2">0.298 (0.03)***</td>
+                  <td data-row="7" data-col="3">0.273 (0.03)***</td>
+                  <td data-row="7" data-col="4">0.307 (0.03)***</td>
+                  <td data-row="7" data-col="5">0.312 (0.04)***</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: ПГТ        </td>
-                  <td>0.016 (0.08)   </td>
-                  <td>-0.041 (0.06)  </td>
-                  <td>-0.046 (0.06)  </td>
-                  <td>-0.013 (0.06)  </td>
-                  <td>0.046 (0.1)    </td>
+                  <td data-row="8" data-col="0">Тип поселения: ПГТ</td>
+                  <td data-row="8" data-col="1">0.016 (0.08)</td>
+                  <td data-row="8" data-col="2">-0.041 (0.06)</td>
+                  <td data-row="8" data-col="3">-0.046 (0.06)</td>
+                  <td data-row="8" data-col="4">-0.013 (0.06)</td>
+                  <td data-row="8" data-col="5">0.046 (0.1)</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: Город      </td>
-                  <td>0.071 (0.07)   </td>
-                  <td>0.049 (0.06)   </td>
-                  <td>0.079 (0.06)   </td>
-                  <td>0.161 (0.06)*  </td>
-                  <td>0.192 (0.06)** </td>
+                  <td data-row="9" data-col="0">Тип поселения: Город</td>
+                  <td data-row="9" data-col="1">0.071 (0.07)</td>
+                  <td data-row="9" data-col="2">0.049 (0.06)</td>
+                  <td data-row="9" data-col="3">0.079 (0.06)</td>
+                  <td data-row="9" data-col="4">0.161 (0.06)*</td>
+                  <td data-row="9" data-col="5">0.192 (0.06)**</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: Райцентр   </td>
-                  <td>0.083 (0.26)   </td>
-                  <td>0.106 (0.26)   </td>
-                  <td>0.16 (0.25)    </td>
-                  <td>0.171 (0.25)   </td>
-                  <td>0.219 (0.25)   </td>
+                  <td data-row="10" data-col="0">Тип поселения: Райцентр</td>
+                  <td data-row="10" data-col="1">0.083 (0.26)</td>
+                  <td data-row="10" data-col="2">0.106 (0.26)</td>
+                  <td data-row="10" data-col="3">0.16 (0.25)</td>
+                  <td data-row="10" data-col="4">0.171 (0.25)</td>
+                  <td data-row="10" data-col="5">0.219 (0.25)</td>
                 </tr>
                 <tr>
-                  <td>Семья: Женат/замужем      </td>
-                  <td>-0.067 (0.05)  </td>
-                  <td>-0.056 (0.03)* </td>
-                  <td>0.004 (0.02)   </td>
-                  <td>-0.007 (0.03)  </td>
-                  <td>0.024 (0.04)   </td>
+                  <td data-row="11" data-col="0">Семья: Женат/замужем</td>
+                  <td data-row="11" data-col="1">-0.067 (0.05)</td>
+                  <td data-row="11" data-col="2">-0.056 (0.03)*</td>
+                  <td data-row="11" data-col="3">0.004 (0.02)</td>
+                  <td data-row="11" data-col="4">-0.007 (0.03)</td>
+                  <td data-row="11" data-col="5">0.024 (0.04)</td>
                 </tr>
                 <tr>
-                  <td>Семья: Разведен/вдовец    </td>
-                  <td>0.022 (0.13)   </td>
-                  <td>-0.005 (0.08)  </td>
-                  <td>0.044 (0.07)   </td>
-                  <td>0.025 (0.08)   </td>
-                  <td>0.073 (0.08)   </td>
+                  <td data-row="12" data-col="0">Семья: Разведен/вдовец</td>
+                  <td data-row="12" data-col="1">0.022 (0.13)</td>
+                  <td data-row="12" data-col="2">-0.005 (0.08)</td>
+                  <td data-row="12" data-col="3">0.044 (0.07)</td>
+                  <td data-row="12" data-col="4">0.025 (0.08)</td>
+                  <td data-row="12" data-col="5">0.073 (0.08)</td>
                 </tr>
                 <tr>
-                  <td>Открытость                </td>
-                  <td>0.037 (0.03)   </td>
-                  <td>0.037 (0.02)*  </td>
-                  <td>0.036 (0.01)*  </td>
-                  <td>0.052 (0.02)** </td>
-                  <td>0.051 (0.02)*  </td>
+                  <td data-row="13" data-col="0">Открытость</td>
+                  <td data-row="13" data-col="1">0.037 (0.03)</td>
+                  <td data-row="13" data-col="2">0.037 (0.02)*</td>
+                  <td data-row="13" data-col="3">0.036 (0.01)*</td>
+                  <td data-row="13" data-col="4">0.052 (0.02)**</td>
+                  <td data-row="13" data-col="5">0.051 (0.02)*</td>
                 </tr>
                 <tr>
-                  <td>Добросовестность          </td>
-                  <td>0.019 (0.02)   </td>
-                  <td>0.015 (0.02)   </td>
-                  <td>0.002 (0.01)   </td>
-                  <td>-0.015 (0.01)  </td>
-                  <td>-0.025 (0.02)  </td>
+                  <td data-row="14" data-col="0">Добросовестность</td>
+                  <td data-row="14" data-col="1">0.019 (0.02)</td>
+                  <td data-row="14" data-col="2">0.015 (0.02)</td>
+                  <td data-row="14" data-col="3">0.002 (0.01)</td>
+                  <td data-row="14" data-col="4">-0.015 (0.01)</td>
+                  <td data-row="14" data-col="5">-0.025 (0.02)</td>
                 </tr>
                 <tr>
-                  <td>Экстраверсия              </td>
-                  <td>-0.014 (0.03)  </td>
-                  <td>0.016 (0.01)   </td>
-                  <td>0.018 (0.01)   </td>
-                  <td>0.029 (0.01)** </td>
-                  <td>0.011 (0.02)   </td>
+                  <td data-row="15" data-col="0">Экстраверсия</td>
+                  <td data-row="15" data-col="1">-0.014 (0.03)</td>
+                  <td data-row="15" data-col="2">0.016 (0.01)</td>
+                  <td data-row="15" data-col="3">0.018 (0.01)</td>
+                  <td data-row="15" data-col="4">0.029 (0.01)**</td>
+                  <td data-row="15" data-col="5">0.011 (0.02)</td>
                 </tr>
                 <tr>
-                  <td>Доброжелательность        </td>
-                  <td>0.015 (0.02)   </td>
-                  <td>0.008 (0.01)   </td>
-                  <td>0.011 (0.01)   </td>
-                  <td>0.012 (0.01)   </td>
-                  <td>0.018 (0.02)   </td>
+                  <td data-row="16" data-col="0">Доброжелательность</td>
+                  <td data-row="16" data-col="1">0.015 (0.02)</td>
+                  <td data-row="16" data-col="2">0.008 (0.01)</td>
+                  <td data-row="16" data-col="3">0.011 (0.01)</td>
+                  <td data-row="16" data-col="4">0.012 (0.01)</td>
+                  <td data-row="16" data-col="5">0.018 (0.02)</td>
                 </tr>
                 <tr>
-                  <td>Эмоциональная стабильность</td>
-                  <td>0.035 (0.02).  </td>
-                  <td>0.019 (0.02)   </td>
-                  <td>0.005 (0.01)   </td>
-                  <td>-0.013 (0.01)  </td>
-                  <td>-0.037 (0.02)* </td>
+                  <td data-row="17" data-col="0">Эмоциональная стабильность</td>
+                  <td data-row="17" data-col="1">0.035 (0.02).</td>
+                  <td data-row="17" data-col="2">0.019 (0.02)</td>
+                  <td data-row="17" data-col="3">0.005 (0.01)</td>
+                  <td data-row="17" data-col="4">-0.013 (0.01)</td>
+                  <td data-row="17" data-col="5">-0.037 (0.02)*</td>
                 </tr>
                 <tr>
-                  <td>Регион                    </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
+                  <td data-row="18" data-col="0">Регион</td>
+                  <td data-row="18" data-col="1">Контролируется</td>
+                  <td data-row="18" data-col="2">Контролируется</td>
+                  <td data-row="18" data-col="3">Контролируется</td>
+                  <td data-row="18" data-col="4">Контролируется</td>
+                  <td data-row="18" data-col="5">Контролируется</td>
                 </tr>
                 <tr>
-                  <td>Кол-во групп              </td>
-                  <td>2170           </td>
-                  <td>2170           </td>
-                  <td>2170           </td>
-                  <td>2170           </td>
-                  <td>2170           </td>
+                  <td data-row="19" data-col="0">Кол-во групп</td>
+                  <td data-row="19" data-col="1">2170</td>
+                  <td data-row="19" data-col="2">2170</td>
+                  <td data-row="19" data-col="3">2170</td>
+                  <td data-row="19" data-col="4">2170</td>
+                  <td data-row="19" data-col="5">2170</td>
                 </tr>
                 <tr>
-                  <td>Кол-во наблюдений         </td>
-                  <td>2673           </td>
-                  <td>2673           </td>
-                  <td>2673           </td>
-                  <td>2673           </td>
-                  <td>2673           </td>
+                  <td data-row="20" data-col="0">Кол-во наблюдений</td>
+                  <td data-row="20" data-col="1">2673</td>
+                  <td data-row="20" data-col="2">2673</td>
+                  <td data-row="20" data-col="3">2673</td>
+                  <td data-row="20" data-col="4">2673</td>
+                  <td data-row="20" data-col="5">2673</td>
                 </tr>
         </tbody>
       </table>
@@ -852,9 +836,9 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_xlegxunsyxqpalidgml0(i, j, css_id) {
-          var table = document.getElementById("tinytable_xlegxunsyxqpalidgml0");
-          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+      function styleCell_id22gn18bm7ztluf0pan(i, j, css_id) {
+          var table = document.getElementById("tinytable_id22gn18bm7ztluf0pan");
+          var cell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
               cell.classList.add(css_id);
@@ -862,55 +846,47 @@ window.Quarto = {
               console.warn(`Cell at (${i}, ${j}) not found.`);
           }
       }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_xlegxunsyxqpalidgml0');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_xlegxunsyxqpalidgml0(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_xlegxunsyxqpalidgml0");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
+      function spanCell_id22gn18bm7ztluf0pan(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_id22gn18bm7ztluf0pan");
+        const targetCell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+        if (!targetCell) {
+          console.warn(`Cell at (${i}, ${j}) not found.`);
+        }
+
+        // Get all cells that need to be removed
+        const cellsToRemove = [];
         for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
+          for (let c = 0; c < colspan; c++) {
+            if (r === 0 && c === 0) continue; // Skip the target cell
+            const cell = table.querySelector(`[data-row="${i + r}"][data-col="${j + c}"]`);
+            if (cell) {
+              cellsToRemove.push(cell);
             }
           }
         }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
+
+        // Remove all cells
+        cellsToRemove.forEach(cell => cell.remove());
+
+        // Set rowspan and colspan of the target cell if it exists
+        if (targetCell) {
+          targetCell.rowSpan = rowspan;
+          targetCell.colSpan = colspan;
+        }
       }
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 22, j: 2 }, { i: 22, j: 1 }, { i: 22, j: 0 }, { i: 22, j: 3 },  ], css_id: 'tinytable_css_wqnjogrefikniidjvez1',}, 
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 },  ], css_id: 'tinytable_css_swd7p8lhl5a61cfwozz5',}, 
-          { positions: [ { i: 20, j: 1 }, { i: 20, j: 0 }, { i: 20, j: 3 }, { i: 20, j: 2 },  ], css_id: 'tinytable_css_abrt9lmywxvjrhwxtzb2',}, 
+          { positions: [ { i: '22', j: 2 }, { i: '22', j: 1 }, { i: '22', j: 0 }, { i: '22', j: 3 },  ], css_id: 'tinytable_css_lyhya710pgt0oinm9khy',}, 
+          { positions: [ { i: '20', j: 1 }, { i: '20', j: 0 }, { i: '20', j: 3 }, { i: '20', j: 2 },  ], css_id: 'tinytable_css_c20gnzdured18sk8lj3p',}, 
+          { positions: [ { i: '0', j: 0 }, { i: '0', j: 3 }, { i: '0', j: 2 }, { i: '0', j: 1 },  ], css_id: 'tinytable_css_mrpoyu23b6l6hhbgh91s',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_xlegxunsyxqpalidgml0(cell.i, cell.j, group.css_id);
+                  styleCell_id22gn18bm7ztluf0pan(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -918,19 +894,19 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_wqnjogrefikniidjvez1, .table th.tinytable_css_wqnjogrefikniidjvez1 { border-bottom: solid #d3d8dc 0.1em; }
-      .table td.tinytable_css_swd7p8lhl5a61cfwozz5, .table th.tinytable_css_swd7p8lhl5a61cfwozz5 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_abrt9lmywxvjrhwxtzb2, .table th.tinytable_css_abrt9lmywxvjrhwxtzb2 { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_lyhya710pgt0oinm9khy, .table th.tinytable_css_lyhya710pgt0oinm9khy { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_c20gnzdured18sk8lj3p, .table th.tinytable_css_c20gnzdured18sk8lj3p { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_mrpoyu23b6l6hhbgh91s, .table th.tinytable_css_mrpoyu23b6l6hhbgh91s { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_xlegxunsyxqpalidgml0" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_id22gn18bm7ztluf0pan" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
-                <th scope="col">variable</th>
-                <th scope="col">Q50</th>
-                <th scope="col">Q75</th>
-                <th scope="col">Q90</th>
+                <th scope="col" data-row="0" data-col="0">variable</th>
+                <th scope="col" data-row="0" data-col="1">Q50</th>
+                <th scope="col" data-row="0" data-col="2">Q75</th>
+                <th scope="col" data-row="0" data-col="3">Q90</th>
               </tr>
         </thead>
         <tfoot><tr><td colspan="4">Note: p&lt;0.001 (***); p&lt;0.01 (**); p&lt;0.05 (*); p&lt;0.1 (.)</td></tr>
@@ -938,136 +914,136 @@ window.Quarto = {
 <tr><td colspan="4">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Константа                           </td>
-                  <td>4.69 (0.07)*** </td>
-                  <td>4.815 (0.08)***</td>
-                  <td>4.93 (0.08)*** </td>
+                  <td data-row="1" data-col="0">Константа</td>
+                  <td data-row="1" data-col="1">4.69 (0.07)***</td>
+                  <td data-row="1" data-col="2">4.815 (0.08)***</td>
+                  <td data-row="1" data-col="3">4.93 (0.08)***</td>
                 </tr>
                 <tr>
-                  <td>Опыт                                </td>
-                  <td>0.069 (0.01)***</td>
-                  <td>0.075 (0.01)***</td>
-                  <td>0.053 (0.01)** </td>
+                  <td data-row="2" data-col="0">Опыт</td>
+                  <td data-row="2" data-col="1">0.069 (0.01)***</td>
+                  <td data-row="2" data-col="2">0.075 (0.01)***</td>
+                  <td data-row="2" data-col="3">0.053 (0.01)**</td>
                 </tr>
                 <tr>
-                  <td>Опыт²                               </td>
-                  <td>-0.004 (0)***  </td>
-                  <td>-0.004 (0)**   </td>
-                  <td>-0.003 (0)*    </td>
+                  <td data-row="3" data-col="0">Опыт²</td>
+                  <td data-row="3" data-col="1">-0.004 (0)***</td>
+                  <td data-row="3" data-col="2">-0.004 (0)**</td>
+                  <td data-row="3" data-col="3">-0.003 (0)*</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: ПГТ                  </td>
-                  <td>-0.022 (0.07)  </td>
-                  <td>0.009 (0.07)   </td>
-                  <td>0.189 (0.09)*  </td>
+                  <td data-row="4" data-col="0">Тип поселения: ПГТ</td>
+                  <td data-row="4" data-col="1">-0.022 (0.07)</td>
+                  <td data-row="4" data-col="2">0.009 (0.07)</td>
+                  <td data-row="4" data-col="3">0.189 (0.09)*</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: Город                </td>
-                  <td>0.15 (0.07)*   </td>
-                  <td>0.212 (0.07)** </td>
-                  <td>0.305 (0.08)***</td>
+                  <td data-row="5" data-col="0">Тип поселения: Город</td>
+                  <td data-row="5" data-col="1">0.15 (0.07)*</td>
+                  <td data-row="5" data-col="2">0.212 (0.07)**</td>
+                  <td data-row="5" data-col="3">0.305 (0.08)***</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: Райцентр             </td>
-                  <td>0.206 (0.27)   </td>
-                  <td>0.246 (0.27)   </td>
-                  <td>0.336 (0.26)   </td>
+                  <td data-row="6" data-col="0">Тип поселения: Райцентр</td>
+                  <td data-row="6" data-col="1">0.206 (0.27)</td>
+                  <td data-row="6" data-col="2">0.246 (0.27)</td>
+                  <td data-row="6" data-col="3">0.336 (0.26)</td>
                 </tr>
                 <tr>
-                  <td>Пол: Мужской                        </td>
-                  <td>0.233 (0.03)***</td>
-                  <td>0.272 (0.03)***</td>
-                  <td>0.273 (0.05)***</td>
+                  <td data-row="7" data-col="0">Пол: Мужской</td>
+                  <td data-row="7" data-col="1">0.233 (0.03)***</td>
+                  <td data-row="7" data-col="2">0.272 (0.03)***</td>
+                  <td data-row="7" data-col="3">0.273 (0.05)***</td>
                 </tr>
                 <tr>
-                  <td>Семья: Женат/замужем                </td>
-                  <td>-0.011 (0.03)  </td>
-                  <td>-0.014 (0.03)  </td>
-                  <td>0.037 (0.04)   </td>
+                  <td data-row="8" data-col="0">Семья: Женат/замужем</td>
+                  <td data-row="8" data-col="1">-0.011 (0.03)</td>
+                  <td data-row="8" data-col="2">-0.014 (0.03)</td>
+                  <td data-row="8" data-col="3">0.037 (0.04)</td>
                 </tr>
                 <tr>
-                  <td>Семья: Разведен/вдовец              </td>
-                  <td>-0.027 (0.06)  </td>
-                  <td>0.008 (0.07)   </td>
-                  <td>0.057 (0.09)   </td>
+                  <td data-row="9" data-col="0">Семья: Разведен/вдовец</td>
+                  <td data-row="9" data-col="1">-0.027 (0.06)</td>
+                  <td data-row="9" data-col="2">0.008 (0.07)</td>
+                  <td data-row="9" data-col="3">0.057 (0.09)</td>
                 </tr>
                 <tr>
-                  <td>Открытость                          </td>
-                  <td>0.063 (0.03)*  </td>
-                  <td>0.063 (0.03)*  </td>
-                  <td>0.072 (0.04)*  </td>
+                  <td data-row="10" data-col="0">Открытость</td>
+                  <td data-row="10" data-col="1">0.063 (0.03)*</td>
+                  <td data-row="10" data-col="2">0.063 (0.03)*</td>
+                  <td data-row="10" data-col="3">0.072 (0.04)*</td>
                 </tr>
                 <tr>
-                  <td>Добросовестность                    </td>
-                  <td>-0.015 (0.02)  </td>
-                  <td>-0.034 (0.02)  </td>
-                  <td>-0.016 (0.03)  </td>
+                  <td data-row="11" data-col="0">Добросовестность</td>
+                  <td data-row="11" data-col="1">-0.015 (0.02)</td>
+                  <td data-row="11" data-col="2">-0.034 (0.02)</td>
+                  <td data-row="11" data-col="3">-0.016 (0.03)</td>
                 </tr>
                 <tr>
-                  <td>Экстраверсия                        </td>
-                  <td>0.018 (0.02)   </td>
-                  <td>0.032 (0.03)   </td>
-                  <td>0.009 (0.03)   </td>
+                  <td data-row="12" data-col="0">Экстраверсия</td>
+                  <td data-row="12" data-col="1">0.018 (0.02)</td>
+                  <td data-row="12" data-col="2">0.032 (0.03)</td>
+                  <td data-row="12" data-col="3">0.009 (0.03)</td>
                 </tr>
                 <tr>
-                  <td>Доброжелательность                  </td>
-                  <td>0.037 (0.02).  </td>
-                  <td>0.009 (0.02)   </td>
-                  <td>0.015 (0.03)   </td>
+                  <td data-row="13" data-col="0">Доброжелательность</td>
+                  <td data-row="13" data-col="1">0.037 (0.02).</td>
+                  <td data-row="13" data-col="2">0.009 (0.02)</td>
+                  <td data-row="13" data-col="3">0.015 (0.03)</td>
                 </tr>
                 <tr>
-                  <td>Эмоциональная стабильность          </td>
-                  <td>0.017 (0.02)   </td>
-                  <td>0.003 (0.02)   </td>
-                  <td>-0.021 (0.02)  </td>
+                  <td data-row="14" data-col="0">Эмоциональная стабильность</td>
+                  <td data-row="14" data-col="1">0.017 (0.02)</td>
+                  <td data-row="14" data-col="2">0.003 (0.02)</td>
+                  <td data-row="14" data-col="3">-0.021 (0.02)</td>
                 </tr>
                 <tr>
-                  <td>Мужской * Открытость                </td>
-                  <td>-0.008 (0.03)  </td>
-                  <td>-0.016 (0.04)  </td>
-                  <td>0.015 (0.04)   </td>
+                  <td data-row="15" data-col="0">Мужской * Открытость</td>
+                  <td data-row="15" data-col="1">-0.008 (0.03)</td>
+                  <td data-row="15" data-col="2">-0.016 (0.04)</td>
+                  <td data-row="15" data-col="3">0.015 (0.04)</td>
                 </tr>
                 <tr>
-                  <td>Мужской * Добросовестность          </td>
-                  <td>0.028 (0.03)   </td>
-                  <td>0.028 (0.03)   </td>
-                  <td>0 (0.03)       </td>
+                  <td data-row="16" data-col="0">Мужской * Добросовестность</td>
+                  <td data-row="16" data-col="1">0.028 (0.03)</td>
+                  <td data-row="16" data-col="2">0.028 (0.03)</td>
+                  <td data-row="16" data-col="3">0 (0.03)</td>
                 </tr>
                 <tr>
-                  <td>Мужской * Экстраверсия              </td>
-                  <td>-0.005 (0.03)  </td>
-                  <td>-0.014 (0.03)  </td>
-                  <td>0.012 (0.03)   </td>
+                  <td data-row="17" data-col="0">Мужской * Экстраверсия</td>
+                  <td data-row="17" data-col="1">-0.005 (0.03)</td>
+                  <td data-row="17" data-col="2">-0.014 (0.03)</td>
+                  <td data-row="17" data-col="3">0.012 (0.03)</td>
                 </tr>
                 <tr>
-                  <td>Мужской * Доброжелательность        </td>
-                  <td>-0.032 (0.02). </td>
-                  <td>0 (0.03)       </td>
-                  <td>-0.017 (0.03)  </td>
+                  <td data-row="18" data-col="0">Мужской * Доброжелательность</td>
+                  <td data-row="18" data-col="1">-0.032 (0.02).</td>
+                  <td data-row="18" data-col="2">0 (0.03)</td>
+                  <td data-row="18" data-col="3">-0.017 (0.03)</td>
                 </tr>
                 <tr>
-                  <td>Мужской * Эмоциональная стабильность</td>
-                  <td>-0.005 (0.02)  </td>
-                  <td>-0.003 (0.03)  </td>
-                  <td>0.017 (0.03)   </td>
+                  <td data-row="19" data-col="0">Мужской * Эмоциональная стабильность</td>
+                  <td data-row="19" data-col="1">-0.005 (0.02)</td>
+                  <td data-row="19" data-col="2">-0.003 (0.03)</td>
+                  <td data-row="19" data-col="3">0.017 (0.03)</td>
                 </tr>
                 <tr>
-                  <td>Регион                              </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
+                  <td data-row="20" data-col="0">Регион</td>
+                  <td data-row="20" data-col="1">Контролируется</td>
+                  <td data-row="20" data-col="2">Контролируется</td>
+                  <td data-row="20" data-col="3">Контролируется</td>
                 </tr>
                 <tr>
-                  <td>Кол-во групп                        </td>
-                  <td>2170           </td>
-                  <td>2170           </td>
-                  <td>2170           </td>
+                  <td data-row="21" data-col="0">Кол-во групп</td>
+                  <td data-row="21" data-col="1">2170</td>
+                  <td data-row="21" data-col="2">2170</td>
+                  <td data-row="21" data-col="3">2170</td>
                 </tr>
                 <tr>
-                  <td>Кол-во наблюдений                   </td>
-                  <td>2673           </td>
-                  <td>2673           </td>
-                  <td>2673           </td>
+                  <td data-row="22" data-col="0">Кол-во наблюдений</td>
+                  <td data-row="22" data-col="1">2673</td>
+                  <td data-row="22" data-col="2">2673</td>
+                  <td data-row="22" data-col="3">2673</td>
                 </tr>
         </tbody>
       </table>
@@ -1119,9 +1095,9 @@ window.Quarto = {
 
     <script>
 
-      function styleCell_wl088gmx8r7ybqbhm35y(i, j, css_id) {
-          var table = document.getElementById("tinytable_wl088gmx8r7ybqbhm35y");
-          var cell = table.rows[i]?.cells[j];  // Safe navigation to avoid errors
+      function styleCell_5j6ze8s67t5xxi0hzicr(i, j, css_id) {
+          var table = document.getElementById("tinytable_5j6ze8s67t5xxi0hzicr");
+          var cell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
           if (cell) {
               console.log(`Styling cell at (${i}, ${j}) with class ${css_id}`);
               cell.classList.add(css_id);
@@ -1129,55 +1105,47 @@ window.Quarto = {
               console.warn(`Cell at (${i}, ${j}) not found.`);
           }
       }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_wl088gmx8r7ybqbhm35y');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_wl088gmx8r7ybqbhm35y(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_wl088gmx8r7ybqbhm35y");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
+      function spanCell_5j6ze8s67t5xxi0hzicr(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_5j6ze8s67t5xxi0hzicr");
+        const targetCell = table.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+        if (!targetCell) {
+          console.warn(`Cell at (${i}, ${j}) not found.`);
+        }
+
+        // Get all cells that need to be removed
+        const cellsToRemove = [];
         for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
+          for (let c = 0; c < colspan; c++) {
+            if (r === 0 && c === 0) continue; // Skip the target cell
+            const cell = table.querySelector(`[data-row="${i + r}"][data-col="${j + c}"]`);
+            if (cell) {
+              cellsToRemove.push(cell);
             }
           }
         }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
+
+        // Remove all cells
+        cellsToRemove.forEach(cell => cell.remove());
+
+        // Set rowspan and colspan of the target cell if it exists
+        if (targetCell) {
+          targetCell.rowSpan = rowspan;
+          targetCell.colSpan = colspan;
+        }
       }
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: 0, j: 0 }, { i: 0, j: 3 }, { i: 0, j: 2 }, { i: 0, j: 1 }, { i: 0, j: 4 },  ], css_id: 'tinytable_css_q9ri2asmr0cddhw9pm05',}, 
-          { positions: [ { i: 15, j: 0 }, { i: 15, j: 3 }, { i: 15, j: 2 }, { i: 15, j: 1 }, { i: 15, j: 4 },  ], css_id: 'tinytable_css_mxr768yxopmassin86l2',}, 
-          { positions: [ { i: 17, j: 0 }, { i: 17, j: 3 }, { i: 17, j: 2 }, { i: 17, j: 1 }, { i: 17, j: 4 },  ], css_id: 'tinytable_css_2kphabfbdwjvgua60z53',}, 
+          { positions: [ { i: '17', j: 0 }, { i: '17', j: 3 }, { i: '17', j: 2 }, { i: '17', j: 1 }, { i: '17', j: 4 },  ], css_id: 'tinytable_css_zfw1crqp2i30f28sxz0g',}, 
+          { positions: [ { i: '15', j: 0 }, { i: '15', j: 3 }, { i: '15', j: 2 }, { i: '15', j: 1 }, { i: '15', j: 4 },  ], css_id: 'tinytable_css_o4kwfsba85tfuuihocl4',}, 
+          { positions: [ { i: '0', j: 0 }, { i: '0', j: 3 }, { i: '0', j: 2 }, { i: '0', j: 1 }, { i: '0', j: 4 },  ], css_id: 'tinytable_css_9iuki0imk8n8i8ygby6s',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  styleCell_wl088gmx8r7ybqbhm35y(cell.i, cell.j, group.css_id);
+                  styleCell_5j6ze8s67t5xxi0hzicr(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -1185,20 +1153,20 @@ window.Quarto = {
 
     <style>
       /* tinytable css entries after */
-      .table td.tinytable_css_q9ri2asmr0cddhw9pm05, .table th.tinytable_css_q9ri2asmr0cddhw9pm05 { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
-      .table td.tinytable_css_mxr768yxopmassin86l2, .table th.tinytable_css_mxr768yxopmassin86l2 { border-bottom: solid black 0.1em; }
-      .table td.tinytable_css_2kphabfbdwjvgua60z53, .table th.tinytable_css_2kphabfbdwjvgua60z53 { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_zfw1crqp2i30f28sxz0g, .table th.tinytable_css_zfw1crqp2i30f28sxz0g { border-bottom: solid #d3d8dc 0.1em; }
+      .table td.tinytable_css_o4kwfsba85tfuuihocl4, .table th.tinytable_css_o4kwfsba85tfuuihocl4 { border-bottom: solid black 0.1em; }
+      .table td.tinytable_css_9iuki0imk8n8i8ygby6s, .table th.tinytable_css_9iuki0imk8n8i8ygby6s { border-top: solid #d3d8dc 0.1em; border-bottom: solid #d3d8dc 0.05em; }
     </style>
     <div class="container">
-      <table class="table table-borderless" id="tinytable_wl088gmx8r7ybqbhm35y" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_5j6ze8s67t5xxi0hzicr" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
-                <th scope="col">variable</th>
-                <th scope="col">16-65</th>
-                <th scope="col">30-39</th>
-                <th scope="col">40-49</th>
-                <th scope="col">50-65</th>
+                <th scope="col" data-row="0" data-col="0">variable</th>
+                <th scope="col" data-row="0" data-col="1">16-65</th>
+                <th scope="col" data-row="0" data-col="2">30-39</th>
+                <th scope="col" data-row="0" data-col="3">40-49</th>
+                <th scope="col" data-row="0" data-col="4">50-65</th>
               </tr>
         </thead>
         <tfoot><tr><td colspan="5">Note: p&lt;0.001 (***); p&lt;0.01 (**); p&lt;0.05 (*); p&lt;0.1 (.)</td></tr>
@@ -1206,123 +1174,123 @@ window.Quarto = {
 <tr><td colspan="5">Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td>Константа                 </td>
-                  <td>4.726 (0.05)*** </td>
-                  <td>4.543 (0.11)***</td>
-                  <td>4.738 (0.13)***</td>
-                  <td>4.211 (0.17)***</td>
+                  <td data-row="1" data-col="0">Константа</td>
+                  <td data-row="1" data-col="1">4.726 (0.05)***</td>
+                  <td data-row="1" data-col="2">4.543 (0.11)***</td>
+                  <td data-row="1" data-col="3">4.738 (0.13)***</td>
+                  <td data-row="1" data-col="4">4.211 (0.17)***</td>
                 </tr>
                 <tr>
-                  <td>Опыт                      </td>
-                  <td>0.024 (0)***    </td>
-                  <td>0.047 (0.01)***</td>
-                  <td>0.018 (0.01).  </td>
-                  <td>0.046 (0.01)***</td>
+                  <td data-row="2" data-col="0">Опыт</td>
+                  <td data-row="2" data-col="1">0.024 (0)***</td>
+                  <td data-row="2" data-col="2">0.047 (0.01)***</td>
+                  <td data-row="2" data-col="3">0.018 (0.01).</td>
+                  <td data-row="2" data-col="4">0.046 (0.01)***</td>
                 </tr>
                 <tr>
-                  <td>Опыт²                     </td>
-                  <td>-0.001 (0)***   </td>
-                  <td>-0.001 (0)***  </td>
-                  <td>0 (0)          </td>
-                  <td>-0.001 (0)***  </td>
+                  <td data-row="3" data-col="0">Опыт²</td>
+                  <td data-row="3" data-col="1">-0.001 (0)***</td>
+                  <td data-row="3" data-col="2">-0.001 (0)***</td>
+                  <td data-row="3" data-col="3">0 (0)</td>
+                  <td data-row="3" data-col="4">-0.001 (0)***</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: ПГТ        </td>
-                  <td>0.043 (0.04)    </td>
-                  <td>0.11 (0.06).   </td>
-                  <td>0.003 (0.06)   </td>
-                  <td>0.129 (0.06)*  </td>
+                  <td data-row="4" data-col="0">Тип поселения: ПГТ</td>
+                  <td data-row="4" data-col="1">0.043 (0.04)</td>
+                  <td data-row="4" data-col="2">0.11 (0.06).</td>
+                  <td data-row="4" data-col="3">0.003 (0.06)</td>
+                  <td data-row="4" data-col="4">0.129 (0.06)*</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: Город      </td>
-                  <td>0.115 (0.02)*** </td>
-                  <td>0.1 (0.04)*    </td>
-                  <td>0.096 (0.04)*  </td>
-                  <td>0.097 (0.04)*  </td>
+                  <td data-row="5" data-col="0">Тип поселения: Город</td>
+                  <td data-row="5" data-col="1">0.115 (0.02)***</td>
+                  <td data-row="5" data-col="2">0.1 (0.04)*</td>
+                  <td data-row="5" data-col="3">0.096 (0.04)*</td>
+                  <td data-row="5" data-col="4">0.097 (0.04)*</td>
                 </tr>
                 <tr>
-                  <td>Тип поселения: Райцентр   </td>
-                  <td>0.346 (0.14)*   </td>
-                  <td>0.584 (0.37)   </td>
-                  <td>0.036 (0.14)   </td>
-                  <td>0.095 (0.22)   </td>
+                  <td data-row="6" data-col="0">Тип поселения: Райцентр</td>
+                  <td data-row="6" data-col="1">0.346 (0.14)*</td>
+                  <td data-row="6" data-col="2">0.584 (0.37)</td>
+                  <td data-row="6" data-col="3">0.036 (0.14)</td>
+                  <td data-row="6" data-col="4">0.095 (0.22)</td>
                 </tr>
                 <tr>
-                  <td>Пол: Мужской              </td>
-                  <td>0.234 (0.01)*** </td>
-                  <td>0.262 (0.02)***</td>
-                  <td>0.234 (0.03)***</td>
-                  <td>0.149 (0.03)***</td>
+                  <td data-row="7" data-col="0">Пол: Мужской</td>
+                  <td data-row="7" data-col="1">0.234 (0.01)***</td>
+                  <td data-row="7" data-col="2">0.262 (0.02)***</td>
+                  <td data-row="7" data-col="3">0.234 (0.03)***</td>
+                  <td data-row="7" data-col="4">0.149 (0.03)***</td>
                 </tr>
                 <tr>
-                  <td>Семья: Женат/замужем      </td>
-                  <td>-0.062 (0.02)***</td>
-                  <td>-0.066 (0.03)* </td>
-                  <td>-0.013 (0.05)  </td>
-                  <td>-0.021 (0.06)  </td>
+                  <td data-row="8" data-col="0">Семья: Женат/замужем</td>
+                  <td data-row="8" data-col="1">-0.062 (0.02)***</td>
+                  <td data-row="8" data-col="2">-0.066 (0.03)*</td>
+                  <td data-row="8" data-col="3">-0.013 (0.05)</td>
+                  <td data-row="8" data-col="4">-0.021 (0.06)</td>
                 </tr>
                 <tr>
-                  <td>Семья: Разведен/вдовец    </td>
-                  <td>-0.09 (0.02)*** </td>
-                  <td>-0.093 (0.04)* </td>
-                  <td>-0.01 (0.06)   </td>
-                  <td>-0.122 (0.07). </td>
+                  <td data-row="9" data-col="0">Семья: Разведен/вдовец</td>
+                  <td data-row="9" data-col="1">-0.09 (0.02)***</td>
+                  <td data-row="9" data-col="2">-0.093 (0.04)*</td>
+                  <td data-row="9" data-col="3">-0.01 (0.06)</td>
+                  <td data-row="9" data-col="4">-0.122 (0.07).</td>
                 </tr>
                 <tr>
-                  <td>Открытость                </td>
-                  <td>0.094 (0.01)*** </td>
-                  <td>0.093 (0.01)***</td>
-                  <td>0.087 (0.01)***</td>
-                  <td>0.102 (0.02)***</td>
+                  <td data-row="10" data-col="0">Открытость</td>
+                  <td data-row="10" data-col="1">0.094 (0.01)***</td>
+                  <td data-row="10" data-col="2">0.093 (0.01)***</td>
+                  <td data-row="10" data-col="3">0.087 (0.01)***</td>
+                  <td data-row="10" data-col="4">0.102 (0.02)***</td>
                 </tr>
                 <tr>
-                  <td>Добросовестность          </td>
-                  <td>0.017 (0.01)**  </td>
-                  <td>0.005 (0.01)   </td>
-                  <td>0.014 (0.01)   </td>
-                  <td>0.042 (0.02)*  </td>
+                  <td data-row="11" data-col="0">Добросовестность</td>
+                  <td data-row="11" data-col="1">0.017 (0.01)**</td>
+                  <td data-row="11" data-col="2">0.005 (0.01)</td>
+                  <td data-row="11" data-col="3">0.014 (0.01)</td>
+                  <td data-row="11" data-col="4">0.042 (0.02)*</td>
                 </tr>
                 <tr>
-                  <td>Экстраверсия              </td>
-                  <td>0.013 (0.01).   </td>
-                  <td>0.023 (0.01)** </td>
-                  <td>0.009 (0.01)   </td>
-                  <td>0.001 (0.02)   </td>
+                  <td data-row="12" data-col="0">Экстраверсия</td>
+                  <td data-row="12" data-col="1">0.013 (0.01).</td>
+                  <td data-row="12" data-col="2">0.023 (0.01)**</td>
+                  <td data-row="12" data-col="3">0.009 (0.01)</td>
+                  <td data-row="12" data-col="4">0.001 (0.02)</td>
                 </tr>
                 <tr>
-                  <td>Доброжелательность        </td>
-                  <td>0.002 (0.01)    </td>
-                  <td>-0.003 (0.01)  </td>
-                  <td>0.006 (0.02)   </td>
-                  <td>0.001 (0.02)   </td>
+                  <td data-row="13" data-col="0">Доброжелательность</td>
+                  <td data-row="13" data-col="1">0.002 (0.01)</td>
+                  <td data-row="13" data-col="2">-0.003 (0.01)</td>
+                  <td data-row="13" data-col="3">0.006 (0.02)</td>
+                  <td data-row="13" data-col="4">0.001 (0.02)</td>
                 </tr>
                 <tr>
-                  <td>Эмоциональная стабильность</td>
-                  <td>0.035 (0.01)*** </td>
-                  <td>0.04 (0.01)*** </td>
-                  <td>0.03 (0.02).   </td>
-                  <td>0.031 (0.02).  </td>
+                  <td data-row="14" data-col="0">Эмоциональная стабильность</td>
+                  <td data-row="14" data-col="1">0.035 (0.01)***</td>
+                  <td data-row="14" data-col="2">0.04 (0.01)***</td>
+                  <td data-row="14" data-col="3">0.03 (0.02).</td>
+                  <td data-row="14" data-col="4">0.031 (0.02).</td>
                 </tr>
                 <tr>
-                  <td>Регион                    </td>
-                  <td>Контролируется  </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
-                  <td>Контролируется </td>
+                  <td data-row="15" data-col="0">Регион</td>
+                  <td data-row="15" data-col="1">Контролируется</td>
+                  <td data-row="15" data-col="2">Контролируется</td>
+                  <td data-row="15" data-col="3">Контролируется</td>
+                  <td data-row="15" data-col="4">Контролируется</td>
                 </tr>
                 <tr>
-                  <td>Кол-во групп              </td>
-                  <td>9797            </td>
-                  <td>3484           </td>
-                  <td>2824           </td>
-                  <td>2519           </td>
+                  <td data-row="16" data-col="0">Кол-во групп</td>
+                  <td data-row="16" data-col="1">9797</td>
+                  <td data-row="16" data-col="2">3484</td>
+                  <td data-row="16" data-col="3">2824</td>
+                  <td data-row="16" data-col="4">2519</td>
                 </tr>
                 <tr>
-                  <td>Кол-во наблюдений         </td>
-                  <td>14648           </td>
-                  <td>4584           </td>
-                  <td>3818           </td>
-                  <td>3522           </td>
+                  <td data-row="17" data-col="0">Кол-во наблюдений</td>
+                  <td data-row="17" data-col="1">14648</td>
+                  <td data-row="17" data-col="2">4584</td>
+                  <td data-row="17" data-col="3">3818</td>
+                  <td data-row="17" data-col="4">3522</td>
                 </tr>
         </tbody>
       </table>

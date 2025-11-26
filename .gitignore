@@ -42,6 +42,9 @@
 
 .ncs_terra_economicus.qmd
 
+# Ignore everything in the folder hse_submission
+hse_submission/**
+
 *.docx
 
 # all files in presentations folder - COMMENTED OUT
