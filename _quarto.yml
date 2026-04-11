@@ -1,6 +1,8 @@
 project:
   type: book
   output-dir: docs
+  post-render:
+    - python3 scripts/fix_docx.py docs/Thesis.docx
 
 book:
   title: ""
@@ -8,9 +10,6 @@ book:
   date: ""
   chapters:
     - index.qmd
-    - list_of_figures.qmd
-    - list_of_tables.qmd
-    - 01_intro.qmd
     - 02_lit_rev.qmd
     - 03_data.qmd
     - 04_ncs_empl.qmd
@@ -31,12 +30,24 @@ format:
     monofont: "Courier New"              # monospace text (code blocks, etc.)
     titlefont: "Times New Roman"         # <- this works in `quarto` >=1.5
     documentclass: scrreprt
+    papersize: a4
+    classoption:
+      - DIV=11
+      - numbers=noendperiod
+      - open=any
     number-sections: true
     lang: ru-RU
     fontsize: 12pt                       # <- set font size here
+    linestretch: 1
+    geometry:
+      - left=2cm
+      - right=2cm
+      - top=2cm
+      - bottom=2cm
     toc: false               # ← suppress automatic TOC
     lof: false               # ← suppress automatic list of figures  
     lot: false               # ← suppress automatic list of tables
+    include-before-body: pdf-frontmatter.tex
     include-in-header: 
       text: |
         \usepackage{pdflscape}
@@ -46,9 +57,9 @@ format:
     sansfont: "Times New Roman"          # sans-serif text (used in headings by some classes)
     monofont: "Courier New"              # monospace text (code blocks, etc.)
     titlefont: "Times New Roman"         # <- this works in `quarto` >=1.5
-    toc: true                            # ← enable automatic TOC
-    lof: true                            # ← enable automatic list of figures
-    lot: true                            # ← enable automatic list of tables
+    toc: false                           # handled manually in index.qmd
+    lof: false
+    lot: false
     dpi: 300
 
 
@@ -64,4 +75,3 @@ execute:
   warning: false
   message: false
   error: false  # optional
-

@@ -7,6 +7,26 @@
 #| output: false  
 #| results: 'hide'
 
+# Force a UTF-8 locale before any tables or plots are created.
+force_utf8_locale <- function() {
+  for (loc in c("ru_RU.UTF-8", "en_US.UTF-8")) {
+    res <- try(Sys.setlocale("LC_CTYPE", loc), silent = TRUE)
+
+    if (!inherits(res, "try-error") && is.character(res) && nzchar(res)) {
+      Sys.setenv(LANG = res, LC_CTYPE = res)
+      options(encoding = "UTF-8")
+      return(invisible(res))
+    }
+  }
+
+  warning("UTF-8 locale is unavailable; DOCX table and figure labels may render incorrectly.")
+  invisible(NULL)
+}
+
+force_utf8_locale()
+
+plot_text_family <- if (knitr::is_latex_output()) "serif" else "Times New Roman"
+
 # Set working directory and paths for the analysis repo
 projectFolder <- "/Users/karavan88/Documents/GitHub/NonCognSkillsRLMS"
 
@@ -26,6 +46,96 @@ invisible(capture.output({
 }))
 
   
+```
+
+```{r}
+#| echo: false
+#| include: false
+
+style_flex_table <- function(ft, note = NULL) {
+  ft <- flextable::theme_booktabs(ft)
+  ft <- flextable::font(ft, fontname = "Times New Roman", part = "all")
+  ft <- flextable::fontsize(ft, size = 10, part = "all")
+  ft <- flextable::padding(ft, padding = 4, part = "all")
+  ft <- flextable::bold(ft, part = "header")
+
+  if (length(ft$col_keys) > 1) {
+    ft <- flextable::align(ft, j = ft$col_keys[-1], align = "center", part = "all")
+  }
+
+  ft <- flextable::align(ft, j = ft$col_keys[1], align = "left", part = "all")
+
+  if (!is.null(note)) {
+    ft <- flextable::add_footer_lines(ft, values = note)
+    ft <- flextable::fontsize(ft, size = 9, part = "footer")
+  }
+
+  flextable::autofit(ft)
+}
+
+df_to_flex <- function(data, note = NULL, col_labels = NULL) {
+  ft <- flextable::flextable(data)
+
+  if (!is.null(col_labels)) {
+    ft <- flextable::set_header_labels(ft, values = col_labels)
+  }
+
+  style_flex_table(ft, note = note)
+}
+
+gtsummary_to_flex <- function(tbl, note = NULL) {
+  style_flex_table(gtsummary::as_flex_table(tbl), note = note)
+}
+
+big5_item_labels_ru <- c(
+  o1 = "Вам приходят в голову идеи, до которых другие не додумались раньше?",
+  o2 = "Вам очень интересно узнавать что-то новое?",
+  o3 = "Вы получаете удовольствие от красивого, например, природы, искусства и музыки?",
+  c1 = "Выполняя какое-то задание, Вы очень аккуратны?",
+  c2 = "Вам больше нравится расслабляться, чем усердно трудиться?",
+  c3 = "Вы работаете очень хорошо и быстро?",
+  e1 = "Вы разговорчивы?",
+  e2 = "Вы предпочитаете держать свое мнение при себе?",
+  e3 = "Вы открыты и общительны, например, Вы очень легко заводите друзей?",
+  a1 = "Вы легко прощаете других людей?",
+  a2 = "Вы очень вежливы с другими людьми?",
+  a3 = "Вы щедро делитесь с другими людьми своим временем и деньгами?",
+  es1 = "Вы спокойны в стрессовых ситуациях?",
+  es2 = "Вы склонны к беспокойству?",
+  es3 = "Вас легко заставить нервничать?"
+)
+
+make_psychometric_ft <- function(trait_label) {
+  big5_item_table %>%
+    filter(trait == trait_label) %>%
+    mutate(item = recode(item, !!!big5_item_labels_ru)) %>%
+    transmute(
+      item = item,
+      missings = round(missings, 2),
+      mean = round(mean, 2),
+      sd = round(sd, 2),
+      skew = round(skew, 2),
+      item_difficulty = round(item_difficulty, 2),
+      item_discrimination = round(item_discrimination, 2),
+      alpha_if_deleted = round(alpha_if_deleted, 2),
+      cronbach_alpha = round(cronbach_alpha, 2),
+      mean_inter_item_corr = round(mean_inter_item_corr, 2)
+    ) %>%
+    df_to_flex(
+      col_labels = c(
+        item = "Пункт",
+        missings = "Пропуски, %",
+        mean = "Среднее",
+        sd = "SD",
+        skew = "Асимметрия",
+        item_difficulty = "Сложность вопроса",
+        item_discrimination = "Дискриминация вопроса",
+        alpha_if_deleted = "alpha если вопрос удален",
+        cronbach_alpha = "alpha Кронбаха",
+        mean_inter_item_corr = "Средняя межпунктовая корреляция"
+      )
+    )
+}
 ```
 
 Цель данной главы — представить и охарактеризовать эмпирическую базу, на которой строится диссертационное исследование, а также обозначить основные этапы предварительного анализа, предшествующего построению моделей в последующих главах. Особое внимание уделяется тому, как в используемых данных представлены некогнитивные навыки, и в какой степени применяемые измерения позволяют валидно и надёжно зафиксировать межличностные различия по ключевым характеристикам личности.
@@ -51,10 +161,10 @@ invisible(capture.output({
 ```{r}
 #| label: fig-ncs-likert
 #| fig-cap: 'Шкала Лайкерта единичных вопросов для измерения некогнитивных навыков Большой пятерки в РМЭЗ среди молодежи 15-29 лет, данные 25-й и 28-й волн'
-#| fig-width: 7
-#| fig-height: 10
 
-likert_plot_ncs
+likert_plot_ncs +
+  labs(x = NULL, y = NULL, fill = NULL) +
+  theme(text = element_text(family = plot_text_family))
 
 ```
 
@@ -66,53 +176,41 @@ likert_plot_ncs
 
 Добросовестность ($\alpha$ = 0,451), экстраверсия ($\alpha$ = 0,467) и доброжелательность ($\alpha$ = 0,478) также показали разумную внутреннюю согласованность, подкрепленную между-вопросными корреляциями на уровне около 0,22–0,23. Эмоциональная стабильность дала самую высокую внутреннюю согласованность ($\alpha$ = 0,633) и самую сильную корреляцию между вопросами (0,367), что предполагает высокую внутреннюю однородность и надежность для этого конструкта.
 
-\newpage
-
 ```{r}
-#| label: tbl-psychometric-analysis1
-#| tbl-cap: 'Психометрический анализ некогнитивных навыков: открытость новому опыту'
-#| echo: false
-#| results: asis
-#| 
-opn_items
-```
-
-```{r}
-#| label: tbl-psychometric-analysis2
-#| tbl-cap: 'Психометрический анализ некогнитивных навыков: добросовестность'
-#| echo: false
-#| results: asis
-#| 
-cons_items
-```
-
-```{r}
-#| label: tbl-psychometric-analysis3
-#| tbl-cap: 'Психометрический анализ некогнитивных навыков: экстраверсия'
-#| echo: false
-#| results: asis
-#| 
-extr_items
-```
-
-```{r}
-#| label: tbl-psychometric-analysis4
-#| tbl-cap: 'Психометрический анализ некогнитивных навыков: доброжелательность'
-#| echo: false
-#| results: asis
-
-agr_items
+big5_item_table %>%
+  mutate(item = recode(item, !!!big5_item_labels_ru)) %>%
+  transmute(
+    trait = trait,
+    item = item,
+    missings = round(missings, 2),
+    mean = round(mean, 2),
+    sd = round(sd, 2),
+    skew = round(skew, 2),
+    item_difficulty = round(item_difficulty, 2),
+    item_discrimination = round(item_discrimination, 2),
+    alpha_if_deleted = round(alpha_if_deleted, 2),
+    cronbach_alpha = round(cronbach_alpha, 2),
+    mean_inter_item_corr = round(mean_inter_item_corr, 2)
+  ) %>%
+  df_to_flex(
+    col_labels = c(
+      trait = "Шкала",
+      item = "Пункт",
+      missings = "Пропуски, %",
+      mean = "Среднее",
+      sd = "SD",
+      skew = "Асимметрия",
+      item_difficulty = "Сложность вопроса",
+      item_discrimination = "Дискриминация вопроса",
+      alpha_if_deleted = "alpha если вопрос удален",
+      cronbach_alpha = "alpha Кронбаха",
+      mean_inter_item_corr = "Средняя межпунктовая корреляция"
+    )
+  )
 
 ```
 
-```{r}
-#| label: tbl-psychometric-analysis5
-#| tbl-cap: 'Психометрический анализ некогнитивных навыков: эмоциональная стабильность'
-#| echo: false
-#| results: asis
-#| 
-em_st_items
-```
+
 
 ## Независимость конструктов некогнитивных навыков
 
@@ -126,7 +224,7 @@ em_st_items
 
 ```{r}
 #| label: fig-corr-ncs
-#| fig-cap: Матрица корреляций некогнитивных навыков (Pearson's r)
+#| fig-cap: Матрица корреляций некогнитивных навыков (коэффициент r Пирсона)
 
 # Step 1: Correlation test to get both r and p-values
 correlation_matrix_plot <-
@@ -157,18 +255,42 @@ correlation_matrix_plot <-
 ```{r}
 #| label: tbl-sample
 #| tbl-cap: Характеристика выборки
-#| 
+
+# we need to create a mapping vector tha maps eng to rus vals for edu lvl
+edu_lvl_rus <- c(
+  "1. No school" = "1. Ниже среднего",
+  "2. Secondary School" = "2. Среднее",
+  "3. Secondary Vocational" = "3. Среднее профессиональное",
+  "4. Tertiary" = "4. Высшее"
+)
+
+area_rus <- c(
+  "Rural" = "Деревня", 
+  "Urban-Type Settlement" = "ПГТ",
+  "City" = "Город",
+  "Regional Center" = "Обл центр"
+  )
+
+sex_rus <- c(
+  "Female" = "Женский",
+  "Male" = "Мужской"
+)
+
 summary_stats <-
   youth_empl %>%
+  # we wanna change the labels for sex to russian
   select(age, sex, year,
-         # employed, employed_officially, self_employed, satisfied_with_job, transition_successful,
          in_education, edu_lvl, 
          year, area, ses5) %>%
+  # provide russian value labels for sex 
+  mutate(
+    sex = recode(sex, !!!sex_rus),
+    edu_lvl = recode(edu_lvl, !!!edu_lvl_rus),
+    area = recode(area, !!!area_rus)
+  ) %>%
   tbl_summary(by = year, 
               type = list( age ~ 'continuous2',
-                           c(
-                             # employed, employed_officially, self_employed, transition_successful,
-                             in_education) ~ 'dichotomous',
+                           c(in_education) ~ 'dichotomous',
                            c( ses5, area, edu_lvl) ~ 'categorical'),
               label = list(age ~ "Возраст",
                            in_education ~ "Обучается",
@@ -177,10 +299,10 @@ summary_stats <-
                            ses5 ~ "Квинтиль дохода ДХ",
                            edu_lvl ~ "Уровень образования") , 
               statistic = list(all_continuous() ~ "{mean} ({sd})")) %>%
-  add_overall() %>%
+  add_overall(col_label = "**Итого**") %>%
   modify_header(label = "Переменная") %>%
   bold_labels() %>%
-  as_flex_table() 
+  gtsummary_to_flex()
 
 summary_stats
 
@@ -217,7 +339,25 @@ summary_stats
 #| label: tbl-dep-var-swt
 #| tbl-cap: Описательная статистика переменных, описывающих успех перехода от учебы к работе
 
-summary_stats_data_chapter
+youth_empl %>%
+  mutate(satisfied_with_job = case_when(j1_1_1 == 1 ~ 1, TRUE ~ 0)) %>%
+  select(employed, employed_officially, self_employed, satisfied_with_job, transition_successful, year) %>%
+  tbl_summary(
+    by = year,
+    type = list(c(employed, employed_officially, self_employed, transition_successful, satisfied_with_job) ~ "dichotomous"),
+    label = list(
+      employed ~ "Трудоустроен",
+      employed_officially ~ "Формальная занятость",
+      self_employed ~ "Самозанятый",
+      satisfied_with_job ~ "Удовлетворен работой",
+      transition_successful ~ "Переход завершен"
+    ),
+    statistic = list(all_continuous() ~ "{mean} ({sd})")
+  ) %>%
+  add_overall(col_label = "**Итого**") %>%
+  modify_header(label = "Переменная") %>%
+  bold_labels() %>%
+  gtsummary_to_flex()
 ```
 
 ### Характер труда и уровень квалификации
@@ -235,7 +375,32 @@ summary_stats_data_chapter
 #| label: tbl-dep-var-occup
 #| tbl-cap: Классификация молодежи по роду занятий в соответствии с МСКЗ-08
 
-occup_table
+youth_empl %>%
+  select(year, occupation) %>%
+  mutate(
+    occupation = case_when(
+      occupation == 0 ~ "0. Военные",
+      occupation == 1 ~ "1. Руководители",
+      occupation == 2 ~ "2. Специалисты-профессионалы",
+      occupation == 3 ~ "3. Специалисты-техники и иной средний специальный персонал",
+      occupation == 4 ~ "4. Служащие, занятые подготовкой и оформлением документации",
+      occupation == 5 ~ "5. Работники сферы обслуживания и торговли",
+      occupation == 6 ~ "6. Квалифицированные работники сельского хозяйства",
+      occupation == 7 ~ "7. Квалифицированные рабочие промышленности",
+      occupation == 8 ~ "8. Операторы и сборщики промышленных установок и машин",
+      occupation == 9 ~ "9. Неквалифицированные работники",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  tbl_summary(
+    by = year,
+    type = list(occupation ~ "categorical"),
+    label = list(occupation ~ "Классификация занятости")
+  ) %>%
+  add_overall(col_label = "**Итого**") %>%
+  modify_header(label = "Переменная") %>%
+  bold_labels() %>%
+  gtsummary_to_flex()
 
 ```
 
@@ -247,12 +412,65 @@ occup_table
 
 Логарифм почасовой заработной платы является основной переменной второго этапа диссертационного исследования, изучающего отдачу от некогнитивных навыков молодежи на российском рынке труда. Данная переменная была произведена в несколько шагов. РМЭЗ фиксирует ежемесячную заработную плату в переменной j10. На первом этапе заработная плата 2016 года была скорректирована на уровень 2019 года благодаря индексу потребительских цен. Затем на основе вопроса j6_2 (количество рабочих часов в неделю) была произведена переменная, указывающая почасовую заработную плату. Логарифм итогового значения послужил зависимой переменной на данном этапе анализа. Описательные статистики переменной в ценах 2019 года представлены в таблице @tbl-dep-var-wage.
 
+```{=latex}
+\clearpage
+\begin{landscape}
+```
+
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:sectPr>
+      <w:type w:val="nextPage"/>
+      <w:pgSz w:w="12240" w:h="15840"/>
+      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
+    </w:sectPr>
+  </w:pPr>
+</w:p>
+```
+
 ```{r}
 #| label: tbl-dep-var-wage
 #| tbl-cap: Описательная статистика почасовой заработной платы трудоустроенной молодежи до 30 лет в РМЭЗ, цены 2019 года
 
-wage_summary
+youth_descr %>%
+  group_by(year) %>%
+  summarise(
+    N = n(),
+    Min = min(hourly_wage, na.rm = TRUE),
+    Q1 = quantile(hourly_wage, 0.25, na.rm = TRUE),
+    Median = median(hourly_wage, na.rm = TRUE),
+    Mean = mean(hourly_wage, na.rm = TRUE),
+    Q3 = quantile(hourly_wage, 0.75, na.rm = TRUE),
+    Max = max(hourly_wage, na.rm = TRUE),
+    SD = sd(hourly_wage, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  tidyr::pivot_longer(cols = -year, names_to = "statistic", values_to = "value") %>%
+  tidyr::pivot_wider(names_from = year, values_from = value) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
+  df_to_flex(
+    note = "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.",
+    col_labels = c(statistic = "Статистика")
+  )
 
+```
+
+```{=latex}
+\end{landscape}
+\clearpage
+```
+
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:sectPr>
+      <w:type w:val="nextPage"/>
+      <w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/>
+      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
+    </w:sectPr>
+  </w:pPr>
+</w:p>
 ```
 
 ### Удовлетворенность работой
@@ -278,7 +496,7 @@ invisible(capture.output({
 }))
 
 
-js_corr_matrix
+js_corr_matrix_ru
 
 ```
 
@@ -292,11 +510,11 @@ js_corr_matrix
 youth_js %>%
   select(j1_1_1, j1_1_2, j1_1_3, j1_1_4, year) %>%
   # mutate all that start with j1_1_ and recode from 1 to 5 as very satisfied to very unsatisfied
-  mutate(across(starts_with("j1_1_"), ~ case_when(. == 1 ~ "1. Very satisfied",
-                                                  . == 2 ~ "2. Satisfied",
-                                                  . == 3 ~ "3. Neutral",
-                                                  . == 4 ~ "4. Dissatisfied",
-                                                  . == 5 ~ "5. Very dissatisfied"))) %>%
+  mutate(across(starts_with("j1_1_"), ~ case_when(. == 1 ~ "1. Полностью удовлетворены",
+                                                  . == 2 ~ "2. Скорее удовлетворены",
+                                                  . == 3 ~ "3. И да, и нет",
+                                                  . == 4 ~ "4. Скорее неудовлетворены",
+                                                  . == 5 ~ "5. Совсем неудовлетворены"))) %>%
   tbl_summary(by = year, 
               type = list( #c( O, C, E, A, ES) ~ 'continuous2',
                            # c(employed, employed_officially, self_employed, transition_successful,
@@ -307,10 +525,10 @@ youth_js %>%
                            j1_1_3 ~ "Удовлетворенность: Оплата труда", 
                            j1_1_4 ~ "Удовлетворенность: Развитие карьеры") , 
               statistic = list(all_continuous() ~ "{mean} ({sd})")) %>%
-  add_overall() %>%
+  add_overall(col_label = "**Итого**") %>%
   modify_header(label = "Переменная") %>%
   bold_labels() %>%
-  as_flex_table() 
+  gtsummary_to_flex()
 ```
 
 ## Предикторы
@@ -323,7 +541,59 @@ youth_js %>%
 #| label: tbl-ncs-descr
 #| tbl-cap: Описательные статистики некогнитивных навыков 
 
-ncs_descr
+youth_empl %>%
+  select(O, C, E, A, ES) %>%
+  rename(
+    openness = O,
+    conscientiousness = C,
+    extraversion = E,
+    agreeableness = A,
+    emotional_stability = ES
+  ) %>%
+  summarise(across(
+    everything(),
+    list(
+      Min  = ~min(.x, na.rm = TRUE),
+      Median = ~median(.x, na.rm = TRUE),
+      Mean = ~mean(.x, na.rm = TRUE),
+      SD   = ~sd(.x, na.rm = TRUE),
+      Max  = ~max(.x, na.rm = TRUE)
+    ),
+    .names = "{.col}_{.fn}"
+  )) %>%
+  tidyr::pivot_longer(
+    cols = everything(),
+    names_to = c("indicator", "statistic"),
+    names_pattern = "^(.*)_(Min|Median|Mean|SD|Max)$"
+  ) %>%
+  tidyr::pivot_wider(
+    names_from = statistic,
+    values_from = value
+  ) %>%
+  mutate(across(c(Min, Median, Mean, SD, Max), ~ round(.x, 2))) %>%
+  df_to_flex(
+    col_labels = c(
+      indicator = "Показатель",
+      Min = "Min",
+      Median = "Median",
+      Mean = "Mean",
+      SD = "SD",
+      Max = "Max"
+    )
+  ) %>%
+  flextable::compose(
+    j = "indicator",
+    value = flextable::as_paragraph(dplyr::recode(
+      indicator,
+      openness = "Открытость",
+      conscientiousness = "Добросовестность",
+      extraversion = "Экстраверсия",
+      agreeableness = "Доброжелательность",
+      emotional_stability = "Эмоциональная стабильность"
+    )),
+    part = "body"
+  )
+  
 ```
 
 {{< pagebreak >}}
