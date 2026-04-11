@@ -84,7 +84,7 @@ df_to_flex <- function(data, note = NULL, col_labels = NULL) {
       }
     }
     tbl <- kableExtra::kbl(data, format = "latex", booktabs = TRUE, linesep = "")
-    tbl <- if (ncol(data) > 7) {
+    tbl <- if (ncol(data) > 4) {
       kableExtra::kable_styling(tbl, latex_options = c("scale_down"), font_size = 9)
     } else {
       kableExtra::kable_styling(tbl, font_size = 9)
@@ -210,27 +210,9 @@ likert_plot_ncs +
 
 Добросовестность ($\alpha$ = 0,451), экстраверсия ($\alpha$ = 0,467) и доброжелательность ($\alpha$ = 0,478) также показали разумную внутреннюю согласованность, подкрепленную между-вопросными корреляциями на уровне около 0,22–0,23. Эмоциональная стабильность дала самую высокую внутреннюю согласованность ($\alpha$ = 0,633) и самую сильную корреляцию между вопросами (0,367), что предполагает высокую внутреннюю однородность и надежность для этого конструкта.
 
-```{=latex}
-\clearpage
-\begin{landscape}
-```
-
-```{=openxml}
-<w:p>
-  <w:pPr>
-    <w:sectPr>
-      <w:type w:val="nextPage"/>
-      <w:pgSz w:w="12240" w:h="15840"/>
-      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
-    </w:sectPr>
-  </w:pPr>
-</w:p>
-```
-
 ```{r}
 #| label: tbl-psychometric
 #| tbl-cap: 'Психометрические характеристики шкал «Большой пятёрки»: пропуски, среднее, стандартное отклонение, асимметрия, сложность и дискриминация вопроса, α Кронбаха'
-#| tbl-pos: H
 
 big5_item_table %>%
   mutate(item = recode(item, !!!big5_item_labels_ru)) %>%
@@ -264,25 +246,6 @@ big5_item_table %>%
   )
 
 ```
-
-```{=latex}
-\end{landscape}
-\clearpage
-```
-
-```{=openxml}
-<w:p>
-  <w:pPr>
-    <w:sectPr>
-      <w:type w:val="nextPage"/>
-      <w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/>
-      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
-    </w:sectPr>
-  </w:pPr>
-</w:p>
-```
-
-
 
 ## Независимость конструктов некогнитивных навыков
 
@@ -450,27 +413,9 @@ youth_empl %>%
 
 Более подробно об отнесении рода занятий и уровня квалификации можно найти на самом сайте МОТ [@ilo_stat_isco2008]. РМЭЗ мониторит занятость в соответствии с указанной классификацией. Специалисты, занятые в 1, 2 и 3 группе МСКЗ-08 были классифицированы как высококвалифицированные специалисты, занятые умственным трудом. Распределение респондентов по всем группам занятости в выборке исследования представлено в таблице @tbl-dep-var-occup.
 
-```{=latex}
-\clearpage
-\begin{landscape}
-```
-
-```{=openxml}
-<w:p>
-  <w:pPr>
-    <w:sectPr>
-      <w:type w:val="nextPage"/>
-      <w:pgSz w:w="12240" w:h="15840"/>
-      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
-    </w:sectPr>
-  </w:pPr>
-</w:p>
-```
-
 ```{r}
 #| label: tbl-dep-var-occup
 #| tbl-cap: Классификация молодежи по роду занятий в соответствии с МСКЗ-08
-#| tbl-pos: H
 
 youth_empl %>%
   select(year, occupation) %>%
@@ -500,23 +445,6 @@ youth_empl %>%
   bold_labels() %>%
   gtsummary_to_flex()
 
-```
-
-```{=latex}
-\end{landscape}
-\clearpage
-```
-
-```{=openxml}
-<w:p>
-  <w:pPr>
-    <w:sectPr>
-      <w:type w:val="nextPage"/>
-      <w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/>
-      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
-    </w:sectPr>
-  </w:pPr>
-</w:p>
 ```
 
 ### Мисматч навыков и избыточная квалификация
