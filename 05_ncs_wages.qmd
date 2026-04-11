@@ -310,17 +310,23 @@ extd_reg_ipw %>%
 ```{r}
 #| label: fig-edu-ncs
 #| fig-cap: Отдача от некогнитивных навыков по уровням образования и квантилям заработной платы, результаты кванильных смешанных моделей с использованием взвешивания обратной вероятности занятости
-#| fig-width: 8
-#| fig-height: 9
+#| fig-width: 7.5
+#| fig-height: 8
 
 print(
-  fig_edu_ncs +
-    facet_grid(quantile ~ model, labeller = labeller(model = as_labeller(edu_model_labels_ru))) +
+  ggplot(edu_models_long, aes(x = estimate * 100, y = variable)) +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
+    geom_errorbarh(aes(xmin = ci.low * 100, xmax = ci.upp * 100),
+                   height = 0.2, linewidth = 0.5) +
+    geom_point(aes(fill = p.value < 0.1), shape = 21, color = "black", size = 3) +
     scale_fill_manual(
-      values = c("TRUE" = "#4292c6", "FALSE" = "grey92"),
-      labels = c("FALSE" = "Незначимо", "TRUE" = "Значимо (p < 0.1)")
+      values = c("TRUE" = "#2166ac", "FALSE" = "white"),
+      labels = c("FALSE" = "Незначимо", "TRUE" = "Значимо (p < 0.1)"),
+      name = NULL
     ) +
-    labs(x = "Эффект, %", y = NULL, fill = NULL) +
+    facet_grid(quantile ~ model,
+               labeller = labeller(model = as_labeller(edu_model_labels_ru))) +
+    labs(x = "Эффект, %", y = NULL) +
     theme_bw(base_family = plot_text_family, base_size = 11) +
     theme(
       panel.grid.minor = element_blank(),

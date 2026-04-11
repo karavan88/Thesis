@@ -414,19 +414,41 @@ render_modelsummary_flex(
 #| label: fig-plot-ses
 #| fig-cap: Коэффициенты вероятности влияния некогнитивных навыков на занятость по квинтилям среднедушевого дохода домохозяйства (случайные коэффициенты модели со смешанными эффектами)
 #| fig-width: 6.5
-#| fig-height: 10
+#| fig-height: 7.5
 
-plot_ses +
-  facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
-  labs(x = "Эффект, п.п.", y = NULL) +
-  theme_bw(base_family = plot_text_family, base_size = 11) +
-  theme(
-    panel.grid.minor = element_blank(),
-    strip.background = element_blank(),
-    strip.text       = element_text(face = "bold", size = rel(0.9)),
-    legend.position  = "bottom",
-    legend.text      = element_text(size = rel(0.8))
+local({
+  sig_skills <- c("Conscientiousness", "Extraversion")
+  df <- m4_ses_coefs |>
+    dplyr::mutate(
+      is_sig    = Skill %in% sig_skills,
+      lbl_hjust = ifelse(Estimate >= 0, -0.35, 1.35)
+    )
+  print(
+    ggplot(df, aes(Estimate, ses5)) +
+      geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
+      geom_segment(aes(x = 0, xend = Estimate, yend = ses5, color = is_sig),
+                   linewidth = 0.6) +
+      geom_point(aes(fill = is_sig, color = is_sig), shape = 21, size = 3) +
+      geom_text(aes(label = round(Estimate, 2), hjust = lbl_hjust),
+                size = 2.5, family = plot_text_family) +
+      scale_fill_manual(values = c("TRUE" = "#2166ac", "FALSE" = "white"),
+                        labels = c("TRUE" = "Значимо",  "FALSE" = "Незначимо"),
+                        name = NULL) +
+      scale_color_manual(values = c("TRUE" = "#2166ac", "FALSE" = "#999999"),
+                         guide = "none") +
+      scale_y_discrete(limits = rev) +
+      facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
+      labs(x = "Эффект, п.п.", y = NULL) +
+      theme_bw(base_family = plot_text_family, base_size = 11) +
+      theme(
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        strip.text       = element_text(face = "bold", size = rel(0.9)),
+        legend.position  = "bottom",
+        legend.text      = element_text(size = rel(0.8))
+      )
   )
+})
 ```
 
 ### Повышает ли уровень образования эффект от некогнитивных навыков на занятость?
@@ -441,20 +463,41 @@ plot_ses +
 #| label: fig-plot-edu
 #| fig-cap: Коэффициенты влияния некогнитивных навыков на вероятность занятости в разрезе уровня образования, варьирующиеся коэффициенты модели со смешанными эффектами
 #| fig-width: 6.5
-#| fig-height: 10
+#| fig-height: 7
 
-plot_edu +
-  scale_y_discrete(limits = rev, labels = edu_labels_ru) +
-  facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
-  labs(x = "Эффект, п.п.", y = NULL) +
-  theme_bw(base_family = plot_text_family, base_size = 11) +
-  theme(
-    panel.grid.minor = element_blank(),
-    strip.background = element_blank(),
-    strip.text       = element_text(face = "bold", size = rel(0.9)),
-    legend.position  = "bottom",
-    legend.text      = element_text(size = rel(0.8))
+local({
+  sig_skills <- c("Conscientiousness", "Extraversion")
+  df <- m5_edu_coefs |>
+    dplyr::mutate(
+      is_sig    = Skill %in% sig_skills,
+      lbl_hjust = ifelse(Estimate >= 0, -0.35, 1.35)
+    )
+  print(
+    ggplot(df, aes(Estimate, edu_lvl)) +
+      geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
+      geom_segment(aes(x = 0, xend = Estimate, yend = edu_lvl, color = is_sig),
+                   linewidth = 0.6) +
+      geom_point(aes(fill = is_sig, color = is_sig), shape = 21, size = 3) +
+      geom_text(aes(label = round(Estimate, 2), hjust = lbl_hjust),
+                size = 2.5, family = plot_text_family) +
+      scale_fill_manual(values = c("TRUE" = "#2166ac", "FALSE" = "white"),
+                        labels = c("TRUE" = "Значимо",  "FALSE" = "Незначимо"),
+                        name = NULL) +
+      scale_color_manual(values = c("TRUE" = "#2166ac", "FALSE" = "#999999"),
+                         guide = "none") +
+      scale_y_discrete(limits = rev, labels = edu_labels_ru) +
+      facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
+      labs(x = "Эффект, п.п.", y = NULL) +
+      theme_bw(base_family = plot_text_family, base_size = 11) +
+      theme(
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        strip.text       = element_text(face = "bold", size = rel(0.9)),
+        legend.position  = "bottom",
+        legend.text      = element_text(size = rel(0.8))
+      )
   )
+})
 ```
 
 ### Могут ли некогнитивные навыки сократить гендерный разрыв в занятости?
@@ -468,21 +511,42 @@ plot_edu +
 ```{r}
 #| label: fig-plot-gender
 #| fig-cap: Коэффициенты влияния некогнитивных навыков на вероятность занятости по полу, варьирующиеся коэффициенты модели со смешанными эффектами
-#| fig-width: 6.5
-#| fig-height: 5
+#| fig-width: 5.5
+#| fig-height: 3.5
 
-plot_sex +
-  scale_y_discrete(labels = skill_labels_ru) +
-  scale_color_discrete(labels = sex_labels_ru, name = NULL) +
-  labs(x = "Эффект, п.п.", y = NULL) +
-  theme_bw(base_family = plot_text_family, base_size = 11) +
-  theme(
-    panel.grid.minor = element_blank(),
-    strip.background = element_blank(),
-    strip.text       = element_text(face = "bold", size = rel(0.9)),
-    legend.position  = "bottom",
-    legend.text      = element_text(size = rel(0.8))
+local({
+  sig_skills <- c("Conscientiousness", "Extraversion")
+  col_male   <- "#2166ac"
+  col_female <- "#d6604d"
+  df <- m6_sex_coefs |>
+    dplyr::mutate(
+      is_sig   = Skill %in% sig_skills,
+      pt_fill  = dplyr::case_when(
+        is_sig & sex == "Male"   ~ col_male,
+        is_sig & sex == "Female" ~ col_female,
+        TRUE                     ~ "white"
+      )
+    )
+  print(
+    ggplot(df, aes(Estimate, Skill, group = sex)) +
+      geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
+      geom_segment(aes(x = 0, xend = Estimate, yend = Skill, color = sex),
+                   linewidth = 0.6, position = position_dodge(width = 0.4)) +
+      geom_point(aes(fill = pt_fill, color = sex), shape = 21, size = 3,
+                 position = position_dodge(width = 0.4)) +
+      scale_fill_identity() +
+      scale_color_manual(values = c("Male" = col_male, "Female" = col_female),
+                         labels = sex_labels_ru, name = NULL) +
+      scale_y_discrete(labels = skill_labels_ru) +
+      labs(x = "Эффект, п.п.", y = NULL) +
+      theme_bw(base_family = plot_text_family, base_size = 11) +
+      theme(
+        panel.grid.minor = element_blank(),
+        legend.position  = "bottom",
+        legend.text      = element_text(size = rel(0.8))
+      )
   )
+})
 ```
 
 ### Некогнитивные навыки и характер труда
@@ -520,19 +584,41 @@ render_modelsummary_flex(
 #| label: fig-occup-ses
 #| fig-cap: 'Коэффициенты вероятности эффекта некогнитивных навыков на занятость в должностях, основанных на умственном труде, по квинтилям среднедушевого дохода домохозяйства: случайные кривые смешанной модели с взвешиванием обратной вероятности занятости.'
 #| fig-width: 6.5
-#| fig-height: 10
+#| fig-height: 7.5
 
-plot_ses_occup +
-  facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
-  labs(x = "Эффект, п.п.", y = NULL) +
-  theme_bw(base_family = plot_text_family, base_size = 11) +
-  theme(
-    panel.grid.minor = element_blank(),
-    strip.background = element_blank(),
-    strip.text       = element_text(face = "bold", size = rel(0.9)),
-    legend.position  = "bottom",
-    legend.text      = element_text(size = rel(0.8))
+local({
+  sig_skills <- c("Openness", "Conscientiousness")
+  df <- m_occup_ses_coefs |>
+    dplyr::mutate(
+      is_sig    = Skill %in% sig_skills,
+      lbl_hjust = ifelse(Estimate >= 0, -0.35, 1.35)
+    )
+  print(
+    ggplot(df, aes(Estimate, ses5)) +
+      geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
+      geom_segment(aes(x = 0, xend = Estimate, yend = ses5, color = is_sig),
+                   linewidth = 0.6) +
+      geom_point(aes(fill = is_sig, color = is_sig), shape = 21, size = 3) +
+      geom_text(aes(label = round(Estimate, 2), hjust = lbl_hjust),
+                size = 2.5, family = plot_text_family) +
+      scale_fill_manual(values = c("TRUE" = "#2166ac", "FALSE" = "white"),
+                        labels = c("TRUE" = "Значимо",  "FALSE" = "Незначимо"),
+                        name = NULL) +
+      scale_color_manual(values = c("TRUE" = "#2166ac", "FALSE" = "#999999"),
+                         guide = "none") +
+      scale_y_discrete(limits = rev) +
+      facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
+      labs(x = "Эффект, п.п.", y = NULL) +
+      theme_bw(base_family = plot_text_family, base_size = 11) +
+      theme(
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        strip.text       = element_text(face = "bold", size = rel(0.9)),
+        legend.position  = "bottom",
+        legend.text      = element_text(size = rel(0.8))
+      )
   )
+})
 
 
 ```

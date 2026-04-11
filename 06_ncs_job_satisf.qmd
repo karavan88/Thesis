@@ -272,21 +272,41 @@ render_modelsummary_flex(
 #| label: fig-wages-ncs
 #| fig-cap: Случайные коэффициенты некогнитивных навыков на удовлетворённость работой, результаты регрессии со смешанными эффектами
 #| fig-width: 6.5
-#| fig-height: 10
+#| fig-height: 7.5
 
-print(
-  plot_wages_ncs +
-    facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
-    labs(x = "Эффект, п.п.", y = "Квинтиль заработной платы", title = NULL) +
-    theme_bw(base_family = plot_text_family, base_size = 11) +
-    theme(
-      panel.grid.minor = element_blank(),
-      strip.background = element_blank(),
-      strip.text       = element_text(face = "bold", size = rel(0.9)),
-      legend.position  = "bottom",
-      legend.text      = element_text(size = rel(0.8))
+local({
+  sig_skills <- c("Conscientiousness", "Extraversion", "Emotional Stability")
+  df <- m3_satisf_coefs |>
+    dplyr::mutate(
+      is_sig    = Skill %in% sig_skills,
+      lbl_hjust = ifelse(Estimate >= 0, -0.35, 1.35)
     )
-)
+  print(
+    ggplot(df, aes(Estimate, hourly_wage_quintile)) +
+      geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
+      geom_segment(aes(x = 0, xend = Estimate, yend = hourly_wage_quintile,
+                       color = is_sig), linewidth = 0.6) +
+      geom_point(aes(fill = is_sig, color = is_sig), shape = 21, size = 3) +
+      geom_text(aes(label = round(Estimate, 2), hjust = lbl_hjust),
+                size = 2.5, family = plot_text_family) +
+      scale_fill_manual(values = c("TRUE" = "#2166ac", "FALSE" = "white"),
+                        labels = c("TRUE" = "Значимо",  "FALSE" = "Незначимо"),
+                        name = NULL) +
+      scale_color_manual(values = c("TRUE" = "#2166ac", "FALSE" = "#999999"),
+                         guide = "none") +
+      scale_y_discrete(limits = rev) +
+      facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
+      labs(x = "Эффект, п.п.", y = "Квинтиль заработной платы", title = NULL) +
+      theme_bw(base_family = plot_text_family, base_size = 11) +
+      theme(
+        panel.grid.minor = element_blank(),
+        strip.background = element_blank(),
+        strip.text       = element_text(face = "bold", size = rel(0.9)),
+        legend.position  = "bottom",
+        legend.text      = element_text(size = rel(0.8))
+      )
+  )
+})
 ```
 
 ### Эффект некогнитивных навыков на отдельные аспекты удовлетворенности работой
