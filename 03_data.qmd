@@ -83,11 +83,12 @@ df_to_flex <- function(data, note = NULL, col_labels = NULL) {
         names(data)[names(data) == cn] <- col_labels[[cn]]
       }
     }
-    tbl <- kableExtra::kbl(data, format = "latex", booktabs = TRUE, linesep = "") |>
-      kableExtra::kable_styling(
-        latex_options = c("scale_down"),
-        font_size = 9
-      )
+    tbl <- kableExtra::kbl(data, format = "latex", booktabs = TRUE, linesep = "")
+    tbl <- if (ncol(data) > 7) {
+      kableExtra::kable_styling(tbl, latex_options = c("scale_down"), font_size = 9)
+    } else {
+      kableExtra::kable_styling(tbl, font_size = 9)
+    }
     if (!is.null(note)) {
       tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
                                   footnote_as_chunk = TRUE, threeparttable = TRUE)
@@ -104,8 +105,8 @@ df_to_flex <- function(data, note = NULL, col_labels = NULL) {
 gtsummary_to_flex <- function(tbl, note = NULL) {
   if (knitr::is_latex_output()) {
     return(
-      gtsummary::as_kable_extra(tbl, format = "latex") |>
-        kableExtra::kable_styling(latex_options = c("scale_down"), font_size = 9)
+      gtsummary::as_kable_extra(tbl, format = "latex", booktabs = TRUE, linesep = "") |>
+        kableExtra::kable_styling(font_size = 9)
     )
   }
   style_flex_table(gtsummary::as_flex_table(tbl), note = note)
@@ -659,25 +660,27 @@ youth_empl %>%
   summarise(across(
     everything(),
     list(
-      Min  = ~min(.x, na.rm = TRUE),
+      N      = ~sum(!is.na(.x)),
+      Mean   = ~mean(.x, na.rm = TRUE),
+      SD     = ~sd(.x, na.rm = TRUE),
+      Min    = ~min(.x, na.rm = TRUE),
       Median = ~median(.x, na.rm = TRUE),
-      Mean = ~mean(.x, na.rm = TRUE),
-      SD   = ~sd(.x, na.rm = TRUE),
-      Max  = ~max(.x, na.rm = TRUE)
+      Max    = ~max(.x, na.rm = TRUE)
     ),
     .names = "{.col}_{.fn}"
   )) %>%
   tidyr::pivot_longer(
     cols = everything(),
     names_to = c("indicator", "statistic"),
-    names_pattern = "^(.*)_(Min|Median|Mean|SD|Max)$"
+    names_pattern = "^(.*)_(N|Mean|SD|Min|Median|Max)$"
   ) %>%
   tidyr::pivot_wider(
     names_from = statistic,
     values_from = value
   ) %>%
   mutate(
-    across(c(Min, Median, Mean, SD, Max), ~ round(.x, 2)),
+    across(c(Mean, SD, Min, Median, Max), ~ round(.x, 2)),
+    N = as.integer(N),
     indicator = dplyr::recode(indicator,
       openness              = "Открытость",
       conscientiousness     = "Добросовестность",
@@ -686,14 +689,17 @@ youth_empl %>%
       emotional_stability   = "Эмоциональная стабильность"
     )
   ) %>%
+  dplyr::select(indicator, N, Mean, SD, Min, Median, Max) %>%
   df_to_flex(
+    note = "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.",
     col_labels = c(
       indicator = "Показатель",
-      Min = "Min",
-      Median = "Median",
-      Mean = "Mean",
-      SD = "SD",
-      Max = "Max"
+      N         = "N",
+      Mean      = "Среднее",
+      SD        = "Ст. откл.",
+      Min       = "Мин.",
+      Median    = "Медиана",
+      Max       = "Макс."
     )
   )
   
