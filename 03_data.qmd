@@ -25,7 +25,10 @@ force_utf8_locale <- function() {
 
 force_utf8_locale()
 
-plot_text_family <- if (knitr::is_latex_output()) "serif" else "Times New Roman"
+plot_text_family <- "Times New Roman"
+if (knitr::is_latex_output()) {
+  knitr::opts_chunk$set(dev = "cairo_pdf", dev.args = list(family = "Times New Roman"))
+}
 
 # Set working directory and paths for the analysis repo
 projectFolder <- "/Users/karavan88/Documents/GitHub/NonCognSkillsRLMS"
@@ -74,16 +77,37 @@ style_flex_table <- function(ft, note = NULL) {
 }
 
 df_to_flex <- function(data, note = NULL, col_labels = NULL) {
+  if (knitr::is_latex_output()) {
+    if (!is.null(col_labels)) {
+      for (cn in intersect(names(data), names(col_labels))) {
+        names(data)[names(data) == cn] <- col_labels[[cn]]
+      }
+    }
+    tbl <- kableExtra::kbl(data, format = "latex", booktabs = TRUE, linesep = "") |>
+      kableExtra::kable_styling(
+        latex_options = c("scale_down"),
+        font_size = 9
+      )
+    if (!is.null(note)) {
+      tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
+                                  footnote_as_chunk = TRUE, threeparttable = TRUE)
+    }
+    return(tbl)
+  }
   ft <- flextable::flextable(data)
-
   if (!is.null(col_labels)) {
     ft <- flextable::set_header_labels(ft, values = col_labels)
   }
-
   style_flex_table(ft, note = note)
 }
 
 gtsummary_to_flex <- function(tbl, note = NULL) {
+  if (knitr::is_latex_output()) {
+    return(
+      gtsummary::as_kable_extra(tbl, format = "latex") |>
+        kableExtra::kable_styling(latex_options = c("scale_down"), font_size = 9)
+    )
+  }
   style_flex_table(gtsummary::as_flex_table(tbl), note = note)
 }
 
@@ -161,10 +185,19 @@ make_psychometric_ft <- function(trait_label) {
 ```{r}
 #| label: fig-ncs-likert
 #| fig-cap: 'Шкала Лайкерта единичных вопросов для измерения некогнитивных навыков Большой пятерки в РМЭЗ среди молодежи 15-29 лет, данные 25-й и 28-й волн'
+#| fig-width: 7
+#| fig-height: 7
 
 likert_plot_ncs +
   labs(x = NULL, y = NULL, fill = NULL) +
-  theme(text = element_text(family = plot_text_family))
+  theme_bw(base_family = plot_text_family, base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold", size = rel(0.9)),
+    legend.position  = "bottom",
+    legend.text      = element_text(size = rel(0.8))
+  )
 
 ```
 
@@ -176,7 +209,28 @@ likert_plot_ncs +
 
 Добросовестность ($\alpha$ = 0,451), экстраверсия ($\alpha$ = 0,467) и доброжелательность ($\alpha$ = 0,478) также показали разумную внутреннюю согласованность, подкрепленную между-вопросными корреляциями на уровне около 0,22–0,23. Эмоциональная стабильность дала самую высокую внутреннюю согласованность ($\alpha$ = 0,633) и самую сильную корреляцию между вопросами (0,367), что предполагает высокую внутреннюю однородность и надежность для этого конструкта.
 
+```{=latex}
+\clearpage
+\begin{landscape}
+```
+
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:sectPr>
+      <w:type w:val="nextPage"/>
+      <w:pgSz w:w="12240" w:h="15840"/>
+      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
+    </w:sectPr>
+  </w:pPr>
+</w:p>
+```
+
 ```{r}
+#| label: tbl-psychometric
+#| tbl-cap: 'Психометрические характеристики шкал «Большой пятёрки»: пропуски, среднее, стандартное отклонение, асимметрия, сложность и дискриминация вопроса, α Кронбаха'
+#| tbl-pos: H
+
 big5_item_table %>%
   mutate(item = recode(item, !!!big5_item_labels_ru)) %>%
   transmute(
@@ -200,14 +254,31 @@ big5_item_table %>%
       mean = "Среднее",
       sd = "SD",
       skew = "Асимметрия",
-      item_difficulty = "Сложность вопроса",
-      item_discrimination = "Дискриминация вопроса",
-      alpha_if_deleted = "alpha если вопрос удален",
-      cronbach_alpha = "alpha Кронбаха",
-      mean_inter_item_corr = "Средняя межпунктовая корреляция"
+      item_difficulty = "Сложность",
+      item_discrimination = "Дискриминация",
+      alpha_if_deleted = "α без пункта",
+      cronbach_alpha = "α Кронбаха",
+      mean_inter_item_corr = "r межпунктовая"
     )
   )
 
+```
+
+```{=latex}
+\end{landscape}
+\clearpage
+```
+
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:sectPr>
+      <w:type w:val="nextPage"/>
+      <w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/>
+      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
+    </w:sectPr>
+  </w:pPr>
+</w:p>
 ```
 
 
@@ -225,8 +296,12 @@ big5_item_table %>%
 ```{r}
 #| label: fig-corr-ncs
 #| fig-cap: Матрица корреляций некогнитивных навыков (коэффициент r Пирсона)
+#| fig-width: 5
+#| fig-height: 5
 
-# Step 1: Correlation test to get both r and p-values
+# Set font family for base R graphics (corrplot uses base R)
+if (knitr::is_latex_output()) old_par <- par(family = "Times New Roman")
+
 correlation_matrix_plot <-
   correlation_matrix_data %>%
   cor() %>%
@@ -243,6 +318,7 @@ correlation_matrix_plot <-
                      mar = c(0, 0, 1, 0),
                      is.corr = TRUE)
 
+if (knitr::is_latex_output()) par(old_par)
 
 ```
 
@@ -288,7 +364,8 @@ summary_stats <-
     edu_lvl = recode(edu_lvl, !!!edu_lvl_rus),
     area = recode(area, !!!area_rus)
   ) %>%
-  tbl_summary(by = year, 
+  tbl_summary(by = year,
+              missing_text = "NA",
               type = list( age ~ 'continuous2',
                            c(in_education) ~ 'dichotomous',
                            c( ses5, area, edu_lvl) ~ 'categorical'),
@@ -297,7 +374,7 @@ summary_stats <-
                            area ~ "Тип поселения",
                            sex ~ "Пол",
                            ses5 ~ "Квинтиль дохода ДХ",
-                           edu_lvl ~ "Уровень образования") , 
+                           edu_lvl ~ "Уровень образования") ,
               statistic = list(all_continuous() ~ "{mean} ({sd})")) %>%
   add_overall(col_label = "**Итого**") %>%
   modify_header(label = "Переменная") %>%
@@ -344,6 +421,7 @@ youth_empl %>%
   select(employed, employed_officially, self_employed, satisfied_with_job, transition_successful, year) %>%
   tbl_summary(
     by = year,
+    missing_text = "NA",
     type = list(c(employed, employed_officially, self_employed, transition_successful, satisfied_with_job) ~ "dichotomous"),
     label = list(
       employed ~ "Трудоустроен",
@@ -371,9 +449,27 @@ youth_empl %>%
 
 Более подробно об отнесении рода занятий и уровня квалификации можно найти на самом сайте МОТ [@ilo_stat_isco2008]. РМЭЗ мониторит занятость в соответствии с указанной классификацией. Специалисты, занятые в 1, 2 и 3 группе МСКЗ-08 были классифицированы как высококвалифицированные специалисты, занятые умственным трудом. Распределение респондентов по всем группам занятости в выборке исследования представлено в таблице @tbl-dep-var-occup.
 
+```{=latex}
+\clearpage
+\begin{landscape}
+```
+
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:sectPr>
+      <w:type w:val="nextPage"/>
+      <w:pgSz w:w="12240" w:h="15840"/>
+      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
+    </w:sectPr>
+  </w:pPr>
+</w:p>
+```
+
 ```{r}
 #| label: tbl-dep-var-occup
 #| tbl-cap: Классификация молодежи по роду занятий в соответствии с МСКЗ-08
+#| tbl-pos: H
 
 youth_empl %>%
   select(year, occupation) %>%
@@ -394,6 +490,7 @@ youth_empl %>%
   ) %>%
   tbl_summary(
     by = year,
+    missing_text = "NA",
     type = list(occupation ~ "categorical"),
     label = list(occupation ~ "Классификация занятости")
   ) %>%
@@ -404,17 +501,9 @@ youth_empl %>%
 
 ```
 
-### Мисматч навыков и избыточная квалификация
-
-Третья зависимая переменная, а именно, избыточная квалификация \[overeducation\], является одной из форм вертикального несоответствия навыков \[vertical skills mismatch\], указывая, что квалификация, полученная индивидом в системе образования, является гораздо выше чем та, которая требуется для выполнения работы. Избыточная квалификация рассматривается как один из критически важных индикаторов неэффективной утилизации человеческого капитала. В данном исследовании респондент был классифицирован как обладающий избыточной квалификацией если он 1) имеет завершенное высшее образование и 2) занят в профессиях, классифицируемых МСКЗ-08 под кодами от 4го до 9го. В обеих волнах РМЭЗ, доля молодежи с избыточной квалификацией составляет около 8% от всей занятой молодежи.
-
-### Заработная плата
-
-Логарифм почасовой заработной платы является основной переменной второго этапа диссертационного исследования, изучающего отдачу от некогнитивных навыков молодежи на российском рынке труда. Данная переменная была произведена в несколько шагов. РМЭЗ фиксирует ежемесячную заработную плату в переменной j10. На первом этапе заработная плата 2016 года была скорректирована на уровень 2019 года благодаря индексу потребительских цен. Затем на основе вопроса j6_2 (количество рабочих часов в неделю) была произведена переменная, указывающая почасовую заработную плату. Логарифм итогового значения послужил зависимой переменной на данном этапе анализа. Описательные статистики переменной в ценах 2019 года представлены в таблице @tbl-dep-var-wage.
-
 ```{=latex}
+\end{landscape}
 \clearpage
-\begin{landscape}
 ```
 
 ```{=openxml}
@@ -422,12 +511,20 @@ youth_empl %>%
   <w:pPr>
     <w:sectPr>
       <w:type w:val="nextPage"/>
-      <w:pgSz w:w="12240" w:h="15840"/>
+      <w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/>
       <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
     </w:sectPr>
   </w:pPr>
 </w:p>
 ```
+
+### Мисматч навыков и избыточная квалификация
+
+Третья зависимая переменная, а именно, избыточная квалификация \[overeducation\], является одной из форм вертикального несоответствия навыков \[vertical skills mismatch\], указывая, что квалификация, полученная индивидом в системе образования, является гораздо выше чем та, которая требуется для выполнения работы. Избыточная квалификация рассматривается как один из критически важных индикаторов неэффективной утилизации человеческого капитала. В данном исследовании респондент был классифицирован как обладающий избыточной квалификацией если он 1) имеет завершенное высшее образование и 2) занят в профессиях, классифицируемых МСКЗ-08 под кодами от 4го до 9го. В обеих волнах РМЭЗ, доля молодежи с избыточной квалификацией составляет около 8% от всей занятой молодежи.
+
+### Заработная плата
+
+Логарифм почасовой заработной платы является основной переменной второго этапа диссертационного исследования, изучающего отдачу от некогнитивных навыков молодежи на российском рынке труда. Данная переменная была произведена в несколько шагов. РМЭЗ фиксирует ежемесячную заработную плату в переменной j10. На первом этапе заработная плата 2016 года была скорректирована на уровень 2019 года благодаря индексу потребительских цен. Затем на основе вопроса j6_2 (количество рабочих часов в неделю) была произведена переменная, указывающая почасовую заработную плату. Логарифм итогового значения послужил зависимой переменной на данном этапе анализа. Описательные статистики переменной в ценах 2019 года представлены в таблице @tbl-dep-var-wage.
 
 ```{r}
 #| label: tbl-dep-var-wage
@@ -456,23 +553,6 @@ youth_descr %>%
 
 ```
 
-```{=latex}
-\end{landscape}
-\clearpage
-```
-
-```{=openxml}
-<w:p>
-  <w:pPr>
-    <w:sectPr>
-      <w:type w:val="nextPage"/>
-      <w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/>
-      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
-    </w:sectPr>
-  </w:pPr>
-</w:p>
-```
-
 ### Удовлетворенность работой
 
 Блок переменных по удовлетворенности работой - в общем и ее специфическими компонентами - представляет зависимые переменные в одной из глав настоящего исследования. Эти переменные являются прокси субъективного успеха перехода от учебы к работе молодежи в России. Общая удовлетворённость работой основана на вопросе: «В целом, насколько Вы удовлетворены своей работой?» Ответы респондентов варьируются от 1 (полностью удовлетворён) до 5 (совершенно не удовлетворён). Кроме того, анкета включает дополнительные вопросы, касающиеся удовлетворённости условиями труда, уровнем оплаты и возможностями карьерного развития. Формат ответов на эти вопросы аналогичен вопросу об общей удовлетворённости работой.
@@ -485,9 +565,9 @@ youth_descr %>%
 
 ```{r}
 #| label: fig-corr-jobsatisf
-#| fig-cap: Матрица корреляций общей удовлетворённости работой и её отдельных компонентов
-
-
+#| fig-cap: Матрица корреляций общей удовлетворённости работой и её отдельных компонентов (коэффициент ρ Спирмена)
+#| fig-width: 5
+#| fig-height: 5
 
 # Source the analysis scripts (suppress all output)
 invisible(capture.output({
@@ -495,8 +575,33 @@ invisible(capture.output({
     source(file.path(codesJobSatisfNcs, "02_descriptive_jobsatisf.R"))
 }))
 
+# Build Spearman correlation matrix from job-satisfaction variables
+js_corr_data <- youth_js %>%
+  dplyr::select(j1_1_1, j1_1_2, j1_1_3, j1_1_4) %>%
+  cor(use = "pairwise.complete.obs", method = "spearman")
 
-js_corr_matrix_ru
+# Short Russian labels (no Var1/Var2 defaults)
+colnames(js_corr_data) <- rownames(js_corr_data) <- c(
+  "Общая", "Усл.\nтруда", "Оплата\nтруда", "Карьера"
+)
+
+if (knitr::is_latex_output()) old_par <- par(family = "Times New Roman")
+corrplot::corrplot(
+  js_corr_data,
+  method      = "color",
+  type        = "upper",
+  tl.col      = "black",
+  tl.srt      = 45,
+  addCoef.col = "black",
+  number.cex  = 0.7,
+  tl.cex      = 0.7,
+  cl.cex      = 0.7,
+  cl.ratio    = 0.2,
+  cl.align.text = "l",
+  mar         = c(0, 0, 1, 0),
+  is.corr     = TRUE
+)
+if (knitr::is_latex_output()) par(old_par)
 
 ```
 
@@ -515,15 +620,16 @@ youth_js %>%
                                                   . == 3 ~ "3. И да, и нет",
                                                   . == 4 ~ "4. Скорее неудовлетворены",
                                                   . == 5 ~ "5. Совсем неудовлетворены"))) %>%
-  tbl_summary(by = year, 
+  tbl_summary(by = year,
+              missing_text = "NA",
               type = list( #c( O, C, E, A, ES) ~ 'continuous2',
                            # c(employed, employed_officially, self_employed, transition_successful,
                            #   in_education, satisfied_with_job) ~ 'dichotomous',
                            c(j1_1_1, j1_1_2, j1_1_3, j1_1_4) ~ 'categorical'),
-              label = list(j1_1_1 ~ "Удовлетворенность: Общая", 
+              label = list(j1_1_1 ~ "Удовлетворенность: Общая",
                            j1_1_2 ~ "Удовлетворенность: Условия труда",
-                           j1_1_3 ~ "Удовлетворенность: Оплата труда", 
-                           j1_1_4 ~ "Удовлетворенность: Развитие карьеры") , 
+                           j1_1_3 ~ "Удовлетворенность: Оплата труда",
+                           j1_1_4 ~ "Удовлетворенность: Развитие карьеры") ,
               statistic = list(all_continuous() ~ "{mean} ({sd})")) %>%
   add_overall(col_label = "**Итого**") %>%
   modify_header(label = "Переменная") %>%
@@ -570,7 +676,16 @@ youth_empl %>%
     names_from = statistic,
     values_from = value
   ) %>%
-  mutate(across(c(Min, Median, Mean, SD, Max), ~ round(.x, 2))) %>%
+  mutate(
+    across(c(Min, Median, Mean, SD, Max), ~ round(.x, 2)),
+    indicator = dplyr::recode(indicator,
+      openness              = "Открытость",
+      conscientiousness     = "Добросовестность",
+      extraversion          = "Экстраверсия",
+      agreeableness         = "Доброжелательность",
+      emotional_stability   = "Эмоциональная стабильность"
+    )
+  ) %>%
   df_to_flex(
     col_labels = c(
       indicator = "Показатель",
@@ -580,18 +695,6 @@ youth_empl %>%
       SD = "SD",
       Max = "Max"
     )
-  ) %>%
-  flextable::compose(
-    j = "indicator",
-    value = flextable::as_paragraph(dplyr::recode(
-      indicator,
-      openness = "Открытость",
-      conscientiousness = "Добросовестность",
-      extraversion = "Экстраверсия",
-      agreeableness = "Доброжелательность",
-      emotional_stability = "Эмоциональная стабильность"
-    )),
-    part = "body"
   )
   
 ```

@@ -25,7 +25,10 @@ force_utf8_locale <- function() {
 
 force_utf8_locale()
 
-plot_text_family <- if (knitr::is_latex_output()) "serif" else "Times New Roman"
+plot_text_family <- "Times New Roman"
+if (knitr::is_latex_output()) {
+  knitr::opts_chunk$set(dev = "cairo_pdf", dev.args = list(family = "Times New Roman"))
+}
 
 # Set working directory and paths for the analysis repo
 projectFolder <- "/Users/karavan88/Documents/GitHub/NonCognSkillsRLMS"
@@ -70,11 +73,43 @@ style_flex_table <- function(ft, note = NULL) {
   flextable::autofit(ft)
 }
 
-df_to_flex <- function(data, note = NULL) {
-  style_flex_table(flextable::flextable(data), note = note)
+df_to_flex <- function(data, note = NULL, col_labels = NULL) {
+  if (knitr::is_latex_output()) {
+    if (!is.null(col_labels)) {
+      for (cn in intersect(names(data), names(col_labels))) {
+        names(data)[names(data) == cn] <- col_labels[[cn]]
+      }
+    }
+    tbl <- kableExtra::kbl(data, format = "latex", booktabs = TRUE, linesep = "") |>
+      kableExtra::kable_styling(
+        latex_options = c("scale_down"),
+        font_size = 9
+      )
+    if (!is.null(note)) {
+      tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
+                                  footnote_as_chunk = TRUE, threeparttable = TRUE)
+    }
+    return(tbl)
+  }
+  ft <- flextable::flextable(data)
+  if (!is.null(col_labels)) {
+    ft <- flextable::set_header_labels(ft, values = col_labels)
+  }
+  style_flex_table(ft, note = note)
 }
 
 render_modelsummary_flex <- function(models, note = NULL, ...) {
+  if (knitr::is_latex_output()) {
+    tbl <- modelsummary::modelsummary(models, output = "kableExtra", ...)
+    tbl <- kableExtra::kable_styling(tbl,
+                                     latex_options = c("scale_down"),
+                                     font_size = 9)
+    if (!is.null(note)) {
+      tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
+                                  footnote_as_chunk = TRUE, threeparttable = TRUE)
+    }
+    return(tbl)
+  }
   ft <- modelsummary::modelsummary(models, output = "flextable", ...)
   style_flex_table(ft, note = note)
 }
@@ -342,7 +377,7 @@ icc_results_swt |>
 #| tbl-cap: "Фиксированные (неварьирующиеся) коэффициенты смешанных моделей с эффектами случайных констант по возрасту, индивидуальному идентификатору и региону: (1) Модель со эффектами случайных констант и некогнитивными навыками, (2) Модель с эффектами случайных констант, некогнитивными навыками и контрольными переменными"
 
 render_modelsummary_flex(
-  models_empl1,
+  setNames(models_empl1, paste0("(", seq_along(models_empl1), ")")),
   statistic = "({std.error}) {stars}",
   gof_omit = "ICC|RMSE|cond|AIC|BIC",
   coef_omit = "SD|Cor",
@@ -358,7 +393,7 @@ render_modelsummary_flex(
 #| tbl-cap: "Фиксированные (неварьирующиеся) коэффициенты смешанных моделей с случайными наклонами по некогнитивным навыкам в разрезе: (1) количества лет с момента окончания наивысшего уровня образования, (2) квинтиля среднедушевого дохода домохозяйства в возрасте 15/16 лет, (3) уровня образования и (4) пола." 
 
 render_modelsummary_flex(
-  models_empl2,
+  setNames(models_empl2, paste0("(", seq_along(models_empl2), ")")),
   statistic = "({std.error}) {stars}",
   gof_omit = "ICC|RMSE|cond|AIC|BIC",
   coef_omit = "SD|Cor",
@@ -378,11 +413,20 @@ render_modelsummary_flex(
 ```{r}
 #| label: fig-plot-ses
 #| fig-cap: Коэффициенты вероятности влияния некогнитивных навыков на занятость по квинтилям среднедушевого дохода домохозяйства (случайные коэффициенты модели со смешанными эффектами)
+#| fig-width: 6.5
+#| fig-height: 10
 
 plot_ses +
   facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
   labs(x = "Эффект, п.п.", y = NULL) +
-  theme(text = element_text(family = plot_text_family))
+  theme_bw(base_family = plot_text_family, base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold", size = rel(0.9)),
+    legend.position  = "bottom",
+    legend.text      = element_text(size = rel(0.8))
+  )
 ```
 
 ### Повышает ли уровень образования эффект от некогнитивных навыков на занятость?
@@ -396,12 +440,21 @@ plot_ses +
 ```{r}
 #| label: fig-plot-edu
 #| fig-cap: Коэффициенты влияния некогнитивных навыков на вероятность занятости в разрезе уровня образования, варьирующиеся коэффициенты модели со смешанными эффектами
+#| fig-width: 6.5
+#| fig-height: 10
 
 plot_edu +
   scale_y_discrete(limits = rev, labels = edu_labels_ru) +
   facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
   labs(x = "Эффект, п.п.", y = NULL) +
-  theme(text = element_text(family = plot_text_family))
+  theme_bw(base_family = plot_text_family, base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold", size = rel(0.9)),
+    legend.position  = "bottom",
+    legend.text      = element_text(size = rel(0.8))
+  )
 ```
 
 ### Могут ли некогнитивные навыки сократить гендерный разрыв в занятости?
@@ -415,12 +468,21 @@ plot_edu +
 ```{r}
 #| label: fig-plot-gender
 #| fig-cap: Коэффициенты влияния некогнитивных навыков на вероятность занятости по полу, варьирующиеся коэффициенты модели со смешанными эффектами
+#| fig-width: 6.5
+#| fig-height: 5
 
 plot_sex +
   scale_y_discrete(labels = skill_labels_ru) +
   scale_color_discrete(labels = sex_labels_ru, name = NULL) +
   labs(x = "Эффект, п.п.", y = NULL) +
-  theme(text = element_text(family = plot_text_family))
+  theme_bw(base_family = plot_text_family, base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold", size = rel(0.9)),
+    legend.position  = "bottom",
+    legend.text      = element_text(size = rel(0.8))
+  )
 ```
 
 ### Некогнитивные навыки и характер труда
@@ -432,7 +494,7 @@ plot_sex +
 #| tbl-cap: 'Фиксированные (неварьирующиеся) коэффициенты смешанных моделей выбора профессии: (1) Высококвалифицированные работники, занятые интеллектуальным трудом, (2) Высококвалифицированные работники, занятые интеллектуальным трудом, со случайными коэффицинтами некогнитивных навыков по социально-экономическому статусу'
 
 render_modelsummary_flex(
-  models_occup,
+  setNames(models_occup, paste0("(", seq_along(models_occup), ")")),
   statistic = "({std.error}) {stars}",
   gof_omit = "ICC|RMSE|cond|AIC|BIC",
   coef_omit = "SD|Cor",
@@ -457,11 +519,20 @@ render_modelsummary_flex(
 ```{r}
 #| label: fig-occup-ses
 #| fig-cap: 'Коэффициенты вероятности эффекта некогнитивных навыков на занятость в должностях, основанных на умственном труде, по квинтилям среднедушевого дохода домохозяйства: случайные кривые смешанной модели с взвешиванием обратной вероятности занятости.'
+#| fig-width: 6.5
+#| fig-height: 10
 
 plot_ses_occup +
   facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
   labs(x = "Эффект, п.п.", y = NULL) +
-  theme(text = element_text(family = plot_text_family))
+  theme_bw(base_family = plot_text_family, base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold", size = rel(0.9)),
+    legend.position  = "bottom",
+    legend.text      = element_text(size = rel(0.8))
+  )
 
 
 ```

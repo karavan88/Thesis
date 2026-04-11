@@ -45,12 +45,28 @@ format:
       - top=2cm
       - bottom=2cm
     toc: false               # ← suppress automatic TOC
-    lof: false               # ← suppress automatic list of figures  
+    lof: false               # ← suppress automatic list of figures
     lot: false               # ← suppress automatic list of tables
+    fig-width: 6.5
+    fig-height: 4
     include-before-body: pdf-frontmatter.tex
-    include-in-header: 
+    include-in-header:
       text: |
         \usepackage{pdflscape}
+        \usepackage{booktabs}
+        \usepackage{longtable}
+        \usepackage{array}
+        \usepackage{multirow}
+        \usepackage{float}
+        \usepackage{colortbl}
+        \usepackage{threeparttable}
+        \usepackage{threeparttablex}
+        \usepackage[normalem]{ulem}
+        \usepackage{makecell}
+        \usepackage{xcolor}
+        \usepackage{etoolbox}
+        \setlength{\footskip}{1.5cm}
+        \AtBeginEnvironment{tablenotes}{\fontsize{9}{11}\selectfont\rmfamily}
   docx: 
     number-sections: true
     mainfont: "Times New Roman"          # body text

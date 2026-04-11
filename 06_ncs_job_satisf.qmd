@@ -25,7 +25,10 @@ force_utf8_locale <- function() {
 
 force_utf8_locale()
 
-plot_text_family <- if (knitr::is_latex_output()) "serif" else "Times New Roman"
+plot_text_family <- "Times New Roman"
+if (knitr::is_latex_output()) {
+  knitr::opts_chunk$set(dev = "cairo_pdf", dev.args = list(family = "Times New Roman"))
+}
 
 # Set working directory and paths for the analysis repo
 projectFolder <- "/Users/karavan88/Documents/GitHub/NonCognSkillsRLMS"
@@ -73,10 +76,33 @@ style_flex_table <- function(ft, note = NULL) {
 }
 
 df_to_flex <- function(data, note = NULL) {
+  if (knitr::is_latex_output()) {
+    tbl <- kableExtra::kbl(data, format = "latex", booktabs = TRUE, linesep = "") |>
+      kableExtra::kable_styling(
+        latex_options = c("scale_down"),
+        font_size = 9
+      )
+    if (!is.null(note)) {
+      tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
+                                  footnote_as_chunk = TRUE, threeparttable = TRUE)
+    }
+    return(tbl)
+  }
   style_flex_table(flextable::flextable(data), note = note)
 }
 
 render_modelsummary_flex <- function(models, note = NULL, ...) {
+  if (knitr::is_latex_output()) {
+    tbl <- modelsummary::modelsummary(models, output = "kableExtra", ...)
+    tbl <- kableExtra::kable_styling(tbl,
+                                     latex_options = c("scale_down"),
+                                     font_size = 9)
+    if (!is.null(note)) {
+      tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
+                                  footnote_as_chunk = TRUE, threeparttable = TRUE)
+    }
+    return(tbl)
+  }
   ft <- modelsummary::modelsummary(models, output = "flextable", ...)
   style_flex_table(ft, note = note)
 }
@@ -160,7 +186,10 @@ models_satisf_rus <- list(
 ```{r}
 #| label: fig-wage-jobsatisf
 #| fig-cap: Влияние логарифма почасовой заработной платы на общую удовлетворённость работой, результаты GAM-регрессии
+#| fig-width: 5.5
+#| fig-height: 4
 
+if (knitr::is_latex_output()) old_par <- par(family = "Times New Roman")
 plot(
   gam_job_satisf,
   select = 1,
@@ -171,6 +200,7 @@ plot(
   xlab = "Логарифм почасовой заработной платы",
   ylab = "Частичный эффект"
 )
+if (knitr::is_latex_output()) par(old_par)
 ```
 
 ### Источники вариации удовлетворённости работой
@@ -221,7 +251,7 @@ icc_results |>
 #| tbl-cap: 'Смешанные регрессионные модели удовлетворённости работой: 1) социально-экономические факторы, 2) социально-экономические факторы и некогнитивные навыки, 3) модель с эффектами случайных коэффициентов некогнитивных навыков по квинтилям заработной платы'
 
 render_modelsummary_flex(
-  models_job_satisf_list,
+  setNames(models_job_satisf_list, paste0("(", seq_along(models_job_satisf_list), ")")),
   statistic = "({std.error}) {stars}",
   gof_omit = "ICC|RMSE|cond|AIC|BIC",
   coef_omit = "SD|Cor",
@@ -241,12 +271,21 @@ render_modelsummary_flex(
 ```{r}
 #| label: fig-wages-ncs
 #| fig-cap: Случайные коэффициенты некогнитивных навыков на удовлетворённость работой, результаты регрессии со смешанными эффектами
+#| fig-width: 6.5
+#| fig-height: 10
 
 print(
   plot_wages_ncs +
     facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
     labs(x = "Эффект, п.п.", y = "Квинтиль заработной платы", title = NULL) +
-    theme(text = element_text(family = plot_text_family))
+    theme_bw(base_family = plot_text_family, base_size = 11) +
+    theme(
+      panel.grid.minor = element_blank(),
+      strip.background = element_blank(),
+      strip.text       = element_text(face = "bold", size = rel(0.9)),
+      legend.position  = "bottom",
+      legend.text      = element_text(size = rel(0.8))
+    )
 )
 ```
 
