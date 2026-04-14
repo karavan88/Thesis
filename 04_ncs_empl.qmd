@@ -29,6 +29,7 @@ plot_text_family <- "Times New Roman"
 if (knitr::is_latex_output()) {
   knitr::opts_chunk$set(dev = "cairo_pdf", dev.args = list(family = "Times New Roman"))
 }
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 # Set working directory and paths for the analysis repo
 projectFolder <- "/Users/karavan88/Documents/GitHub/NonCognSkillsRLMS"
@@ -52,12 +53,16 @@ invisible(capture.output({
 #| echo: false
 #| include: false
 
-style_flex_table <- function(ft, note = NULL) {
+style_flex_table <- function(ft, note = NULL, latex_total_width = 5.6) {
   ft <- flextable::theme_booktabs(ft)
   ft <- flextable::font(ft, fontname = "Times New Roman", part = "all")
-  ft <- flextable::fontsize(ft, size = 10, part = "all")
-  ft <- flextable::padding(ft, padding = 4, part = "all")
+  ft <- flextable::fontsize(ft, size = if (knitr::is_latex_output()) 9 else 10, part = "all")
+  ft <- flextable::padding(ft, padding = if (knitr::is_latex_output()) 1 else 4, part = "all")
+  ft <- flextable::line_spacing(ft, space = 1, part = "all")
   ft <- flextable::bold(ft, part = "header")
+  if ("term" %in% ft$col_keys) {
+    ft <- flextable::set_header_labels(ft, term = "")
+  }
 
   if (length(ft$col_keys) > 1) {
     ft <- flextable::align(ft, j = ft$col_keys[-1], align = "center", part = "all")
@@ -65,57 +70,59 @@ style_flex_table <- function(ft, note = NULL) {
 
   ft <- flextable::align(ft, j = ft$col_keys[1], align = "left", part = "all")
 
+  section_titles <- c("Фиксированные эффекты", "Случайные эффекты", "Качество модели")
+  ds <- ft$body$dataset
+  if (!is.null(ds) && "term" %in% names(ds)) {
+    sec_rows <- which(ds$term %in% section_titles)
+    if (length(sec_rows) > 0) {
+      for (r in sec_rows) {
+        ft <- flextable::merge_at(ft, i = r, j = seq_along(ft$col_keys), part = "body")
+      }
+      ft <- flextable::bold(ft, i = sec_rows, part = "body")
+      ft <- flextable::bg(ft, i = sec_rows, bg = "#F2F2F2", part = "body")
+      ft <- flextable::align(ft, i = sec_rows, align = "left", part = "body")
+    }
+  }
+
   if (!is.null(note)) {
     ft <- flextable::add_footer_lines(ft, values = note)
+    ft <- flextable::font(ft, fontname = "Times New Roman", part = "footer")
     ft <- flextable::fontsize(ft, size = 9, part = "footer")
+  }
+
+  ft <- flextable::set_table_properties(
+    ft,
+    layout = if (knitr::is_latex_output()) "fixed" else "autofit",
+    opts_word = list(split = TRUE),
+    opts_pdf = list(float = "none", tabcolsep = 1, arraystretch = 1)
+  )
+  if (knitr::is_latex_output()) {
+    ncols <- length(ft$col_keys)
+    total_w <- latex_total_width
+    if (ncols >= 2) {
+      first_w <- max(min(2.2, total_w - 0.6 * (ncols - 1)), 1.6)
+      other_w <- max((total_w - first_w) / (ncols - 1), 0.55)
+      ft <- flextable::width(ft, j = 1, width = first_w)
+      ft <- flextable::width(ft, j = 2:ncols, width = other_w)
+    } else {
+      ft <- flextable::width(ft, j = 1, width = total_w)
+    }
+    ft <- flextable::paginate(ft, init = TRUE, hdr_ftr = TRUE)
+    return(ft)
   }
 
   flextable::autofit(ft)
 }
 
-df_to_flex <- function(data, note = NULL, col_labels = NULL) {
-  if (knitr::is_latex_output()) {
-    if (!is.null(col_labels)) {
-      for (cn in intersect(names(data), names(col_labels))) {
-        names(data)[names(data) == cn] <- col_labels[[cn]]
-      }
-    }
-    tbl <- kableExtra::kbl(data, format = "latex", booktabs = TRUE, linesep = "")
-    tbl <- if (ncol(data) > 4) {
-      kableExtra::kable_styling(tbl, latex_options = c("scale_down"), font_size = 9)
-    } else {
-      kableExtra::kable_styling(tbl, font_size = 9)
-    }
-    if (!is.null(note)) {
-      tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
-                                  footnote_as_chunk = TRUE, threeparttable = TRUE)
-    }
-    return(tbl)
-  }
+df_to_flex <- function(data, note = NULL, col_labels = NULL, latex_total_width = 5.6) {
   ft <- flextable::flextable(data)
   if (!is.null(col_labels)) {
     ft <- flextable::set_header_labels(ft, values = col_labels)
   }
-  style_flex_table(ft, note = note)
+  style_flex_table(ft, note = note, latex_total_width = latex_total_width)
 }
 
 render_modelsummary_flex <- function(models, note = NULL, add_rows = NULL, ...) {
-  if (!is.null(add_rows)) {
-    tmp <- modelsummary::modelsummary(models, output = "dataframe", add_rows = NULL, ...)
-    n_est <- sum(tmp$part == "estimates")
-    attr(add_rows, "position") <- seq_len(nrow(add_rows)) + n_est
-  }
-  if (knitr::is_latex_output()) {
-    tbl <- modelsummary::modelsummary(models, output = "kableExtra", add_rows = add_rows, ...)
-    tbl <- kableExtra::kable_styling(tbl,
-                                     latex_options = c("scale_down"),
-                                     font_size = 9)
-    if (!is.null(note)) {
-      tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
-                                  footnote_as_chunk = TRUE, threeparttable = TRUE)
-    }
-    return(tbl)
-  }
   ft <- modelsummary::modelsummary(models, output = "flextable", add_rows = add_rows, ...)
   style_flex_table(ft, note = note)
 }
@@ -126,6 +133,14 @@ skill_labels_ru <- c(
   "Extraversion" = "Экстраверсия",
   "Agreeableness" = "Доброжелательность",
   "Emotional Stability" = "Эмоциональная стабильность"
+)
+
+skill_code_labels_ru <- c(
+  "O" = "Открытость",
+  "C" = "Добросовестность",
+  "E" = "Экстраверсия",
+  "A" = "Доброжелательность",
+  "ES" = "Эмоциональная стабильность"
 )
 
 edu_labels_ru <- c(
@@ -146,8 +161,251 @@ coef_note <- paste(
   "Базовые категории для дамми-переменных: пол — женщины;",
   "образование — ниже среднего (нет аттестата);",
   "тип поселения — сельская местность; квинтиль СЭС — Q1.",
+  "В блоке случайных эффектов: оценка показывает дисперсию компоненты; число в скобках — доля от общей дисперсии (%).",
   "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы."
 )
+
+coef_note_mismatch <- paste(
+  "Примечание: коэффициенты приведены со стандартными ошибками в скобках;",
+  "*** p < 0.001, ** p < 0.01, * p < 0.05, . p < 0.1.",
+  "Базовые категории для дамми-переменных: пол — женщины;",
+  "тип поселения — сельская местность; квинтиль СЭС — Q1.",
+  "Выборка ограничена респондентами с высшим образованием.",
+  "В блоке случайных эффектов: оценка показывает дисперсию компоненты; число в скобках — доля от общей дисперсии (%).",
+  "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы."
+)
+
+note_rs_coef <- paste(
+  "Примечание: в таблице показаны коэффициенты случайных наклонов по группам.",
+  "Значения интерпретируются как изменение вероятности в процентных пунктах (п.п.)."
+)
+
+safe_r2 <- function(model) {
+  out <- NULL
+  tryCatch({
+    suppressWarnings(suppressMessages({
+      capture.output({
+        out <- performance::r2_nakagawa(model, verbose = FALSE)
+      })
+    }))
+  }, error = function(e) {
+    out <<- NULL
+  })
+  if (is.null(out)) return(c(marginal = NA_real_, conditional = NA_real_))
+  c(marginal = unname(out$R2_marginal), conditional = unname(out$R2_conditional))
+}
+
+make_re_diagnostics_rows <- function(models_list, digits = 3) {
+  var_labels <- c(
+    "idind" = "Индивидуальный ID",
+    "region" = "Регион",
+    "age" = "Возраст",
+    "age_factor" = "Возраст",
+    "occupation" = "Профессия",
+    "edu_lvl" = "Уровень образования",
+    "ses5" = "СЭС",
+    "sex" = "Пол",
+    "O" = "Открытость",
+    "C" = "Добросовестность",
+    "E" = "Экстраверсия",
+    "A" = "Доброжелательность",
+    "ES" = "Эмоциональная стабильность"
+  )
+
+  format_one <- function(m) {
+    vc <- as.data.frame(lme4::VarCorr(m))
+    vc <- vc |>
+      dplyr::filter(is.na(var2)) |>
+      dplyr::mutate(
+        grp_lab = dplyr::recode(grp, !!!var_labels, .default = grp),
+        var1_lab = dplyr::recode(var1, !!!var_labels, .default = var1),
+        comp = dplyr::case_when(
+          grp == "Residual" ~ "Var(Residual)",
+          var1 == "(Intercept)" ~ paste0("Var(u0): ", grp_lab),
+          TRUE ~ paste0("Var(u1): ", grp_lab, " | ", var1_lab)
+        )
+      )
+
+    total_var <- sum(vc$vcov, na.rm = TRUE)
+    vals <- setNames(
+      sprintf(paste0("%.", digits, "f (", "%.1f%%", ")"), vc$vcov, 100 * vc$vcov / total_var),
+      vc$comp
+    )
+
+    vals
+  }
+
+  diag_list <- lapply(models_list, format_one)
+  all_terms <- unique(unlist(lapply(diag_list, names)))
+  int_terms <- grep("^Var\\(u0\\)", all_terms, value = TRUE)
+  slope_terms <- grep("^Var\\(u1\\)", all_terms, value = TRUE)
+  resid_terms <- grep("^Var\\(Residual\\)$", all_terms, value = TRUE)
+  ordered_terms <- c(sort(int_terms), sort(slope_terms), resid_terms)
+  ordered_terms <- ordered_terms[ordered_terms %in% all_terms]
+
+  rows <- lapply(ordered_terms, function(term) {
+    vals <- sapply(diag_list, function(x) ifelse(term %in% names(x), x[[term]], ""))
+    c(list(term = term), as.list(vals))
+  })
+
+  out <- do.call(rbind, lapply(rows, function(r) as.data.frame(r, stringsAsFactors = FALSE)))
+  names(out) <- c("term", names(models_list))
+  out
+}
+
+make_model_quality_rows <- function(models_list) {
+  one_model <- function(m) {
+    r2_vals <- safe_r2(m)
+    c(
+      "RMSE" = sprintf("%.3f", sqrt(mean(stats::residuals(m)^2, na.rm = TRUE))),
+      "R2 marginal" = ifelse(is.na(r2_vals[["marginal"]]), "", sprintf("%.3f", r2_vals[["marginal"]])),
+      "R2 conditional" = ifelse(is.na(r2_vals[["conditional"]]), "", sprintf("%.3f", r2_vals[["conditional"]])),
+      "N" = as.character(stats::nobs(m))
+    )
+  }
+
+  stat_list <- lapply(models_list, one_model)
+  stat_names <- c("RMSE", "R2 marginal", "R2 conditional", "N")
+
+  rows <- lapply(stat_names, function(term) {
+    vals <- sapply(stat_list, function(x) x[[term]])
+    c(list(term = term), as.list(vals))
+  })
+
+  out <- do.call(rbind, lapply(rows, function(r) as.data.frame(r, stringsAsFactors = FALSE)))
+  names(out) <- c("term", names(models_list))
+  out
+}
+
+build_sectioned_model_table <- function(models_list, coef_rename = NULL, single_model_inline = FALSE) {
+  ms <- modelsummary::modelsummary(
+    models_list,
+    output = "dataframe",
+    statistic = "({std.error}) {stars}",
+    gof_omit = ".*",
+    coef_omit = "SD|Cor",
+    coef_rename = coef_rename
+  )
+
+  est <- ms |> dplyr::filter(part == "estimates")
+  model_cols <- setdiff(names(est), c("part", "term", "statistic"))
+
+  groups <- split(est, cumsum(est$statistic == "estimate"))
+  fixed_rows <- lapply(groups, function(g) {
+    e <- g[1, , drop = FALSE]
+    s <- if (nrow(g) > 1) g[2, , drop = FALSE] else NULL
+
+    vals <- lapply(model_cols, function(col) {
+      ev <- as.character(e[[col]])
+      sv <- if (!is.null(s)) as.character(s[[col]]) else ""
+      if (single_model_inline && length(model_cols) == 1) {
+        if (!nzchar(ev)) return("")
+        if (nzchar(sv)) return(paste(ev, sv))
+        return(ev)
+      }
+      ev
+    })
+    names(vals) <- model_cols
+    row_main <- as.data.frame(c(list(term = as.character(e$term)), vals), stringsAsFactors = FALSE, check.names = FALSE)
+
+    if (single_model_inline && length(model_cols) == 1) {
+      return(row_main)
+    }
+
+    if (!is.null(s)) {
+      se_vals <- lapply(model_cols, function(col) as.character(s[[col]]))
+      names(se_vals) <- model_cols
+      row_se <- as.data.frame(c(list(term = ""), se_vals), stringsAsFactors = FALSE, check.names = FALSE)
+      return(dplyr::bind_rows(row_main, row_se))
+    }
+    row_main
+  })
+  fixed_block <- dplyr::bind_rows(fixed_rows)
+
+  re_block <- make_re_diagnostics_rows(models_list)
+  qual_block <- make_model_quality_rows(models_list)
+
+  sec_row <- function(lbl) {
+    x <- as.list(c(lbl, rep("", length(model_cols))))
+    names(x) <- c("term", model_cols)
+    as.data.frame(x, stringsAsFactors = FALSE, check.names = FALSE)
+  }
+
+  dplyr::bind_rows(
+    sec_row("Фиксированные эффекты"),
+    fixed_block,
+    sec_row("Случайные эффекты"),
+    re_block,
+    sec_row("Качество модели"),
+    qual_block
+  )
+}
+
+make_random_slope_coef_table <- function(df, group_col, group_labels = NULL) {
+  out <- df |>
+    dplyr::transmute(
+      skill = dplyr::recode(Skill, !!!skill_labels_ru),
+      group = as.character(.data[[group_col]]),
+      estimate = round(Estimate, 3)
+    )
+
+  if (!is.null(group_labels)) {
+    out <- out |> dplyr::mutate(group = dplyr::recode(group, !!!group_labels))
+  }
+
+  out |>
+    tidyr::pivot_wider(names_from = group, values_from = estimate) |>
+    dplyr::rename(`Навык` = skill)
+}
+
+plot_random_slope_curves <- function(model, group_var, group_labels = NULL,
+                                     skill_vars = c("O", "C", "E", "A", "ES"),
+                                     y_label = "Pr(занятость)") {
+  pred_list <- lapply(skill_vars, function(sv) {
+    term1 <- sprintf("%s [-2:2 by=0.1]", sv)
+    p <- tryCatch(
+      ggeffects::ggpredict(model, terms = c(term1, group_var), type = "random"),
+      error = function(e) NULL
+    )
+    if (is.null(p)) return(NULL)
+    d <- as.data.frame(p)
+    d$skill <- skill_code_labels_ru[[sv]]
+    d
+  })
+
+  pred <- dplyr::bind_rows(pred_list)
+  if (nrow(pred) == 0) {
+    return(ggplot() + theme_void() +
+             labs(title = "Не удалось построить кривые: проверьте спецификацию модели"))
+  }
+
+  pred <- pred |>
+    dplyr::mutate(group = as.character(group))
+  if (!is.null(group_labels)) {
+    pred <- pred |> dplyr::mutate(group = dplyr::recode(group, !!!group_labels))
+  }
+
+  p <- ggplot(pred, aes(x = x, y = predicted, color = group, fill = group)) +
+    geom_line(linewidth = 0.8)
+
+  if (all(c("conf.low", "conf.high") %in% names(pred))) {
+    p <- p + geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.12, color = NA)
+  }
+
+  p +
+    facet_wrap(~ skill, scales = "free_y") +
+    labs(x = "Значение навыка (стандартизованная шкала)",
+         y = y_label,
+         color = NULL,
+         fill = NULL) +
+    theme_bw(base_family = plot_text_family, base_size = 11) +
+    theme(
+      panel.grid.minor = element_blank(),
+      legend.position = "bottom",
+      strip.background = element_blank(),
+      strip.text = element_text(face = "bold")
+    )
+}
 
 make_icc_rows <- function(models_list) {
   lbl_map <- c(
@@ -475,17 +733,14 @@ $$ {#eq-overeduc}
 
 ```{r}
 #| label: tbl-regs-mem-fixed
-#| tbl-cap: "Фиксированные (неварьирующиеся) коэффициенты смешанных моделей с эффектами случайных констант по возрасту, индивидуальному идентификатору и региону: (1) Модель со эффектами случайных констант и некогнитивными навыками, (2) Модель с эффектами случайных констант, некогнитивными навыками и контрольными переменными"
+#| tbl-cap: "Занятость: базовая модель и модель с НКН"
+#| warning: false
+#| message: false
 
 local({
-  nm <- setNames(models_empl1, paste0("(", seq_along(models_empl1), ")"))
-  render_modelsummary_flex(
-    nm,
-    statistic = "({std.error}) {stars}",
-    gof_omit = "^ICC$",
-    coef_omit = "SD|Cor",
-    coef_rename = rename_vector_empl_rus,
-    add_rows = make_icc_rows(nm),
+  nm <- stats::setNames(models_empl1, c("Базовая модель", "Модель с НКН"))
+  df_to_flex(
+    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, single_model_inline = FALSE),
     note = coef_note
   )
 })
@@ -495,17 +750,14 @@ local({
 
 ```{r}
 #| label: tbl-regs-mem-random
-#| tbl-cap: "Фиксированные (неварьирующиеся) коэффициенты смешанных моделей с случайными наклонами по некогнитивным навыкам в разрезе: (1) количества лет с момента окончания наивысшего уровня образования, (2) квинтиля среднедушевого дохода домохозяйства в возрасте 15/16 лет, (3) уровня образования и (4) пола." 
+#| tbl-cap: "Занятость: модели со случайными наклонами по СЭС, образованию и полу"
+#| warning: false
+#| message: false
 
 local({
-  nm <- setNames(models_empl2, paste0("(", seq_along(models_empl2), ")"))
-  render_modelsummary_flex(
-    nm,
-    statistic = "({std.error}) {stars}",
-    gof_omit = "^ICC$",
-    coef_omit = "SD|Cor",
-    coef_rename = rename_vector_empl_rus,
-    add_rows = make_icc_rows(nm),
+  nm <- stats::setNames(models_empl2, c("СЭС", "Уровень образования", "Пол"))
+  df_to_flex(
+    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, single_model_inline = FALSE),
     note = coef_note
   )
 })
@@ -519,45 +771,40 @@ local({
 
 Полученные результаты вызывают обеспокоенность по поводу перспектив социальной мобильности, указывая на то, что молодёжь из более состоятельных семей имеет преимущество в успешной занятости.
 
+[Табличные коэффициенты случайных наклонов для модели по СЭС см. в @tbl-rs-coefs-ses-empl; предсказанные кривые см. на @fig-plot-ses.]{style="color: red;"}
+
+```{=latex}
+\clearpage
+```
+
 ```{r}
 #| label: fig-plot-ses
-#| fig-cap: Коэффициенты вероятности влияния некогнитивных навыков на занятость по квинтилям среднедушевого дохода домохозяйства (случайные коэффициенты модели со смешанными эффектами)
+#| fig-cap: "Занятость: предсказанные кривые по квинтилям СЭС"
 #| fig-width: 6.5
-#| fig-height: 7.5
+#| fig-height: 5.2
+#| fig-pos: H
+#| warning: false
+#| message: false
 
 local({
-  sig_skills <- c("Conscientiousness", "Extraversion")
-  df <- m4_ses_coefs |>
-    dplyr::mutate(
-      is_sig    = Skill %in% sig_skills,
-      lbl_hjust = ifelse(Estimate >= 0, -0.35, 1.35)
-    )
-  print(
-    ggplot(df, aes(Estimate, ses5)) +
-      geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
-      geom_segment(aes(x = 0, xend = Estimate, yend = ses5, color = is_sig),
-                   linewidth = 0.6) +
-      geom_point(aes(fill = is_sig, color = is_sig), shape = 21, size = 3) +
-      geom_text(aes(label = round(Estimate, 2), hjust = lbl_hjust),
-                size = 2.5, family = plot_text_family) +
-      scale_fill_manual(values = c("TRUE" = "#2166ac", "FALSE" = "white"),
-                        labels = c("TRUE" = "Значимо",  "FALSE" = "Незначимо"),
-                        name = NULL) +
-      scale_color_manual(values = c("TRUE" = "#2166ac", "FALSE" = "#999999"),
-                         guide = "none") +
-      scale_y_discrete(limits = rev) +
-      facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
-      labs(x = "Эффект, п.п.", y = NULL) +
-      theme_bw(base_family = plot_text_family, base_size = 11) +
-      theme(
-        panel.grid.minor = element_blank(),
-        strip.background = element_blank(),
-        strip.text       = element_text(face = "bold", size = rel(0.9)),
-        legend.position  = "bottom",
-        legend.text      = element_text(size = rel(0.8))
-      )
-  )
+  print(plot_random_slope_curves(models_empl2[[1]], group_var = "ses5", y_label = "Pr(занятость)"))
 })
+```
+
+```{r}
+#| label: tbl-rs-coefs-ses-empl
+#| tbl-cap: "Коэффициенты случайных наклонов по СЭС для модели «СЭС» из @tbl-regs-mem-random"
+#| warning: false
+#| message: false
+
+df_to_flex(
+  make_random_slope_coef_table(m4_ses_coefs, group_col = "ses5"),
+  note = note_rs_coef
+)
+```
+
+```{=latex}
+\clearpage
 ```
 
 ### Повышает ли уровень образования эффект от некогнитивных навыков на занятость?
@@ -568,45 +815,40 @@ local({
 
 Противоположная закономерность наблюдается в случае экстраверсии: её влияние оказывается более значимым для молодежи с низким уровнем образования. Эффект экстраверсии для респондентов без среднего образования составляет `r extr_no_school`, тогда как для молодежи с высшим образованием он снижается до `r extr_tert`. Другими словами, социальные навыки играют более важную роль в занятости молодежи без академических квалификаций высокого уровня.
 
+[Табличные коэффициенты случайных наклонов для модели по образованию см. в @tbl-rs-coefs-edu-empl; предсказанные кривые см. на @fig-plot-edu.]{style="color: red;"}
+
+```{=latex}
+\clearpage
+```
+
 ```{r}
 #| label: fig-plot-edu
-#| fig-cap: Коэффициенты влияния некогнитивных навыков на вероятность занятости в разрезе уровня образования, варьирующиеся коэффициенты модели со смешанными эффектами
+#| fig-cap: "Занятость: предсказанные кривые по уровню образования"
 #| fig-width: 6.5
-#| fig-height: 7
+#| fig-height: 5.2
+#| fig-pos: H
+#| warning: false
+#| message: false
 
 local({
-  sig_skills <- c("Conscientiousness", "Extraversion")
-  df <- m5_edu_coefs |>
-    dplyr::mutate(
-      is_sig    = Skill %in% sig_skills,
-      lbl_hjust = ifelse(Estimate >= 0, -0.35, 1.35)
-    )
-  print(
-    ggplot(df, aes(Estimate, edu_lvl)) +
-      geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
-      geom_segment(aes(x = 0, xend = Estimate, yend = edu_lvl, color = is_sig),
-                   linewidth = 0.6) +
-      geom_point(aes(fill = is_sig, color = is_sig), shape = 21, size = 3) +
-      geom_text(aes(label = round(Estimate, 2), hjust = lbl_hjust),
-                size = 2.5, family = plot_text_family) +
-      scale_fill_manual(values = c("TRUE" = "#2166ac", "FALSE" = "white"),
-                        labels = c("TRUE" = "Значимо",  "FALSE" = "Незначимо"),
-                        name = NULL) +
-      scale_color_manual(values = c("TRUE" = "#2166ac", "FALSE" = "#999999"),
-                         guide = "none") +
-      scale_y_discrete(limits = rev, labels = edu_labels_ru) +
-      facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
-      labs(x = "Эффект, п.п.", y = NULL) +
-      theme_bw(base_family = plot_text_family, base_size = 11) +
-      theme(
-        panel.grid.minor = element_blank(),
-        strip.background = element_blank(),
-        strip.text       = element_text(face = "bold", size = rel(0.9)),
-        legend.position  = "bottom",
-        legend.text      = element_text(size = rel(0.8))
-      )
-  )
+  print(plot_random_slope_curves(models_empl2[[2]], group_var = "edu_lvl", group_labels = edu_labels_ru, y_label = "Pr(занятость)"))
 })
+```
+
+```{r}
+#| label: tbl-rs-coefs-edu-empl
+#| tbl-cap: "Коэффициенты случайных наклонов по образованию для модели «Уровень образования» из @tbl-regs-mem-random"
+#| warning: false
+#| message: false
+
+df_to_flex(
+  make_random_slope_coef_table(m5_edu_coefs, group_col = "edu_lvl", group_labels = edu_labels_ru),
+  note = note_rs_coef
+)
+```
+
+```{=latex}
+\clearpage
 ```
 
 ### Могут ли некогнитивные навыки сократить гендерный разрыв в занятости?
@@ -617,45 +859,40 @@ local({
 
 Важно отметить, что экстраверсия демонстрирует противоположную закономерность. Хотя как само её влияние, так и гендерный разрыв в этом влиянии меньше, чем в случае добросовестности, увеличение экстраверсии на 1 стандартное отклонение повышает вероятность занятости у женщин на `r extr_female` п.п., в то время как у мужчин — на `r extr_male`. Это указывает на то, что экстраверсия является тем некогнитивным навыком, который может способствовать сокращению гендерного разрыва в занятости.
 
+[Табличные коэффициенты случайных наклонов для модели по полу см. в @tbl-rs-coefs-sex-empl; предсказанные кривые см. на @fig-plot-gender.]{style="color: red;"}
+
+```{=latex}
+\clearpage
+```
+
 ```{r}
 #| label: fig-plot-gender
-#| fig-cap: Коэффициенты влияния некогнитивных навыков на вероятность занятости по полу, варьирующиеся коэффициенты модели со смешанными эффектами
-#| fig-width: 5.5
-#| fig-height: 3.5
+#| fig-cap: "Занятость: предсказанные кривые по полу"
+#| fig-width: 6.5
+#| fig-height: 5.2
+#| fig-pos: H
+#| warning: false
+#| message: false
 
 local({
-  sig_skills <- c("Conscientiousness", "Extraversion")
-  col_male   <- "#2166ac"
-  col_female <- "#d6604d"
-  df <- m6_sex_coefs |>
-    dplyr::mutate(
-      is_sig   = Skill %in% sig_skills,
-      pt_fill  = dplyr::case_when(
-        is_sig & sex == "Male"   ~ col_male,
-        is_sig & sex == "Female" ~ col_female,
-        TRUE                     ~ "white"
-      )
-    )
-  print(
-    ggplot(df, aes(Estimate, Skill, group = sex)) +
-      geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
-      geom_segment(aes(x = 0, xend = Estimate, yend = Skill, color = sex),
-                   linewidth = 0.6, position = position_dodge(width = 0.4)) +
-      geom_point(aes(fill = pt_fill, color = sex), shape = 21, size = 3,
-                 position = position_dodge(width = 0.4)) +
-      scale_fill_identity() +
-      scale_color_manual(values = c("Male" = col_male, "Female" = col_female),
-                         labels = sex_labels_ru, name = NULL) +
-      scale_y_discrete(labels = skill_labels_ru) +
-      labs(x = "Эффект, п.п.", y = NULL) +
-      theme_bw(base_family = plot_text_family, base_size = 11) +
-      theme(
-        panel.grid.minor = element_blank(),
-        legend.position  = "bottom",
-        legend.text      = element_text(size = rel(0.8))
-      )
-  )
+  print(plot_random_slope_curves(models_empl2[[3]], group_var = "sex", group_labels = sex_labels_ru, y_label = "Pr(занятость)"))
 })
+```
+
+```{r}
+#| label: tbl-rs-coefs-sex-empl
+#| tbl-cap: "Коэффициенты случайных наклонов по полу для модели «Пол» из @tbl-regs-mem-random"
+#| warning: false
+#| message: false
+
+df_to_flex(
+  make_random_slope_coef_table(m6_sex_coefs, group_col = "sex", group_labels = sex_labels_ru),
+  note = note_rs_coef
+)
+```
+
+```{=latex}
+\clearpage
 ```
 
 ### Некогнитивные навыки и характер труда
@@ -664,17 +901,12 @@ local({
 
 ```{r}
 #| label: tbl-mem-occup
-#| tbl-cap: 'Фиксированные (неварьирующиеся) коэффициенты смешанных моделей выбора профессии: (1) Высококвалифицированные работники, занятые интеллектуальным трудом, (2) Высококвалифицированные работники, занятые интеллектуальным трудом, со случайными коэффицинтами некогнитивных навыков по социально-экономическому статусу'
+#| tbl-cap: 'Высококвалифицированный умственный труд: базовая модель и случайные наклоны по СЭС'
 
 local({
-  nm <- setNames(models_occup, paste0("(", seq_along(models_occup), ")"))
-  render_modelsummary_flex(
-    nm,
-    statistic = "({std.error}) {stars}",
-    gof_omit = "^ICC$",
-    coef_omit = "SD|Cor",
-    coef_rename = rename_vector_empl_rus,
-    add_rows = make_icc_rows(nm),
+  nm <- stats::setNames(models_occup, c("Базовая", "Случайные наклоны по СЭС"))
+  df_to_flex(
+    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, single_model_inline = FALSE),
     note = coef_note
   )
 })
@@ -693,47 +925,42 @@ local({
 
 Таким образом, полученные результаты подчеркивают не только значимость некогнитивных навыков для успешной интеграции в сегмент высококвалифицированного умственного труда, но и важность учета социально-экономического контекста, в котором данные навыки реализуются. Это подтверждает необходимость дифференцированного подхода к разработке молодежной политики, направленной на компенсацию структурных неравенств в доступе к «качественной» занятости.
 
+[Табличные коэффициенты случайных наклонов для модели по СЭС в модели умственного труда см. в @tbl-rs-coefs-occup-ses; предсказанные кривые см. на @fig-occup-ses.]{style="color: red;"}
+
+```{=latex}
+\clearpage
+```
+
 ```{r}
 #| label: fig-occup-ses
-#| fig-cap: 'Коэффициенты вероятности эффекта некогнитивных навыков на занятость в должностях, основанных на умственном труде, по квинтилям среднедушевого дохода домохозяйства: случайные кривые смешанной модели с взвешиванием обратной вероятности занятости.'
+#| fig-cap: 'Высококвалифицированный умственный труд: предсказанные кривые по квинтилям СЭС'
 #| fig-width: 6.5
-#| fig-height: 7.5
+#| fig-height: 5.2
+#| fig-pos: H
+#| warning: false
+#| message: false
 
 local({
-  sig_skills <- c("Openness", "Conscientiousness")
-  df <- m_occup_ses_coefs |>
-    dplyr::mutate(
-      is_sig    = Skill %in% sig_skills,
-      lbl_hjust = ifelse(Estimate >= 0, -0.35, 1.35)
-    )
-  print(
-    ggplot(df, aes(Estimate, ses5)) +
-      geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
-      geom_segment(aes(x = 0, xend = Estimate, yend = ses5, color = is_sig),
-                   linewidth = 0.6) +
-      geom_point(aes(fill = is_sig, color = is_sig), shape = 21, size = 3) +
-      geom_text(aes(label = round(Estimate, 2), hjust = lbl_hjust),
-                size = 2.5, family = plot_text_family) +
-      scale_fill_manual(values = c("TRUE" = "#2166ac", "FALSE" = "white"),
-                        labels = c("TRUE" = "Значимо",  "FALSE" = "Незначимо"),
-                        name = NULL) +
-      scale_color_manual(values = c("TRUE" = "#2166ac", "FALSE" = "#999999"),
-                         guide = "none") +
-      scale_y_discrete(limits = rev) +
-      facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
-      labs(x = "Эффект, п.п.", y = NULL) +
-      theme_bw(base_family = plot_text_family, base_size = 11) +
-      theme(
-        panel.grid.minor = element_blank(),
-        strip.background = element_blank(),
-        strip.text       = element_text(face = "bold", size = rel(0.9)),
-        legend.position  = "bottom",
-        legend.text      = element_text(size = rel(0.8))
-      )
-  )
+  print(plot_random_slope_curves(models_occup[[2]], group_var = "ses5", y_label = "Pr(высококвалифицированный умственный труд)"))
 })
 
 
+```
+
+```{r}
+#| label: tbl-rs-coefs-occup-ses
+#| tbl-cap: "Коэффициенты случайных наклонов по СЭС для модели «Случайные наклоны по СЭС» из @tbl-mem-occup"
+#| warning: false
+#| message: false
+
+df_to_flex(
+  make_random_slope_coef_table(m_occup_ses_coefs, group_col = "ses5"),
+  note = note_rs_coef
+)
+```
+
+```{=latex}
+\clearpage
 ```
 
 ### Влияют ли некогнитивные способности на выбор занятости выпускников с высшим образованием в менее квалифицированных должностях?
@@ -748,18 +975,15 @@ local({
 
 ```{r}
 #| label: tbl-reg-mismatch
-#| tbl-cap: Результаты регрессионной модели со смешанными эффектами, модель несоответсвия уровня образования выполняемой работе (избыточной квалификации) с взвешиванием обратной вероятности занятости
+#| tbl-cap: "Избыточная квалификация: результаты модели со смешанными эффектами"
+#| warning: false
+#| message: false
 
 local({
-  nm <- list("(1)" = models_suppl[["Educational Mismatch"]])
-  render_modelsummary_flex(
-    nm,
-    statistic = "({std.error}) {stars}",
-    gof_omit = "^ICC$",
-    coef_omit = "SD|Cor",
-    coef_rename = rename_vector_empl_rus,
-    add_rows = make_icc_rows(nm),
-    note = coef_note
+  nm <- list("Избыточная квалификация" = models_suppl[["Educational Mismatch"]])
+  df_to_flex(
+    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, single_model_inline = TRUE),
+    note = coef_note_mismatch
   )
 })
 ```

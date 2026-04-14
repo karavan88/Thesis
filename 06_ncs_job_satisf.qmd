@@ -54,71 +54,264 @@ invisible(capture.output({
 #| echo: false
 #| include: false
 
-style_flex_table <- function(ft, note = NULL) {
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(flextable)
+library(modelsummary)
+library(performance)
+library(ggeffects)
+
+style_flex_table <- function(ft, note = NULL, latex_total_width = 5.6) {
   ft <- flextable::theme_booktabs(ft)
   ft <- flextable::font(ft, fontname = "Times New Roman", part = "all")
-  ft <- flextable::fontsize(ft, size = 10, part = "all")
-  ft <- flextable::padding(ft, padding = 4, part = "all")
+  ft <- flextable::fontsize(ft, size = if (knitr::is_latex_output()) 9 else 10, part = "all")
+  ft <- flextable::padding(ft, padding = if (knitr::is_latex_output()) 1 else 4, part = "all")
+  ft <- flextable::line_spacing(ft, space = 1, part = "all")
   ft <- flextable::bold(ft, part = "header")
+  if ("term" %in% ft$col_keys) {
+    ft <- flextable::set_header_labels(ft, term = "")
+  }
 
   if (length(ft$col_keys) > 1) {
     ft <- flextable::align(ft, j = ft$col_keys[-1], align = "center", part = "all")
   }
-
   ft <- flextable::align(ft, j = ft$col_keys[1], align = "left", part = "all")
+
+  section_titles <- c("Фиксированные эффекты", "Случайные эффекты", "Качество модели")
+  ds <- ft$body$dataset
+  if (!is.null(ds) && "term" %in% names(ds)) {
+    sec_rows <- which(ds$term %in% section_titles)
+    if (length(sec_rows) > 0) {
+      for (r in sec_rows) {
+        ft <- flextable::merge_at(ft, i = r, j = seq_along(ft$col_keys), part = "body")
+      }
+      ft <- flextable::bold(ft, i = sec_rows, part = "body")
+      ft <- flextable::bg(ft, i = sec_rows, bg = "#F2F2F2", part = "body")
+      ft <- flextable::align(ft, i = sec_rows, align = "left", part = "body")
+    }
+  }
 
   if (!is.null(note)) {
     ft <- flextable::add_footer_lines(ft, values = note)
+    ft <- flextable::font(ft, fontname = "Times New Roman", part = "footer")
     ft <- flextable::fontsize(ft, size = 9, part = "footer")
+  }
+
+  ft <- flextable::set_table_properties(
+    ft,
+    layout = if (knitr::is_latex_output()) "fixed" else "autofit",
+    opts_word = list(split = TRUE),
+    opts_pdf = list(float = "none", tabcolsep = 1, arraystretch = 1)
+  )
+  if (knitr::is_latex_output()) {
+    ncols <- length(ft$col_keys)
+    total_w <- latex_total_width
+    if (ncols >= 2) {
+      first_w <- max(min(2.2, total_w - 0.6 * (ncols - 1)), 1.6)
+      other_w <- max((total_w - first_w) / (ncols - 1), 0.55)
+      ft <- flextable::width(ft, j = 1, width = first_w)
+      ft <- flextable::width(ft, j = 2:ncols, width = other_w)
+    } else {
+      ft <- flextable::width(ft, j = 1, width = total_w)
+    }
+    ft <- flextable::paginate(ft, init = TRUE, hdr_ftr = TRUE)
+    return(ft)
   }
 
   flextable::autofit(ft)
 }
 
-df_to_flex <- function(data, note = NULL) {
-  if (knitr::is_latex_output()) {
-    tbl <- kableExtra::kbl(data, format = "latex", booktabs = TRUE, linesep = "")
-    tbl <- if (ncol(data) > 4) {
-      kableExtra::kable_styling(tbl, latex_options = c("scale_down"), font_size = 9)
-    } else {
-      kableExtra::kable_styling(tbl, font_size = 9)
-    }
-    if (!is.null(note)) {
-      tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
-                                  footnote_as_chunk = TRUE, threeparttable = TRUE)
-    }
-    return(tbl)
-  }
-  style_flex_table(flextable::flextable(data), note = note)
+df_to_flex <- function(data, note = NULL, latex_total_width = 5.6) {
+  style_flex_table(flextable::flextable(data), note = note, latex_total_width = latex_total_width)
 }
 
-render_modelsummary_flex <- function(models, note = NULL, add_rows = NULL, ...) {
-  if (!is.null(add_rows)) {
-    tmp <- modelsummary::modelsummary(models, output = "dataframe", add_rows = NULL, ...)
-    n_est <- sum(tmp$part == "estimates")
-    attr(add_rows, "position") <- seq_len(nrow(add_rows)) + n_est
+safe_r2 <- function(model) {
+  out <- NULL
+  tryCatch({
+    suppressWarnings(suppressMessages({
+      capture.output({
+        out <- performance::r2_nakagawa(model, verbose = FALSE)
+      })
+    }))
+  }, error = function(e) {
+    out <<- NULL
+  })
+  if (is.null(out)) return(c(marginal = NA_real_, conditional = NA_real_))
+  c(marginal = unname(out$R2_marginal), conditional = unname(out$R2_conditional))
+}
+
+make_re_diagnostics_rows <- function(models_list, digits = 3) {
+  var_labels <- c(
+    "idind" = "Индивидуальный ID",
+    "region" = "Регион",
+    "occupation" = "Профессия",
+    "hourly_wage_quintile" = "Квинтиль заработной платы",
+    "age" = "Возраст",
+    "age_factor" = "Возраст",
+    "edu_lvl" = "Уровень образования",
+    "ses5" = "СЭС",
+    "sex" = "Пол",
+    "O" = "Открытость",
+    "C" = "Добросовестность",
+    "E" = "Экстраверсия",
+    "A" = "Доброжелательность",
+    "ES" = "Эмоциональная стабильность"
+  )
+
+  format_one <- function(m) {
+    vc <- as.data.frame(lme4::VarCorr(m))
+    vc <- vc |>
+      dplyr::filter(is.na(var2)) |>
+      dplyr::mutate(
+        grp_lab = dplyr::recode(grp, !!!var_labels, .default = grp),
+        var1_lab = dplyr::recode(var1, !!!var_labels, .default = var1),
+        comp = dplyr::case_when(
+          grp == "Residual" ~ "Var(Residual)",
+          var1 == "(Intercept)" ~ paste0("Var(u0): ", grp_lab),
+          TRUE ~ paste0("Var(u1): ", grp_lab, " | ", var1_lab)
+        )
+      )
+
+    total_var <- sum(vc$vcov, na.rm = TRUE)
+    vals <- setNames(
+      sprintf(
+        paste0("%.", digits, "f (", "%.1f%%", ")"),
+        vc$vcov,
+        100 * vc$vcov / total_var
+      ),
+      vc$comp
+    )
+
+    vals
   }
-  if (knitr::is_latex_output()) {
-    tbl <- modelsummary::modelsummary(models, output = "kableExtra", add_rows = add_rows, ...)
-    tbl <- kableExtra::kable_styling(tbl,
-                                     latex_options = c("scale_down"),
-                                     font_size = 9)
-    if (!is.null(note)) {
-      tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
-                                  footnote_as_chunk = TRUE, threeparttable = TRUE)
+
+  diag_list <- lapply(models_list, format_one)
+
+  all_terms <- unique(unlist(lapply(diag_list, names)))
+  int_terms <- grep("^Var\\(u0\\)", all_terms, value = TRUE)
+  slope_terms <- grep("^Var\\(u1\\)", all_terms, value = TRUE)
+  resid_terms <- grep("^Var\\(Residual\\)$", all_terms, value = TRUE)
+  ordered_terms <- c(sort(int_terms), sort(slope_terms), resid_terms)
+  ordered_terms <- ordered_terms[ordered_terms %in% all_terms]
+
+  rows <- lapply(ordered_terms, function(term) {
+    vals <- sapply(diag_list, function(x) ifelse(term %in% names(x), x[[term]], ""))
+    c(list(term = term), as.list(vals))
+  })
+
+  out <- do.call(rbind, lapply(rows, function(r) as.data.frame(r, stringsAsFactors = FALSE)))
+  names(out) <- c("term", names(models_list))
+  out
+}
+
+make_model_quality_rows <- function(models_list) {
+  one_model <- function(m) {
+    r2_vals <- safe_r2(m)
+    c(
+      "RMSE" = sprintf("%.3f", sqrt(mean(stats::residuals(m)^2, na.rm = TRUE))),
+      "R2 marginal" = ifelse(is.na(r2_vals[["marginal"]]), "", sprintf("%.3f", r2_vals[["marginal"]])),
+      "R2 conditional" = ifelse(is.na(r2_vals[["conditional"]]), "", sprintf("%.3f", r2_vals[["conditional"]])),
+      "N" = as.character(stats::nobs(m))
+    )
+  }
+
+  stat_list <- lapply(models_list, one_model)
+  stat_names <- c("RMSE", "R2 marginal", "R2 conditional", "N")
+
+  rows <- lapply(stat_names, function(term) {
+    vals <- sapply(stat_list, function(x) x[[term]])
+    c(list(term = term), as.list(vals))
+  })
+
+  out <- do.call(rbind, lapply(rows, function(r) as.data.frame(r, stringsAsFactors = FALSE)))
+  names(out) <- c("term", names(models_list))
+  out
+}
+
+build_sectioned_model_table <- function(models_list, coef_rename = NULL, single_model_inline = FALSE) {
+  ms <- modelsummary::modelsummary(
+    models_list,
+    output = "dataframe",
+    statistic = "({std.error}) {stars}",
+    gof_omit = ".*",
+    coef_omit = "SD|Cor|Intercept",
+    coef_rename = coef_rename
+  )
+
+  est <- ms |> dplyr::filter(part == "estimates")
+  model_cols <- setdiff(names(est), c("part", "term", "statistic"))
+
+  groups <- split(est, cumsum(est$statistic == "estimate"))
+  fixed_rows <- lapply(groups, function(g) {
+    e <- g[1, , drop = FALSE]
+    s <- if (nrow(g) > 1) g[2, , drop = FALSE] else NULL
+
+    vals <- lapply(model_cols, function(col) {
+      ev <- as.character(e[[col]])
+      sv <- if (!is.null(s)) as.character(s[[col]]) else ""
+      if (single_model_inline && length(model_cols) == 1) {
+        if (!nzchar(ev)) return("")
+        if (nzchar(sv)) return(paste(ev, sv))
+        return(ev)
+      }
+      ev
+    })
+    names(vals) <- model_cols
+    row_main <- as.data.frame(c(list(term = as.character(e$term)), vals), stringsAsFactors = FALSE, check.names = FALSE)
+
+    if (single_model_inline && length(model_cols) == 1) {
+      return(row_main)
     }
-    return(tbl)
+
+    if (!is.null(s)) {
+      se_vals <- lapply(model_cols, function(col) as.character(s[[col]]))
+      names(se_vals) <- model_cols
+      row_se <- as.data.frame(c(list(term = ""), se_vals), stringsAsFactors = FALSE, check.names = FALSE)
+      return(dplyr::bind_rows(row_main, row_se))
+    }
+    row_main
+  })
+  fixed_block <- dplyr::bind_rows(fixed_rows)
+
+  re_block <- make_re_diagnostics_rows(models_list)
+  qual_block <- make_model_quality_rows(models_list)
+
+  sec_row <- function(lbl) {
+    x <- as.list(c(lbl, rep("", length(model_cols))))
+    names(x) <- c("term", model_cols)
+    as.data.frame(x, stringsAsFactors = FALSE, check.names = FALSE)
   }
-  ft <- modelsummary::modelsummary(models, output = "flextable", add_rows = add_rows, ...)
-  style_flex_table(ft, note = note)
+
+  dplyr::bind_rows(
+    sec_row("Фиксированные эффекты"),
+    fixed_block,
+    sec_row("Случайные эффекты"),
+    re_block,
+    sec_row("Качество модели"),
+    qual_block
+  )
 }
 
 skill_labels_ru <- c(
-  "Openness" = "Открытость",
   "Conscientiousness" = "Добросовестность",
   "Extraversion" = "Экстраверсия",
-  "Agreeableness" = "Доброжелательность",
-  "Emotional Stability" = "Эмоциональная стабильность"
+  "Emotional Stability" = "Эмоциональная стабильность",
+  "Openness" = "Открытость",
+  "Agreeableness" = "Доброжелательность"
+)
+
+wage_q_labels_ru <- c(
+  "Q1" = "Q1",
+  "Q2" = "Q2",
+  "Q3" = "Q3",
+  "Q4" = "Q4",
+  "Q5" = "Q5",
+  "1" = "Q1",
+  "2" = "Q2",
+  "3" = "Q3",
+  "4" = "Q4",
+  "5" = "Q5"
 )
 
 rename_vector_js_ru <- c(
@@ -147,6 +340,12 @@ coef_note_js <- paste(
   "*** p < 0.001, ** p < 0.01, * p < 0.05, . p < 0.1.",
   "Базовые категории для дамми-переменных: пол — женщины;",
   "образование — высшее; тип поселения — сельская местность.",
+  "В блоке случайных эффектов: оценка показывает дисперсию компоненты; число в скобках — доля от общей дисперсии (%).",
+  "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы."
+)
+
+coef_note_rs <- paste(
+  "Примечание: приведены оценки случайных коэффициентов модели 3.",
   "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы."
 )
 
@@ -156,46 +355,74 @@ models_satisf_rus <- list(
   "Заработная плата" = m6_satisf
 )
 
-make_icc_rows <- function(models_list) {
-  lbl_map <- c(
-    idind                = "ICC: Индивидуальный ID",
-    region               = "ICC: Регион",
-    age                  = "ICC: Возраст",
-    age_factor           = "ICC: Возраст",
-    edu_lvl              = "ICC: Образование",
-    ses5                 = "ICC: Квинтиль СЭС",
-    sex                  = "ICC: Пол",
-    occupation           = "ICC: Профессия",
-    hourly_wage_quintile = "ICC: Квинтиль зарплаты"
-  )
-  get_var_comps <- function(m) {
-    tryCatch({
-      vc <- lme4::VarCorr(m)
-      fam <- tryCatch(stats::family(m)$family, error = function(e) "gaussian")
-      sigma2_e <- if (identical(fam, "binomial")) pi^2 / 3 else attr(vc, "sc")^2
-      group_vars <- sapply(vc, function(mat) as.numeric(mat)[1])
-      total_var <- sum(group_vars) + sigma2_e
-      list(
-        group    = round(group_vars / total_var, 3),
-        residual = round(sigma2_e   / total_var, 3)
-      )
-    }, error = function(e) NULL)
-  }
-  results <- lapply(models_list, get_var_comps)
-  all_groups <- unique(unlist(lapply(results, function(r) if (!is.null(r)) names(r$group))))
-  rows <- lapply(all_groups, function(g) {
-    lbl  <- if (g %in% names(lbl_map)) lbl_map[[g]] else paste0("ICC: ", g)
-    vals <- sapply(results, function(r) {
-      if (is.null(r)) return("")
-      if (g %in% names(r$group)) as.character(r$group[[g]]) else ""
-    })
-    c(list(term = lbl), as.list(vals))
+make_wage_slope_table <- function(df) {
+  df |>
+    dplyr::transmute(
+      `Навык` = dplyr::recode(Skill, !!!skill_labels_ru, .default = Skill),
+      `Квинтиль заработной платы` = dplyr::recode(as.character(hourly_wage_quintile), !!!wage_q_labels_ru, .default = as.character(hourly_wage_quintile)),
+      `Оценка` = round(Estimate, 3)
+    ) |>
+    tidyr::pivot_wider(names_from = `Квинтиль заработной платы`, values_from = `Оценка`) |>
+    dplyr::arrange(`Навык`)
+}
+
+plot_random_slope_trends_js <- function(model,
+                                        group_var = "hourly_wage_quintile",
+                                        skill_vars = c("O", "C", "E", "A", "ES"),
+                                        skill_labels = NULL,
+                                        group_labels = NULL,
+                                        y_label = "Pr(удовлетворенность работой)") {
+  pred_list <- lapply(skill_vars, function(sv) {
+    term1 <- sprintf("%s [-2:2 by=0.1]", sv)
+    p <- tryCatch(
+      ggeffects::ggpredict(model, terms = c(term1, group_var), type = "random"),
+      error = function(e) NULL
+    )
+    if (is.null(p)) return(NULL)
+    d <- as.data.frame(p)
+    d$skill <- sv
+    d
   })
-  resid_vals <- sapply(results, function(r) if (is.null(r)) "" else as.character(r$residual))
-  rows <- c(rows, list(c(list(term = "ICC: Остаток"), as.list(resid_vals))))
-  df <- do.call(rbind, lapply(rows, function(r) as.data.frame(r, stringsAsFactors = FALSE)))
-  names(df) <- c("term", names(models_list))
-  df
+
+  pred <- dplyr::bind_rows(pred_list)
+  if (nrow(pred) == 0) {
+    return(ggplot2::ggplot() + ggplot2::theme_void() +
+             ggplot2::labs(title = "Не удалось построить ggpredict-тренды: проверьте спецификацию модели"))
+  }
+
+  pred <- pred |>
+    dplyr::mutate(
+      skill = if (!is.null(skill_labels)) dplyr::recode(skill, !!!skill_labels, .default = skill) else skill,
+      group = as.character(group)
+    )
+
+  if (!is.null(group_labels)) {
+    pred <- pred |> dplyr::mutate(group = dplyr::recode(group, !!!group_labels, .default = group))
+  }
+
+  p <- ggplot2::ggplot(pred, ggplot2::aes(x = x, y = predicted, color = group, fill = group)) +
+    ggplot2::geom_line(linewidth = 0.8)
+
+  if (all(c("conf.low", "conf.high") %in% names(pred))) {
+    p <- p +
+      ggplot2::geom_ribbon(ggplot2::aes(ymin = conf.low, ymax = conf.high), alpha = 0.12, color = NA)
+  }
+
+  p +
+    ggplot2::facet_wrap(~ skill, scales = "free_y") +
+    ggplot2::labs(
+      x = "Значение навыка (стандартизованная шкала)",
+      y = y_label,
+      color = "Квинтиль заработной платы",
+      fill = "Квинтиль заработной платы"
+    ) +
+    ggplot2::theme_bw(base_family = plot_text_family, base_size = 11) +
+    ggplot2::theme(
+      panel.grid.minor = ggplot2::element_blank(),
+      legend.position = "bottom",
+      strip.background = ggplot2::element_blank(),
+      strip.text = ggplot2::element_text(face = "bold")
+    )
 }
 ```
 
@@ -332,16 +559,13 @@ if (knitr::is_latex_output()) par(old_par)
 ```{r}
 #| label: tbl-mem-ncs
 #| tbl-cap: 'Смешанные регрессионные модели удовлетворённости работой: 1) социально-экономические факторы, 2) социально-экономические факторы и некогнитивные навыки, 3) модель с эффектами случайных коэффициентов некогнитивных навыков по квинтилям заработной платы'
+#| warning: false
+#| message: false
 
 local({
-  nm <- setNames(models_job_satisf_list, paste0("(", seq_along(models_job_satisf_list), ")"))
-  render_modelsummary_flex(
-    nm,
-    statistic = "({std.error}) {stars}",
-    gof_omit = "^ICC$",
-    coef_omit = "SD|Cor",
-    coef_rename = rename_vector_js_ru,
-    add_rows = make_icc_rows(nm),
+  nm <- stats::setNames(models_job_satisf_list, c("Модель 1", "Модель 2", "Модель 3"))
+  df_to_flex(
+    build_sectioned_model_table(nm, coef_rename = rename_vector_js_ru, single_model_inline = FALSE),
     note = coef_note_js
   )
 })
@@ -349,51 +573,65 @@ local({
 
 ### Варьируются ли эффекты некогнитивных навыков в зависимости от квинтиля заработной платы?
 
-Для изучения взаимодействия между удовлетворённостью работой, заработной платой и некогнитивными навыками была построена третья модель, в которой логарифм почасовой зарплаты исключён из фиксированной части, а случайные коэффициенты некогнитивных навыков варьируются по квинтилям зарплаты. Коэффициенты фиксированной части приведены в третьем столбце @tbl-mem-ncs, а результаты случайной части визуализированы на @fig-wages-ncs.
+Для изучения взаимодействия между удовлетворённостью работой, заработной платой и некогнитивными навыками была построена третья модель, в которой логарифм почасовой зарплаты исключён из фиксированной части, а случайные коэффициенты некогнитивных навыков варьируются по квинтилям зарплаты. Коэффициенты фиксированной части приведены в третьем столбце @tbl-mem-ncs, оценки случайных коэффициентов представлены в @tbl-js-rs-coefs, а соответствующие ggpredict-тренды визуализированы на @fig-wages-ncs.
 
 Наиболее интересный паттерн выявлен для экстраверсии: чем ниже уровень заработной платы, тем выше эффект экстраверсии на удовлетворённость работой. Так, для молодёжи из нижнего квинтиля заработной платы экстраверсия увеличивает вероятность удовлетворённости более чем на 5 п.п.. По мере роста квинтиля коэффициент снижается, достигая 2.38 п.п. для верхнего квинтиля. Схожий, хотя и менее выраженный паттерн наблюдается для добросовестности: её эффект также выше в нижних квинтилях, но в целом можно сказать, что более добросовестные индивиды — более удовлетворены работой вне зависимости от зарплаты. Наибольший эффект добросовестности — в 3.39 п.п. — наблюдается во втором квинтиле, наименьший — в пятом (2.02 п.п.).
 
 Интересно, что наибольший эффект эмоциональной стабильности наблюдается во втором квинтиле зарплаты (почти 5 п.п.), то есть среди молодёжи с доходом ниже медианного, но не на самом дне распределения. За ним следует четвёртый квинтиль (2.8 п.п.).
 
+```{=latex}
+\clearpage
+```
+
+::: {.layout-ncol=2}
+
 ```{r}
-#| label: fig-wages-ncs
-#| fig-cap: Случайные коэффициенты некогнитивных навыков на удовлетворённость работой, результаты регрессии со смешанными эффектами
-#| fig-width: 6.5
-#| fig-height: 7.5
+#| label: tbl-js-rs-coefs
+#| tbl-cap: "Оценки случайных коэффициентов некогнитивных навыков по квинтилям заработной платы (модель 3)"
+#| warning: false
+#| message: false
 
 local({
-  sig_skills <- c("Conscientiousness", "Extraversion", "Emotional Stability")
-  df <- m3_satisf_coefs |>
-    dplyr::mutate(
-      is_sig    = Skill %in% sig_skills,
-      lbl_hjust = ifelse(Estimate >= 0, -0.35, 1.35)
-    )
-  print(
-    ggplot(df, aes(Estimate, hourly_wage_quintile)) +
-      geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
-      geom_segment(aes(x = 0, xend = Estimate, yend = hourly_wage_quintile,
-                       color = is_sig), linewidth = 0.6) +
-      geom_point(aes(fill = is_sig, color = is_sig), shape = 21, size = 3) +
-      geom_text(aes(label = round(Estimate, 2), hjust = lbl_hjust),
-                size = 2.5, family = plot_text_family) +
-      scale_fill_manual(values = c("TRUE" = "#2166ac", "FALSE" = "white"),
-                        labels = c("TRUE" = "Значимо",  "FALSE" = "Незначимо"),
-                        name = NULL) +
-      scale_color_manual(values = c("TRUE" = "#2166ac", "FALSE" = "#999999"),
-                         guide = "none") +
-      scale_y_discrete(limits = rev) +
-      facet_wrap(~ Skill, ncol = 1, labeller = as_labeller(skill_labels_ru)) +
-      labs(x = "Эффект, п.п.", y = "Квинтиль заработной платы", title = NULL) +
-      theme_bw(base_family = plot_text_family, base_size = 11) +
-      theme(
-        panel.grid.minor = element_blank(),
-        strip.background = element_blank(),
-        strip.text       = element_text(face = "bold", size = rel(0.9)),
-        legend.position  = "bottom",
-        legend.text      = element_text(size = rel(0.8))
-      )
+  df_to_flex(
+    make_wage_slope_table(m3_satisf_coefs),
+    note = coef_note_rs,
+    latex_total_width = 2.7
   )
 })
+```
+
+```{r}
+#| label: fig-wages-ncs
+#| fig-cap: Случайные наклоны некогнитивных навыков по квинтилям заработной платы (ggpredict-тренды), модель 3
+#| fig-width: 4.6
+#| fig-height: 6.0
+#| warning: false
+#| message: false
+
+local({
+  print(
+    plot_random_slope_trends_js(
+      model = m3_satisf,
+      group_var = "hourly_wage_quintile",
+      skill_vars = c("O", "C", "E", "A", "ES"),
+      skill_labels = c(
+        "O" = "Открытость",
+        "C" = "Добросовестность",
+        "E" = "Экстраверсия",
+        "A" = "Доброжелательность",
+        "ES" = "Эмоциональная стабильность"
+      ),
+      group_labels = wage_q_labels_ru,
+      y_label = "Pr(удовлетворенность работой)"
+    )
+  )
+})
+```
+
+:::
+
+```{=latex}
+\clearpage
 ```
 
 ### Эффект некогнитивных навыков на отдельные аспекты удовлетворенности работой
@@ -403,15 +641,12 @@ local({
 ```{r}
 #| label: tbl-mem-ncs2
 #| tbl-cap: 'Результаты смешанных моделей регрессии удовлетворенности: 1) возможностями карьерного роста, 2) условиями труда, 3) заработной платой'
+#| warning: false
+#| message: false
 
 local({
-  render_modelsummary_flex(
-    models_satisf_rus,
-    statistic = "({std.error}) {stars}",
-    coef_omit = "Intercept|SD|Cor",
-    gof_omit = "^ICC$",
-    coef_rename = rename_vector_js_ru,
-    add_rows = make_icc_rows(models_satisf_rus),
+  df_to_flex(
+    build_sectioned_model_table(models_satisf_rus, coef_rename = rename_vector_js_ru, single_model_inline = FALSE),
     note = coef_note_js
   )
 })
