@@ -44,11 +44,13 @@ source("project_config.R")
 
 src_ch4_main <- file.path(projectFolder, "03_EmplNCS/01_codes/03_regression_empl.R")
 src_ch4_suppl <- file.path(projectFolder, "03_EmplNCS/01_codes/04_regression_supplement.R")
+src_ch5_main <- file.path(projectFolder, "04_ReturnsNCS/01_codes/03_regression_returns_final.R")
 src_ch6_main <- file.path(projectFolder, "05_JobSatisfNCS/01_codes/03_regressions_jobsatisf.R")
 
 invisible(capture.output({
   source(file.path(codesEmplNcs, "02_descr_empl.R"))
   source(file.path(codesEmplNcs, "05_regression_final.R"))
+  source(file.path(codesReturnsNcs, "05_output_returns_rus.R"))
   source(file.path(codesJobSatisfNcs, "01_data_prep_jobsatisf.R"))
   source(file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R"))
 }))
@@ -84,7 +86,7 @@ get_model_name_from_code <- function(code_snippet, fallback = "model_obj") {
   fallback
 }
 
-print_model_output <- function(label, model, source_file, start_line, end_line) {
+render_model_output <- function(model, source_file, start_line, end_line, render_code, render_output) {
   code_snippet <- get_source_code(source_file, start_line, end_line)
   model_name <- get_model_name_from_code(code_snippet, fallback = "model_obj")
   assign(model_name, model, envir = knitr::knit_global())
@@ -92,11 +94,11 @@ print_model_output <- function(label, model, source_file, start_line, end_line) 
   code_chunk <- paste0(
     "```{r eval=FALSE, echo=TRUE}\n",
     code_snippet, "\n\n",
-    "summary(", model_name, ")\n",
+    render_code(model_name), "\n",
     "```\n"
   )
   code_rendered <- knitr::knit_child(text = code_chunk, quiet = TRUE, envir = knitr::knit_global())
-  out <- capture.output(summary(model))
+  out <- capture.output(render_output(model))
 
   cat("\n\n")
   cat(code_rendered, sep = "\n")
@@ -104,6 +106,28 @@ print_model_output <- function(label, model, source_file, start_line, end_line) 
   cat("```text\n")
   cat(out, sep = "\n")
   cat("\n```\n")
+}
+
+print_model_output <- function(label, model, source_file, start_line, end_line) {
+  render_model_output(
+    model = model,
+    source_file = source_file,
+    start_line = start_line,
+    end_line = end_line,
+    render_code = function(model_name) paste0("summary(", model_name, ")"),
+    render_output = function(model_obj) summary(model_obj)
+  )
+}
+
+print_raw_model_output <- function(label, model, source_file, start_line, end_line) {
+  render_model_output(
+    model = model,
+    source_file = source_file,
+    start_line = start_line,
+    end_line = end_line,
+    render_code = function(model_name) model_name,
+    render_output = function(model_obj) print(model_obj)
+  )
 }
 ```
 
@@ -189,6 +213,118 @@ print_model_output("models_occup[[2]]", models_occup[[2]], src_ch4_suppl, 149, 1
 print_model_output("models_suppl[['Educational Mismatch']]", models_suppl[["Educational Mismatch"]], src_ch4_suppl, 194, 201)
 ```
 
+## Глава 5 {.unnumbered}
+
+### Базовая модель заработной платы {.unnumbered}
+
+Аннотация: таблица @tbl-baseline-reg-ipw.
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("m1_ipw_summaries", m1_ipw_summaries, src_ch5_main, 236, 242)
+```
+
+### Расширенная модель заработной платы с учетом образования {.unnumbered}
+
+Аннотация: таблица @tbl-extended-reg.
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("m2_ipw_summaries", m2_ipw_summaries, src_ch5_main, 294, 300)
+```
+
+### Модель для группы с высшим образованием {.unnumbered}
+
+Аннотация: рисунок @fig-edu-ncs, панель «Высшее образование».
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("m3_edu_ipw_summaries[['Tertiary']]", m3_edu_ipw_summaries[["Tertiary"]], src_ch5_main, 339, 345)
+```
+
+### Модель для группы со средним профессиональным образованием {.unnumbered}
+
+Аннотация: рисунок @fig-edu-ncs, панель «Среднее профессиональное образование».
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("m3_edu_ipw_summaries[['Secondary_Vocational']]", m3_edu_ipw_summaries[["Secondary_Vocational"]], src_ch5_main, 355, 361)
+```
+
+### Модель для группы со средним образованием и ниже {.unnumbered}
+
+Аннотация: рисунок @fig-edu-ncs, панель «Среднее образование и ниже».
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("m3_edu_ipw_summaries[['Secondary_or_below']]", m3_edu_ipw_summaries[["Secondary_or_below"]], src_ch5_main, 371, 377)
+```
+
+### Модель с взаимодействием пола и некогнитивных навыков {.unnumbered}
+
+Аннотация: таблица @tbl-reg-gndr.
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("m4_ipw_summaries", m4_ipw_summaries, src_ch5_main, 440, 446)
+```
+
+### Медианная модель для населения 16-65 лет {.unnumbered}
+
+Аннотация: таблица @tbl-reg-lc, столбец «16-65».
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("m_lc_ipw_summaries[['age_16_65']]", m_lc_ipw_summaries[["age_16_65"]], src_ch5_main, 479, 487)
+```
+
+### Медианная модель для возрастной группы 30-39 лет {.unnumbered}
+
+Аннотация: таблица @tbl-reg-lc, столбец «30-39».
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("m_lc_ipw_summaries[['age_30_39']]", m_lc_ipw_summaries[["age_30_39"]], src_ch5_main, 500, 508)
+```
+
+### Медианная модель для возрастной группы 40-49 лет {.unnumbered}
+
+Аннотация: таблица @tbl-reg-lc, столбец «40-49».
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("m_lc_ipw_summaries[['age_40_49']]", m_lc_ipw_summaries[["age_40_49"]], src_ch5_main, 521, 529)
+```
+
+### Медианная модель для возрастной группы 50-65 лет {.unnumbered}
+
+Аннотация: таблица @tbl-reg-lc, столбец «50-65».
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("m_lc_ipw_summaries[['age_50_65']]", m_lc_ipw_summaries[["age_50_65"]], src_ch5_main, 542, 550)
+```
+
+### Обобщенная аддитивная модель возраста {.unnumbered}
+
+Аннотация: рисунок @fig-age-gam.
+
+```{r}
+#| echo: false
+#| results: asis
+print_raw_model_output("gam", gam, src_ch5_main, 589, 589)
+```
+
 ## Глава 6 {.unnumbered}
 
 ### Модель удовлетворенности работой 1 {.unnumbered}
@@ -250,5 +386,3 @@ print_model_output("models_satisf_rus[[2]]", models_satisf_rus[[2]], src_ch6_mai
 #| results: asis
 print_model_output("models_satisf_rus[[3]]", models_satisf_rus[[3]], src_ch6_main, 308, 316)
 ```
-
-\`\`\`
