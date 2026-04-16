@@ -1,0 +1,254 @@
+---
+number-sections: false
+---
+
+# Приложения
+
+```{=latex}
+\setcounter{secnumdepth}{0}
+\AtBeginEnvironment{Shaded}{\footnotesize}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},breaklines=true,breakanywhere=true,breakindent=0pt,fontsize=\footnotesize}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{breaklines=true,breakanywhere=true,breakindent=0pt,fontsize=\footnotesize}
+```
+
+## Приложение 1. Код и полные выводы регрессионных моделей {.unnumbered}
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| output: false
+#| results: 'hide'
+
+# Ensure UTF-8 rendering consistency for Russian text in console outputs.
+force_utf8_locale <- function() {
+  for (loc in c("ru_RU.UTF-8", "en_US.UTF-8")) {
+    res <- try(Sys.setlocale("LC_CTYPE", loc), silent = TRUE)
+    if (!inherits(res, "try-error") && is.character(res) && nzchar(res)) {
+      Sys.setenv(LANG = res, LC_CTYPE = res)
+      options(encoding = "UTF-8")
+      return(invisible(res))
+    }
+  }
+  invisible(NULL)
+}
+
+force_utf8_locale()
+
+# Favor regular decimal output in printed model summaries.
+options(scipen = 999)
+
+projectFolder <- "/Users/karavan88/Documents/GitHub/NonCognSkillsRLMS"
+setwd(projectFolder)
+source("project_config.R")
+
+src_ch4_main <- file.path(projectFolder, "03_EmplNCS/01_codes/03_regression_empl.R")
+src_ch4_suppl <- file.path(projectFolder, "03_EmplNCS/01_codes/04_regression_supplement.R")
+src_ch6_main <- file.path(projectFolder, "05_JobSatisfNCS/01_codes/03_regressions_jobsatisf.R")
+
+invisible(capture.output({
+  source(file.path(codesEmplNcs, "02_descr_empl.R"))
+  source(file.path(codesEmplNcs, "05_regression_final.R"))
+  source(file.path(codesJobSatisfNcs, "01_data_prep_jobsatisf.R"))
+  source(file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R"))
+}))
+
+# Some scripts expose domain models as models_satisf; chapter text expects models_satisf_rus.
+if (!exists("models_satisf_rus") && exists("models_satisf")) {
+  models_satisf_rus <- models_satisf
+}
+
+get_model_call <- function(model) {
+  call_obj <- tryCatch(stats::getCall(model), error = function(e) NULL)
+  if (is.null(call_obj)) return("Call is unavailable for this model object.")
+  paste(deparse(call_obj, width.cutoff = 500), collapse = "\n")
+}
+
+get_model_formula <- function(model) {
+  f <- tryCatch(stats::formula(model), error = function(e) NULL)
+  if (is.null(f)) return("Formula is unavailable for this model object.")
+  paste(deparse(f, width.cutoff = 500), collapse = "\n")
+}
+
+get_source_code <- function(file_path, start_line, end_line) {
+  code_lines <- readLines(file_path, warn = FALSE, encoding = "UTF-8")
+  paste(code_lines[start_line:end_line], collapse = "\n")
+}
+
+get_model_name_from_code <- function(code_snippet, fallback = "model_obj") {
+  m <- regexec("^\\s*([A-Za-z][A-Za-z0-9_.]*)\\s*<-", code_snippet)
+  r <- regmatches(code_snippet, m)
+  if (length(r) > 0 && length(r[[1]]) > 1 && nzchar(r[[1]][2])) {
+    return(r[[1]][2])
+  }
+  fallback
+}
+
+print_model_output <- function(label, model, source_file, start_line, end_line) {
+  code_snippet <- get_source_code(source_file, start_line, end_line)
+  model_name <- get_model_name_from_code(code_snippet, fallback = "model_obj")
+  assign(model_name, model, envir = knitr::knit_global())
+
+  code_chunk <- paste0(
+    "```{r eval=FALSE, echo=TRUE}\n",
+    code_snippet, "\n\n",
+    "summary(", model_name, ")\n",
+    "```\n"
+  )
+  code_rendered <- knitr::knit_child(text = code_chunk, quiet = TRUE, envir = knitr::knit_global())
+  out <- capture.output(summary(model))
+
+  cat("\n\n")
+  cat(code_rendered, sep = "\n")
+  cat("\n")
+  cat("```text\n")
+  cat(out, sep = "\n")
+  cat("\n```\n")
+}
+```
+
+## Глава 4 {.unnumbered}
+
+### Базовая модель занятости {.unnumbered}
+
+Аннотация: уравнение @eq-empl-fixed; таблица @tbl-regs-mem-fixed, столбец «Базовая модель».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_empl1[[1]]", models_empl1[[1]], src_ch4_main, 136, 141)
+```
+
+### Модель занятости с НКН {.unnumbered}
+
+Аннотация: уравнение @eq-empl-fixed; таблица @tbl-regs-mem-fixed, столбец «Модель с НКН».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_empl1[[2]]", models_empl1[[2]], src_ch4_main, 190, 196)
+```
+
+### Модель со случайными наклонами по СЭС {.unnumbered}
+
+Аннотация: уравнение @eq-empl-rs; таблица @tbl-regs-mem-random, столбец «СЭС».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_empl2[[1]]", models_empl2[[1]], src_ch4_main, 257, 264)
+```
+
+### Модель со случайными наклонами по образованию {.unnumbered}
+
+Аннотация: уравнение @eq-empl-rs; таблица @tbl-regs-mem-random, столбец «Уровень образования».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_empl2[[2]]", models_empl2[[2]], src_ch4_main, 296, 303)
+```
+
+### Модель со случайными наклонами по полу {.unnumbered}
+
+Аннотация: уравнение @eq-empl-rs; таблица @tbl-regs-mem-random, столбец «Пол».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_empl2[[3]]", models_empl2[[3]], src_ch4_main, 335, 342)
+```
+
+### Базовая модель умственного труда {.unnumbered}
+
+Аннотация: уравнение @eq-empl-wc; таблица @tbl-mem-occup, столбец «Базовая».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_occup[[1]]", models_occup[[1]], src_ch4_suppl, 128, 135)
+```
+
+### Модель умственного труда со случайными наклонами по СЭС {.unnumbered}
+
+Аннотация: уравнение @eq-empl-wc; таблица @tbl-mem-occup, столбец «Случайные наклоны по СЭС».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_occup[[2]]", models_occup[[2]], src_ch4_suppl, 149, 158)
+```
+
+### Модель избыточной квалификации {.unnumbered}
+
+Аннотация: уравнение @eq-overeduc; таблица @tbl-reg-mismatch, столбец «Избыточная квалификация».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_suppl[['Educational Mismatch']]", models_suppl[["Educational Mismatch"]], src_ch4_suppl, 194, 201)
+```
+
+## Глава 6 {.unnumbered}
+
+### Модель удовлетворенности работой 1 {.unnumbered}
+
+Аннотация: уравнение @eq-satisf-main; таблица @tbl-mem-ncs, столбец «Модель 1».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_job_satisf_list[[1]]", models_job_satisf_list[[1]], src_ch6_main, 119, 127)
+```
+
+### Модель удовлетворенности работой 2 {.unnumbered}
+
+Аннотация: уравнение @eq-satisf-main; таблица @tbl-mem-ncs, столбец «Модель 2».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_job_satisf_list[[2]]", models_job_satisf_list[[2]], src_ch6_main, 139, 148)
+```
+
+### Модель удовлетворенности работой 3 {.unnumbered}
+
+Аннотация: уравнение @eq-satisf-rs; таблица @tbl-mem-ncs, столбец «Модель 3».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_job_satisf_list[[3]]", models_job_satisf_list[[3]], src_ch6_main, 176, 186)
+```
+
+### Модель удовлетворенности карьерным ростом {.unnumbered}
+
+Аннотация: уравнение @eq-satisf-main; таблица @tbl-mem-ncs2, столбец «Удовлетворенность карьерным ростом».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_satisf_rus[[1]]", models_satisf_rus[[1]], src_ch6_main, 284, 292)
+```
+
+### Модель удовлетворенности условиями труда {.unnumbered}
+
+Аннотация: уравнение @eq-satisf-main; таблица @tbl-mem-ncs2, столбец «Удовлетворенность условиями труда».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_satisf_rus[[2]]", models_satisf_rus[[2]], src_ch6_main, 296, 304)
+```
+
+### Модель удовлетворенности заработной платой {.unnumbered}
+
+Аннотация: уравнение @eq-satisf-main; таблица @tbl-mem-ncs2, столбец «Удовлетворенность заработной платой».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_satisf_rus[[3]]", models_satisf_rus[[3]], src_ch6_main, 308, 316)
+```
+
+\`\`\`

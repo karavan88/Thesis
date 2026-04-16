@@ -130,6 +130,34 @@ big5_item_labels_ru <- c(
   es3 = "Вас легко заставить нервничать?"
 )
 
+big5_trait_labels_ru <- c(
+  "Openness" = "Открытость",
+  "Conscientiousness" = "Добросовестность",
+  "Extraversion" = "Экстраверсия",
+  "Agreeableness" = "Доброжелательность",
+  "Emotional Stability" = "Эмоциональная стабильность"
+)
+
+trait_key_map <- setNames(names(big5_trait_labels_ru), unname(big5_trait_labels_ru))
+
+trait_summary_inline <- big5_item_table %>%
+  dplyr::distinct(trait, cronbach_alpha, mean_inter_item_corr) %>%
+  dplyr::mutate(trait = dplyr::recode(trait, !!!trait_key_map, .default = trait)) %>%
+  dplyr::rename(alpha = cronbach_alpha, mean_iic = mean_inter_item_corr)
+
+scale_alpha <- trait_summary_inline %>%
+  dplyr::select(trait, alpha) %>%
+  tibble::deframe()
+
+scale_iic <- trait_summary_inline %>%
+  dplyr::select(trait, mean_iic) %>%
+  tibble::deframe()
+
+min_iic <- min(big5_item_table$mean_inter_item_corr, na.rm = TRUE)
+max_iic <- max(big5_item_table$mean_inter_item_corr, na.rm = TRUE)
+min_iic_trait <- big5_item_table$trait[which.min(big5_item_table$mean_inter_item_corr)]
+max_iic_trait <- big5_item_table$trait[which.max(big5_item_table$mean_inter_item_corr)]
+
 make_psychometric_ft <- function(trait_label) {
   big5_item_table %>%
     filter(trait == trait_label) %>%
@@ -186,8 +214,8 @@ make_psychometric_ft <- function(trait_label) {
 ```{r}
 #| label: fig-ncs-likert
 #| fig-cap: 'Шкала Лайкерта единичных вопросов для измерения некогнитивных навыков Большой пятерки в РМЭЗ среди молодежи 15-29 лет, данные 25-й и 28-й волн'
-#| fig-width: 7
-#| fig-height: 7
+#| fig-width: 8.5
+#| fig-height: 8.5
 
 likert_plot_ncs +
   labs(x = NULL, y = NULL, fill = NULL) +
@@ -206,9 +234,9 @@ likert_plot_ncs +
 
 Внутренняя согласованность \[internal consistency\] и психометрические характеристики пяти конструктов некогнитивных навыков (открытость, добросовестность, экстраверсия, доброжелательность и эмоциональная стабильность) оценивались с использованием общей $\alpha$ Кронбаха, средних корреляций между вопросами \[inter-item correlations\], сложности вопроса \[item difficulty\], дискриминации вопроса \[item discrimination\] и статистики $\alpha$ Кронбаха если вопрос удален. Каждый конструкт измерялся с использованием трех вопросов с ответами, записанными по четырехбалльной шкале Лайкерта. Хотя короткие шкалы снижают нагрузку на респондентов в крупных опросах, они по своей сути ограничивают показатели надежности из-за уменьшенной вариативности ответов.
 
-Во всех пяти шкалах средняя между-вопросная корреляция варьировалась от 0.222 (экстраверсия) до 0.367 (эмоциональная стабильность), при этом все значения превышали общепринятую нижнюю границу 0.15 для коротких психологических шкал [@clark1995]. Это предполагает достаточную внутреннюю согласованность в пределах каждого конструкта. В частности, шкала открытости продемонстрировала прочную между-вопросную корреляцию 0,271 и $\alpha$ Кронбаха 0.521, что указывает на умеренную внутреннюю согласованность. Учитывая, что общий $\alpha$ Кронбаха чувствителен к количеству вопросов в шкале, значения в диапазоне 0,45–0,65 приемлемы для шкал из трех вопросов, особенно при использовании для оценки на уровне населения \[population-level estimation\].
+Во всех пяти шкалах средняя между-вопросная корреляция варьировалась от `r round(min_iic, 2)` (`r recode(min_iic_trait, !!!big5_trait_labels_ru)`) до `r round(max_iic, 2)` (`r recode(max_iic_trait, !!!big5_trait_labels_ru)`), при этом все значения превышали общепринятую нижнюю границу 0.15 для коротких психологических шкал [@clark1995]. Это предполагает достаточную внутреннюю согласованность в пределах каждого конструкта. В частности, шкала открытости продемонстрировала прочную между-вопросную корреляцию `r round(scale_iic["Openness"], 2)` и $\alpha$ Кронбаха `r round(scale_alpha["Openness"], 2)`, что указывает на умеренную внутреннюю согласованность. Учитывая, что общий $\alpha$ Кронбаха чувствителен к количеству вопросов в шкале, значения в диапазоне 0,45–0,65 приемлемы для шкал из трех вопросов, особенно при использовании для оценки на уровне населения \[population-level estimation\].
 
-Добросовестность ($\alpha$ = 0,451), экстраверсия ($\alpha$ = 0,467) и доброжелательность ($\alpha$ = 0,478) также показали разумную внутреннюю согласованность, подкрепленную между-вопросными корреляциями на уровне около 0,22–0,23. Эмоциональная стабильность дала самую высокую внутреннюю согласованность ($\alpha$ = 0,633) и самую сильную корреляцию между вопросами (0,367), что предполагает высокую внутреннюю однородность и надежность для этого конструкта.
+Добросовестность ($\alpha$ = `r round(scale_alpha["Conscientiousness"], 2)`), экстраверсия ($\alpha$ = `r round(scale_alpha["Extraversion"], 2)`) и доброжелательность ($\alpha$ = `r round(scale_alpha["Agreeableness"], 2)`) также показали разумную внутреннюю согласованность, подкрепленную между-вопросными корреляциями на уровне около `r round(scale_iic["Conscientiousness"], 2)`. Эмоциональная стабильность дала самую высокую внутреннюю согласованность ($\alpha$ = `r round(scale_alpha["Emotional Stability"], 2)`) и самую сильную корреляцию между вопросами (`r round(max_iic, 2)`), что предполагает высокую внутреннюю однородность и надежность для этого конструкта.
 
 ```{=latex}
 \clearpage
@@ -217,38 +245,113 @@ likert_plot_ncs +
 
 ```{r}
 #| label: tbl-psychometric
-#| tbl-cap: 'Психометрические характеристики шкал «Большой пятёрки»: пропуски, среднее, стандартное отклонение, асимметрия, сложность и дискриминация вопроса, α Кронбаха'
+#| tbl-cap: 'Психометрические характеристики шкал «Большой пятёрки»: пропуски, среднее, стандартное отклонение, асимметрия и дискриминация вопроса'
 
-big5_item_table %>%
-  mutate(item = recode(item, !!!big5_item_labels_ru)) %>%
-  transmute(
-    trait = trait,
-    item = item,
-    missings = round(missings, 2),
-    mean = round(mean, 2),
-    sd = round(sd, 2),
-    skew = round(skew, 2),
-    item_difficulty = round(item_difficulty, 2),
-    item_discrimination = round(item_discrimination, 2),
-    alpha_if_deleted = round(alpha_if_deleted, 2),
-    cronbach_alpha = round(cronbach_alpha, 2),
-    mean_inter_item_corr = round(mean_inter_item_corr, 2)
+fmt2 <- function(x) ifelse(is.na(x), "", sprintf("%.2f", x))
+
+tbl_items <- big5_item_table %>%
+  mutate(
+    trait_ru = recode(trait, !!!big5_trait_labels_ru, .default = trait),
+    item_ru = recode(item, !!!big5_item_labels_ru),
+    item_num = dplyr::row_number(),
+    item_ord = dplyr::row_number(),
+    row_type = "item"
   ) %>%
-  df_to_flex(
+  transmute(
+    trait_ru,
+    item_ord,
+    row_type,
+    item_num = as.character(item_num),
+    item = item_ru,
+    missings = fmt2(round(missings, 2)),
+    mean = fmt2(round(mean, 2)),
+    sd = fmt2(round(sd, 2)),
+    skew = fmt2(round(skew, 2)),
+    item_discrimination = fmt2(round(item_discrimination, 2)),
+    alpha_if_deleted = fmt2(round(alpha_if_deleted, 2))
+  )
+
+trait_summary_stats <- big5_item_table %>%
+  mutate(trait_ru = recode(trait, !!!big5_trait_labels_ru, .default = trait)) %>%
+  group_by(trait_ru) %>%
+  summarise(
+    cronbach_alpha = dplyr::first(cronbach_alpha),
+    mean_inter_item_corr = dplyr::first(mean_inter_item_corr),
+    .groups = "drop"
+  )
+
+tbl_summary <- trait_summary_stats %>%
+  transmute(
+    trait_ru,
+    item = paste0(
+      trait_ru,
+      " (α Кронбаха = ", sprintf("%.2f", cronbach_alpha),
+      ", r межпунктовая = ", sprintf("%.2f", mean_inter_item_corr), ")"
+    )
+  ) %>%
+  mutate(
+    item_ord = 0,
+    row_type = "summary",
+    item_num = "",
+    missings = "",
+    mean = "",
+    sd = "",
+    skew = "",
+    item_discrimination = "",
+    alpha_if_deleted = ""
+  ) %>%
+  select(names(tbl_items))
+
+psych_tbl <- bind_rows(tbl_summary, tbl_items) %>%
+  mutate(
+    trait_ru = factor(trait_ru, levels = unique(tbl_items$trait_ru)),
+    row_type = factor(row_type, levels = c("summary", "item"))
+  ) %>%
+  arrange(trait_ru, row_type, item_ord)
+
+summary_idx <- which(psych_tbl$row_type == "summary")
+
+show_tbl <- psych_tbl %>%
+  select(-trait_ru, -item_ord, -row_type)
+
+if (knitr::is_latex_output()) {
+  out <- kableExtra::kbl(
+    show_tbl,
+    format = "latex",
+    booktabs = TRUE,
+    linesep = "",
+    col.names = c(
+      "N",
+      "Пункт",
+      "Пропуски, %",
+      "Среднее",
+      "Ст.откл",
+      "Асимметрия",
+      "Дискриминация",
+      "α без пункта"
+    )
+  )
+  out <- kableExtra::kable_styling(out, latex_options = c("scale_down"), font_size = 9)
+  out <- kableExtra::row_spec(out, summary_idx, bold = TRUE, align = "c", background = "#EFEFEF")
+  out
+} else {
+  ft <- df_to_flex(
+    show_tbl,
     col_labels = c(
-      trait = "Шкала",
       item = "Пункт",
       missings = "Пропуски, %",
       mean = "Среднее",
-      sd = "SD",
+      sd = "Ст.откл",
       skew = "Асимметрия",
-      item_difficulty = "Сложность",
       item_discrimination = "Дискриминация",
-      alpha_if_deleted = "α без пункта",
-      cronbach_alpha = "α Кронбаха",
-      mean_inter_item_corr = "r межпунктовая"
+      alpha_if_deleted = "α без пункта"
     )
   )
+  ft <- flextable::bold(ft, i = summary_idx, bold = TRUE, part = "body")
+  ft <- flextable::align(ft, i = summary_idx, align = "center", part = "body")
+  ft <- flextable::bg(ft, i = summary_idx, bg = "#EFEFEF", part = "body")
+  ft
+}
 
 ```
 
@@ -270,8 +373,8 @@ big5_item_table %>%
 ```{r}
 #| label: fig-corr-ncs
 #| fig-cap: Матрица корреляций некогнитивных навыков (коэффициент r Пирсона)
-#| fig-width: 5
-#| fig-height: 5
+#| fig-width: 7
+#| fig-height: 7
 
 # Set font family for base R graphics (corrplot uses base R)
 if (knitr::is_latex_output()) old_par <- par(family = "Times New Roman")
@@ -298,9 +401,89 @@ if (knitr::is_latex_output()) par(old_par)
 
 ## Характеристика выборки
 
-Аналитическая выборка РМЭЗ, отобранная для настоящего исследования, включает почти 6 тысяч наблюдений за 2 волны за молодежью в возрасте 15–29 лет, находящейся на этапе перехода от учебы к работе. Результаты описательного анализа выборки представлены в @tbl-sample. Половой состав выборки сбалансирован: 52% составляют женщины и 48% — мужчины, средний возраст респондентов равен 22,7 года. Около 40% участников на момент опроса продолжали обучение, что отражает переходный характер данного возрастного периода, когда многие совмещают учебу и первые шаги на рынке труда. По той же самой причине неоднородна структура образовательных достижений: около половины респондентов имеют лишь среднее общее (22%) или среднее профессиональное образование (28%), тогда как каждый пятый обладает высшим образованием. Почти треть опрошенных указали на отсутствие завершённого формального образования, что указывает на сохраняющееся неравенство в доступе к образовательным возможностям среди российской молодежи.
+```{r}
+#| echo: false
+#| include: false
 
-Выборка характеризуется также социальной и географической диверсификацией. Почти половина респондентов (43%) проживает в региональных центрах, четверть — в сельской местности, а остальные распределены между городами и посёлками городского типа. С учетом того, что для данного исследования была отобрана суб-выборка, распределение по квинтилям среднедушевого дохода домохозяйства в начале перехода от учебы к работе (то есть когда респонденту было 15 или 16 лет) относительно сбалансировано, однако наблюдается некоторый перевес в сторону низкодоходных групп: почти 30% молодежи относятся к нижнему квинтилю и лишь 15% — к верхнему.
+sample_data <- youth_empl %>%
+  mutate(
+    sex_ru = case_when(
+      sex == "Female" ~ "Женский",
+      sex == "Male" ~ "Мужской",
+      TRUE ~ as.character(sex)
+    ),
+    edu_lvl_ru = case_when(
+      edu_lvl == "1. No school" ~ "1. Ниже среднего",
+      edu_lvl == "2. Secondary School" ~ "2. Среднее",
+      edu_lvl == "3. Secondary Vocational" ~ "3. Среднее профессиональное",
+      edu_lvl == "4. Tertiary" ~ "4. Высшее",
+      TRUE ~ as.character(edu_lvl)
+    ),
+    area_ru = case_when(
+      area == "Rural" ~ "Деревня",
+      area == "Urban-Type Settlement" ~ "ПГТ",
+      area == "City" ~ "Город",
+      area == "Regional Center" ~ "Обл центр",
+      TRUE ~ as.character(area)
+    ),
+    in_education_ru = case_when(
+      in_education %in% c(1, "1", TRUE) ~ "Да",
+      in_education %in% c(0, "0", FALSE) ~ "Нет",
+      TRUE ~ NA_character_
+    ),
+    ses5_num = suppressWarnings(as.integer(gsub("[^0-9]", "", as.character(ses5)))),
+    ses5_q = case_when(
+      ses5_num >= 1 & ses5_num <= 5 ~ paste0("Q", ses5_num),
+      TRUE ~ NA_character_
+    )
+  )
+
+sex_stats <- sample_data %>%
+  filter(!is.na(sex_ru)) %>%
+  count(sex_ru) %>%
+  mutate(pct = 100 * n / sum(n))
+
+edu_stats <- sample_data %>%
+  filter(!is.na(edu_lvl_ru)) %>%
+  count(edu_lvl_ru) %>%
+  mutate(pct = 100 * n / sum(n))
+
+area_stats <- sample_data %>%
+  filter(!is.na(area_ru)) %>%
+  count(area_ru) %>%
+  mutate(pct = 100 * n / sum(n))
+
+study_stats <- sample_data %>%
+  filter(!is.na(in_education_ru)) %>%
+  count(in_education_ru) %>%
+  mutate(pct = 100 * n / sum(n))
+
+ses_stats <- sample_data %>%
+  filter(!is.na(ses5_q)) %>%
+  count(ses5_q) %>%
+  mutate(pct = 100 * n / sum(n))
+
+# Calculate sample percentages for inline use
+fmt_pct <- function(x) {
+  if (is.na(x)) return("")
+  if (x >= 1) as.integer(round(x)) else round(x, 1)
+}
+
+pct_female <- (sex_stats %>% filter(sex_ru == "Женский") %>% pull(pct))[1]
+pct_male <- (sex_stats %>% filter(sex_ru == "Мужской") %>% pull(pct))[1]
+pct_continue_study <- (study_stats %>% filter(in_education_ru == "Да") %>% pull(pct))[1]
+pct_low_edu <- (edu_stats %>% filter(edu_lvl_ru == "1. Ниже среднего") %>% pull(pct))[1]
+pct_mid_edu <- (edu_stats %>% filter(edu_lvl_ru %in% c("2. Среднее", "3. Среднее профессиональное")) %>% summarise(pct = sum(pct)) %>% pull(pct))[1]
+pct_high_edu <- (edu_stats %>% filter(edu_lvl_ru == "4. Высшее") %>% pull(pct))[1]
+pct_reg_center <- (area_stats %>% filter(area_ru == "Обл центр") %>% pull(pct))[1]
+pct_low_ses <- (ses_stats %>% filter(ses5_q %in% c("Q1", "Q2")) %>% summarise(pct = sum(pct)) %>% pull(pct))[1]
+pct_mid_ses <- (ses_stats %>% filter(ses5_q == "Q3") %>% pull(pct))[1]
+pct_high_ses <- (ses_stats %>% filter(ses5_q %in% c("Q4", "Q5")) %>% summarise(pct = sum(pct)) %>% pull(pct))[1]
+```
+
+Аналитическая выборка РМЭЗ, отобранная для настоящего исследования, включает почти 6 тысяч наблюдений за 2 волны за молодежью в возрасте 15–29 лет, находящейся на этапе `\textcolor{red}{выхода молодежи на рынок труда}`{=latex}. Результаты описательного анализа выборки представлены в @tbl-sample. Половой состав выборки сбалансирован: `r fmt_pct(pct_female)`% составляют женщины и `r fmt_pct(pct_male)`% — мужчины, средний возраст респондентов равен 22,7 года. Около `r fmt_pct(pct_continue_study)`% участников на момент опроса продолжали обучение, что отражает переходный характер данного возрастного периода, когда многие совмещают учебу и первые шаги на рынке труда. По той же самой причине неоднородна структура образовательных достижений: `r fmt_pct(pct_low_edu)`% респондентов имеют образование ниже среднего, `r fmt_pct(pct_mid_edu)`% — среднее или среднее профессиональное, а `r fmt_pct(pct_high_edu)`% — высшее образование.
+
+Выборка характеризуется также социальной и географической диверсификацией. `r fmt_pct(pct_reg_center)`% респондентов проживает в областных центрах, остальные распределены между городами, ПГТ и сельской местностью. С учетом того, что для данного исследования была отобрана суб-выборка, распределение по квинтилям среднедушевого дохода домохозяйства в начале `\textcolor{red}{выхода молодежи на рынок труда}`{=latex} (то есть когда респонденту было 15 или 16 лет) относительно сбалансировано, однако наблюдается некоторый перевес в сторону низкодоходных групп: почти `r fmt_pct(pct_low_ses)`% молодежи относятся к нижним квинтилям и `r fmt_pct(pct_high_ses)`% — к верхним.
 
 ```{r}
 #| label: tbl-sample
@@ -327,28 +510,18 @@ sex_rus <- c(
 )
 
 summary_stats <-
-  youth_empl %>%
-  # we wanna change the labels for sex to russian
-  select(age, sex, year,
-         in_education, edu_lvl, 
-         year, area, ses5) %>%
-  # provide russian value labels for sex 
-  mutate(
-    sex = recode(sex, !!!sex_rus),
-    edu_lvl = recode(edu_lvl, !!!edu_lvl_rus),
-    area = recode(area, !!!area_rus)
-  ) %>%
+  sample_data %>%
+  select(age, sex_ru, year, in_education_ru, edu_lvl_ru, area_ru, ses5_q) %>%
   tbl_summary(by = year,
               missing_text = "NA",
               type = list( age ~ 'continuous2',
-                           c(in_education) ~ 'dichotomous',
-                           c( ses5, area, edu_lvl) ~ 'categorical'),
+                           c(in_education_ru, ses5_q, area_ru, edu_lvl_ru, sex_ru) ~ 'categorical'),
               label = list(age ~ "Возраст",
-                           in_education ~ "Обучается",
-                           area ~ "Тип поселения",
-                           sex ~ "Пол",
-                           ses5 ~ "Квинтиль дохода ДХ",
-                           edu_lvl ~ "Уровень образования") ,
+                           in_education_ru ~ "Обучается",
+                           area_ru ~ "Тип поселения",
+                           sex_ru ~ "Пол",
+                           ses5_q ~ "Квинтиль дохода ДХ",
+                           edu_lvl_ru ~ "Уровень образования") ,
               statistic = list(all_continuous() ~ "{mean} ({sd})")) %>%
   add_overall(col_label = "**Итого**") %>%
   modify_header(label = "Переменная") %>%
@@ -388,21 +561,19 @@ summary_stats
 
 ```{r}
 #| label: tbl-dep-var-swt
-#| tbl-cap: Описательная статистика переменных, описывающих успех перехода от учебы к работе
+#| tbl-cap: Описательные статистики характеристик занятости молодежи
 
 youth_empl %>%
   mutate(satisfied_with_job = case_when(j1_1_1 == 1 ~ 1, TRUE ~ 0)) %>%
-  select(employed, employed_officially, self_employed, satisfied_with_job, transition_successful, year) %>%
+  select(employed, employed_officially, self_employed, year) %>%
   tbl_summary(
     by = year,
     missing_text = "NA",
-    type = list(c(employed, employed_officially, self_employed, transition_successful, satisfied_with_job) ~ "dichotomous"),
+    type = list(c(employed, employed_officially, self_employed) ~ "dichotomous"),
     label = list(
       employed ~ "Трудоустроен",
       employed_officially ~ "Формальная занятость",
-      self_employed ~ "Самозанятый",
-      satisfied_with_job ~ "Удовлетворен работой",
-      transition_successful ~ "Переход завершен"
+      self_employed ~ "Самозанятый"
     ),
     statistic = list(all_continuous() ~ "{mean} ({sd})")
   ) %>%
@@ -428,10 +599,10 @@ youth_empl %>%
 #| tbl-cap: Классификация молодежи по роду занятий в соответствии с МСКЗ-08
 
 youth_empl %>%
+  filter(occupation != 0) %>%
   select(year, occupation) %>%
   mutate(
     occupation = case_when(
-      occupation == 0 ~ "0. Военные",
       occupation == 1 ~ "1. Руководители",
       occupation == 2 ~ "2. Специалисты-профессионалы",
       occupation == 3 ~ "3. Специалисты-техники и иной средний специальный персонал",
@@ -472,29 +643,35 @@ youth_empl %>%
 youth_descr %>%
   group_by(year) %>%
   summarise(
-    N = n(),
-    Min = min(hourly_wage, na.rm = TRUE),
-    Q1 = quantile(hourly_wage, 0.25, na.rm = TRUE),
-    Median = median(hourly_wage, na.rm = TRUE),
+    Q10 = quantile(hourly_wage, 0.10, na.rm = TRUE),
+    Q25 = quantile(hourly_wage, 0.25, na.rm = TRUE),
+    Q50 = quantile(hourly_wage, 0.50, na.rm = TRUE),
+    Q75 = quantile(hourly_wage, 0.75, na.rm = TRUE),
+    Q90 = quantile(hourly_wage, 0.90, na.rm = TRUE),
     Mean = mean(hourly_wage, na.rm = TRUE),
-    Q3 = quantile(hourly_wage, 0.75, na.rm = TRUE),
-    Max = max(hourly_wage, na.rm = TRUE),
     SD = sd(hourly_wage, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  tidyr::pivot_longer(cols = -year, names_to = "statistic", values_to = "value") %>%
-  tidyr::pivot_wider(names_from = year, values_from = value) %>%
-  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
+  mutate(across(-year, ~ round(.x, 2))) %>%
   df_to_flex(
-    note = "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.",
-    col_labels = c(statistic = "Статистика")
+    note = "Примечание: данные 2016 года скорректированы на уровень цен 2019 года с учетом индекса потребительских цен.",
+    col_labels = c(
+      year = "Год",
+      Q10 = "Q10",
+      Q25 = "Q25",
+      Q50 = "Q50",
+      Q75 = "Q75",
+      Q90 = "Q90",
+      Mean = "Среднее",
+      SD = "Ст.откл"
+    )
   )
 
 ```
 
 ### Удовлетворенность работой
 
-Блок переменных по удовлетворенности работой - в общем и ее специфическими компонентами - представляет зависимые переменные в одной из глав настоящего исследования. Эти переменные являются прокси субъективного успеха перехода от учебы к работе молодежи в России. Общая удовлетворённость работой основана на вопросе: «В целом, насколько Вы удовлетворены своей работой?» Ответы респондентов варьируются от 1 (полностью удовлетворён) до 5 (совершенно не удовлетворён). Кроме того, анкета включает дополнительные вопросы, касающиеся удовлетворённости условиями труда, уровнем оплаты и возможностями карьерного развития. Формат ответов на эти вопросы аналогичен вопросу об общей удовлетворённости работой.
+Блок переменных по удовлетворенности работой - в общем и ее специфическими компонентами - представляет зависимые переменные в одной из глав настоящего исследования. Эти переменные являются прокси субъективного успеха `\textcolor{red}{выхода молодежи на рынок труда}`{=latex} в России. Общая удовлетворённость работой основана на вопросе: «В целом, насколько Вы удовлетворены своей работой?» Ответы респондентов варьируются от 1 (полностью удовлетворён) до 5 (совершенно не удовлетворён). Кроме того, анкета включает дополнительные вопросы, касающиеся удовлетворённости условиями труда, уровнем оплаты и возможностями карьерного развития. Формат ответов на эти вопросы аналогичен вопросу об общей удовлетворённости работой.
 
 Поскольку предполагается высокая степень корреляции между общей удовлетворённостью работой и её отдельными аспектами, основной акцент в анализе делается именно на общей удовлетворённости. Однако для более всестороннего понимания взаимосвязи между некогнитивными навыками и удовлетворённостью работой исследование также рассматривает отдельные компоненты последней. Иными словами, несмотря на то что основным результатом анализа выступает общая удовлетворённость работой, включение в рассмотрение таких аспектов, как удовлетворённость условиями труда, оплатой и возможностями карьерного роста, предоставляет важные аналитические преимущества.
 
@@ -598,27 +775,29 @@ youth_empl %>%
   summarise(across(
     everything(),
     list(
-      N      = ~sum(!is.na(.x)),
-      Mean   = ~mean(.x, na.rm = TRUE),
-      SD     = ~sd(.x, na.rm = TRUE),
-      Min    = ~min(.x, na.rm = TRUE),
-      Median = ~median(.x, na.rm = TRUE),
-      Max    = ~max(.x, na.rm = TRUE)
+      N_unique = ~n_distinct(.x),
+      Min      = ~min(.x, na.rm = TRUE),
+      Q25      = ~quantile(.x, 0.25, na.rm = TRUE),
+      Q50      = ~median(.x, na.rm = TRUE),
+      Q75      = ~quantile(.x, 0.75, na.rm = TRUE),
+      Max      = ~max(.x, na.rm = TRUE),
+      Mean     = ~mean(.x, na.rm = TRUE),
+      SD       = ~sd(.x, na.rm = TRUE)
     ),
     .names = "{.col}_{.fn}"
   )) %>%
   tidyr::pivot_longer(
     cols = everything(),
     names_to = c("indicator", "statistic"),
-    names_pattern = "^(.*)_(N|Mean|SD|Min|Median|Max)$"
+    names_pattern = "^(.*)_(N_unique|Min|Q25|Q50|Q75|Max|Mean|SD)$"
   ) %>%
   tidyr::pivot_wider(
     names_from = statistic,
     values_from = value
   ) %>%
   mutate(
-    across(c(Mean, SD, Min, Median, Max), ~ round(.x, 2)),
-    N = as.integer(N),
+    across(c(Min, Q25, Q50, Q75, Max, Mean, SD), ~ round(.x, 2)),
+    N_unique = as.integer(N_unique),
     indicator = dplyr::recode(indicator,
       openness              = "Открытость",
       conscientiousness     = "Добросовестность",
@@ -627,17 +806,19 @@ youth_empl %>%
       emotional_stability   = "Эмоциональная стабильность"
     )
   ) %>%
-  dplyr::select(indicator, N, Mean, SD, Min, Median, Max) %>%
+  dplyr::select(indicator, N_unique, Min, Q25, Q50, Q75, Max, Mean, SD) %>%
   df_to_flex(
-    note = "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.",
+    note = "Примечание: N уник. — количество уникальных значений переменной. Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы.",
     col_labels = c(
       indicator = "Показатель",
-      N         = "N",
-      Mean      = "Среднее",
-      SD        = "Ст. откл.",
+      N_unique  = "N уник.",
       Min       = "Мин.",
-      Median    = "Медиана",
-      Max       = "Макс."
+      Q25       = "Q25",
+      Q50       = "Медиана",
+      Q75       = "Q75",
+      Max       = "Макс.",
+      Mean      = "Среднее",
+      SD        = "Ст. откл."
     )
   )
   

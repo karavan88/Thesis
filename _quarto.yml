@@ -17,6 +17,7 @@ book:
     - 06_ncs_job_satisf.qmd
     - 07_concl.qmd
     - references.qmd
+    - 08_annex.qmd
 
 bibliography: references_sorted.bib
 
@@ -44,6 +45,7 @@ format:
       - right=2cm
       - top=2cm
       - bottom=2cm
+    highlight-style: kate
     toc: false               # ← suppress automatic TOC
     lof: false               # ← suppress automatic list of figures
     lot: false               # ← suppress automatic list of tables
@@ -65,6 +67,9 @@ format:
         \usepackage{makecell}
         \usepackage{xcolor}
         \usepackage{etoolbox}
+        \usepackage{fvextra}
+        \definecolor{shadecolor}{RGB}{245,247,250}
+        \renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
         \setlength{\footskip}{1.5cm}
         \AtBeginEnvironment{tablenotes}{\fontsize{9}{11}\selectfont\rmfamily}
   docx: 
