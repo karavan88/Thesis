@@ -38,9 +38,69 @@ force_utf8_locale()
 # Favor regular decimal output in printed model summaries.
 options(scipen = 999)
 
+# Minimal package set needed for sourced chapter 4/6 scripts.
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(dplyr)
+  library(purrr)
+  library(tibble)
+  library(tidyr)
+  library(forcats)
+  library(lubridate)
+  library(stringr)
+  library(readr)
+  library(haven)
+  library(readxl)
+  library(here)
+  library(gtsummary)
+  library(modelsummary)
+  library(tinytable)
+  library(kableExtra)
+  library(flextable)
+  library(gt)
+  library(lme4)
+  library(lmerTest)
+  library(lqmm)
+  library(mgcv)
+  library(broom)
+  library(broom.mixed)
+  library(psych)
+  library(e1071)
+  library(ggeffects)
+  library(gridExtra)
+  library(sjPlot)
+  library(ggcorrplot)
+  library(ggstats)
+  library(WeightIt)
+  library(easystats)
+  library(bayestestR)
+  library(performance)
+  library(parameters)
+  library(effectsize)
+  library(correlation)
+  library(insight)
+  library(glue)
+})
+
 projectFolder <- "/Users/karavan88/Documents/GitHub/NonCognSkillsRLMS"
 setwd(projectFolder)
-source("project_config.R")
+
+# Local path variables (replacement for project_config.R environment).
+inputData <- file.path(projectFolder, "01_input_data")
+processedData <- file.path(inputData, "processed")
+rCodes <- file.path(projectFolder, "02_data_prep")
+
+emplNcs <- file.path(projectFolder, "03_EmplNCS")
+codesEmplNcs <- file.path(emplNcs, "01_codes")
+outputsEmplNcs <- file.path(emplNcs, "02_output")
+
+returnsNcs <- file.path(projectFolder, "04_ReturnsNCS")
+codesReturnsNcs <- file.path(returnsNcs, "01_codes")
+outputsReturnsNcs <- file.path(returnsNcs, "02_output")
+
+jobSatisfNcs <- file.path(projectFolder, "05_JobSatisfNCS")
+codesJobSatisfNcs <- file.path(jobSatisfNcs, "01_codes")
+outputsJobSatisfNcs <- file.path(jobSatisfNcs, "02_output")
 
 src_ch4_main <- file.path(projectFolder, "03_EmplNCS/01_codes/03_regression_empl.R")
 src_ch4_suppl <- file.path(projectFolder, "03_EmplNCS/01_codes/04_regression_supplement.R")
@@ -50,10 +110,68 @@ src_ch6_main <- file.path(projectFolder, "05_JobSatisfNCS/01_codes/03_regression
 invisible(capture.output({
   source(file.path(codesEmplNcs, "02_descr_empl.R"))
   source(file.path(codesEmplNcs, "05_regression_final.R"))
-  source(file.path(codesReturnsNcs, "05_output_returns_rus.R"))
   source(file.path(codesJobSatisfNcs, "01_data_prep_jobsatisf.R"))
   source(file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R"))
 }))
+
+# Load raw chapter 5 model objects saved for thesis annex output.
+returns_thesis_out <- file.path(projectFolder, "04_ReturnsNCS/02_output/thesis")
+if (dir.exists(returns_thesis_out)) {
+  m1_ipw_models <- list(
+    q10 = readRDS(file.path(returns_thesis_out, "m1_ipw_q10_model.rds")),
+    q25 = readRDS(file.path(returns_thesis_out, "m1_ipw_q25_model.rds")),
+    q50 = readRDS(file.path(returns_thesis_out, "m1_ipw_q50_model.rds")),
+    q75 = readRDS(file.path(returns_thesis_out, "m1_ipw_q75_model.rds")),
+    q90 = readRDS(file.path(returns_thesis_out, "m1_ipw_q90_model.rds"))
+  )
+
+  m2_ipw_models <- list(
+    q10 = readRDS(file.path(returns_thesis_out, "m2_ipw_q10_model.rds")),
+    q25 = readRDS(file.path(returns_thesis_out, "m2_ipw_q25_model.rds")),
+    q50 = readRDS(file.path(returns_thesis_out, "m2_ipw_q50_model.rds")),
+    q75 = readRDS(file.path(returns_thesis_out, "m2_ipw_q75_model.rds")),
+    q90 = readRDS(file.path(returns_thesis_out, "m2_ipw_q90_model.rds"))
+  )
+
+  m3_edu_ipw_models <- list(
+    Tertiary = list(
+      q10 = readRDS(file.path(returns_thesis_out, "m3_tert_ipw_q10_model.rds")),
+      q25 = readRDS(file.path(returns_thesis_out, "m3_tert_ipw_q25_model.rds")),
+      q50 = readRDS(file.path(returns_thesis_out, "m3_tert_ipw_q50_model.rds")),
+      q75 = readRDS(file.path(returns_thesis_out, "m3_tert_ipw_q75_model.rds")),
+      q90 = readRDS(file.path(returns_thesis_out, "m3_tert_ipw_q90_model.rds"))
+    ),
+    Secondary_Vocational = list(
+      q10 = readRDS(file.path(returns_thesis_out, "m3_voc_ipw_q10_model.rds")),
+      q25 = readRDS(file.path(returns_thesis_out, "m3_voc_ipw_q25_model.rds")),
+      q50 = readRDS(file.path(returns_thesis_out, "m3_voc_ipw_q50_model.rds")),
+      q75 = readRDS(file.path(returns_thesis_out, "m3_voc_ipw_q75_model.rds")),
+      q90 = readRDS(file.path(returns_thesis_out, "m3_voc_ipw_q90_model.rds"))
+    ),
+    Secondary_or_below = list(
+      q10 = readRDS(file.path(returns_thesis_out, "m3_sec_ipw_q10_model.rds")),
+      q25 = readRDS(file.path(returns_thesis_out, "m3_sec_ipw_q25_model.rds")),
+      q50 = readRDS(file.path(returns_thesis_out, "m3_sec_ipw_q50_model.rds")),
+      q75 = readRDS(file.path(returns_thesis_out, "m3_sec_ipw_q75_model.rds")),
+      q90 = readRDS(file.path(returns_thesis_out, "m3_sec_ipw_q90_model.rds"))
+    )
+  )
+
+  m4_ipw_models <- list(
+    q50 = readRDS(file.path(returns_thesis_out, "m4_ipw_q50_model.rds")),
+    q75 = readRDS(file.path(returns_thesis_out, "m4_ipw_q75_model.rds")),
+    q90 = readRDS(file.path(returns_thesis_out, "m4_ipw_q90_model.rds"))
+  )
+
+  m_lc_ipw_models <- list(
+    age_16_65 = readRDS(file.path(returns_thesis_out, "m_lc_ipw_age_16_65_model.rds")),
+    age_30_39 = readRDS(file.path(returns_thesis_out, "m_lc_ipw_age_30_39_model.rds")),
+    age_40_49 = readRDS(file.path(returns_thesis_out, "m_lc_ipw_age_40_49_model.rds")),
+    age_50_65 = readRDS(file.path(returns_thesis_out, "m_lc_ipw_age_50_65_model.rds"))
+  )
+
+  gam_age_model <- readRDS(file.path(returns_thesis_out, "m_gam_age_model.rds"))
+}
 
 # Some scripts expose domain models as models_satisf; chapter text expects models_satisf_rus.
 if (!exists("models_satisf_rus") && exists("models_satisf")) {
@@ -125,8 +243,12 @@ print_raw_model_output <- function(label, model, source_file, start_line, end_li
     source_file = source_file,
     start_line = start_line,
     end_line = end_line,
-    render_code = function(model_name) model_name,
-    render_output = function(model_obj) print(model_obj)
+    render_code = function(model_name) paste0("print(", model_name, ")"),
+    render_output = function(model_obj) {
+      printed_lines <- capture.output(print(model_obj))
+      filtered_lines <- printed_lines[!grepl("^[[:space:]]*region", printed_lines)]
+      cat(paste(filtered_lines, collapse = "\n"), "\n", sep = "")
+    }
   )
 }
 ```
@@ -222,7 +344,7 @@ print_model_output("models_suppl[['Educational Mismatch']]", models_suppl[["Educ
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m1_ipw_summaries", m1_ipw_summaries, src_ch5_main, 236, 242)
+print_raw_model_output("m1_ipw_models", m1_ipw_models, src_ch5_main, 236, 242)
 ```
 
 ### Расширенная модель заработной платы с учетом образования {.unnumbered}
@@ -232,7 +354,7 @@ print_raw_model_output("m1_ipw_summaries", m1_ipw_summaries, src_ch5_main, 236, 
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m2_ipw_summaries", m2_ipw_summaries, src_ch5_main, 294, 300)
+print_raw_model_output("m2_ipw_models", m2_ipw_models, src_ch5_main, 294, 300)
 ```
 
 ### Модель для группы с высшим образованием {.unnumbered}
@@ -242,7 +364,7 @@ print_raw_model_output("m2_ipw_summaries", m2_ipw_summaries, src_ch5_main, 294, 
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m3_edu_ipw_summaries[['Tertiary']]", m3_edu_ipw_summaries[["Tertiary"]], src_ch5_main, 339, 345)
+print_raw_model_output("m3_edu_ipw_models[['Tertiary']]", m3_edu_ipw_models[["Tertiary"]], src_ch5_main, 339, 345)
 ```
 
 ### Модель для группы со средним профессиональным образованием {.unnumbered}
@@ -252,7 +374,7 @@ print_raw_model_output("m3_edu_ipw_summaries[['Tertiary']]", m3_edu_ipw_summarie
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m3_edu_ipw_summaries[['Secondary_Vocational']]", m3_edu_ipw_summaries[["Secondary_Vocational"]], src_ch5_main, 355, 361)
+print_raw_model_output("m3_edu_ipw_models[['Secondary_Vocational']]", m3_edu_ipw_models[["Secondary_Vocational"]], src_ch5_main, 355, 361)
 ```
 
 ### Модель для группы со средним образованием и ниже {.unnumbered}
@@ -262,7 +384,7 @@ print_raw_model_output("m3_edu_ipw_summaries[['Secondary_Vocational']]", m3_edu_
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m3_edu_ipw_summaries[['Secondary_or_below']]", m3_edu_ipw_summaries[["Secondary_or_below"]], src_ch5_main, 371, 377)
+print_raw_model_output("m3_edu_ipw_models[['Secondary_or_below']]", m3_edu_ipw_models[["Secondary_or_below"]], src_ch5_main, 371, 377)
 ```
 
 ### Модель с взаимодействием пола и некогнитивных навыков {.unnumbered}
@@ -272,7 +394,7 @@ print_raw_model_output("m3_edu_ipw_summaries[['Secondary_or_below']]", m3_edu_ip
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m4_ipw_summaries", m4_ipw_summaries, src_ch5_main, 440, 446)
+print_raw_model_output("m4_ipw_models", m4_ipw_models, src_ch5_main, 440, 446)
 ```
 
 ### Медианная модель для населения 16-65 лет {.unnumbered}
@@ -282,7 +404,7 @@ print_raw_model_output("m4_ipw_summaries", m4_ipw_summaries, src_ch5_main, 440, 
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m_lc_ipw_summaries[['age_16_65']]", m_lc_ipw_summaries[["age_16_65"]], src_ch5_main, 479, 487)
+print_raw_model_output("m_lc_ipw_models[['age_16_65']]", m_lc_ipw_models[["age_16_65"]], src_ch5_main, 479, 487)
 ```
 
 ### Медианная модель для возрастной группы 30-39 лет {.unnumbered}
@@ -292,7 +414,7 @@ print_raw_model_output("m_lc_ipw_summaries[['age_16_65']]", m_lc_ipw_summaries[[
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m_lc_ipw_summaries[['age_30_39']]", m_lc_ipw_summaries[["age_30_39"]], src_ch5_main, 500, 508)
+print_raw_model_output("m_lc_ipw_models[['age_30_39']]", m_lc_ipw_models[["age_30_39"]], src_ch5_main, 500, 508)
 ```
 
 ### Медианная модель для возрастной группы 40-49 лет {.unnumbered}
@@ -302,7 +424,7 @@ print_raw_model_output("m_lc_ipw_summaries[['age_30_39']]", m_lc_ipw_summaries[[
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m_lc_ipw_summaries[['age_40_49']]", m_lc_ipw_summaries[["age_40_49"]], src_ch5_main, 521, 529)
+print_raw_model_output("m_lc_ipw_models[['age_40_49']]", m_lc_ipw_models[["age_40_49"]], src_ch5_main, 521, 529)
 ```
 
 ### Медианная модель для возрастной группы 50-65 лет {.unnumbered}
@@ -312,7 +434,7 @@ print_raw_model_output("m_lc_ipw_summaries[['age_40_49']]", m_lc_ipw_summaries[[
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m_lc_ipw_summaries[['age_50_65']]", m_lc_ipw_summaries[["age_50_65"]], src_ch5_main, 542, 550)
+print_raw_model_output("m_lc_ipw_models[['age_50_65']]", m_lc_ipw_models[["age_50_65"]], src_ch5_main, 542, 550)
 ```
 
 ### Обобщенная аддитивная модель возраста {.unnumbered}
@@ -322,7 +444,7 @@ print_raw_model_output("m_lc_ipw_summaries[['age_50_65']]", m_lc_ipw_summaries[[
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("gam", gam, src_ch5_main, 589, 589)
+print_raw_model_output("gam_age_model", gam_age_model, src_ch5_main, 589, 589)
 ```
 
 ## Глава 6 {.unnumbered}
