@@ -103,4 +103,5 @@ execute:
   echo: false
   warning: false
   message: false
-  error: false  # optional
+  error: false   # optional
+  freeze: auto   # cache chunk results; re-run only when source changes

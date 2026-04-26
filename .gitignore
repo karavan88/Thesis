@@ -14,8 +14,10 @@
 .quarto/
 **/_files/
 **/*_files/
-**/_freeze/
 04_thesis/_book/
+
+# Track 04_thesis/_freeze/ in git so the cache survives across machines.
+# (Quarto upstream recommends committing this directory.)
 
 # Build artefacts that may appear next to qmds
 **/*.html
@@ -54,3 +56,7 @@ _tmp_*/
 # --- Claude Code -------------------------------------------------------------
 .claude/worktrees/
 .claude/local/
+
+# Plot/CSV byproducts that scripts emit but the qmds never read
+03_output/empl_outputs/*.png
+03_output/returns_outputs/edu_ncs_fig.csv
