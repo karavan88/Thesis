@@ -14,14 +14,12 @@
 # Data Source:  Russia Longitudinal Monitoring Survey (RLMS-HSE)
 # Sample:       Youth aged 15-29 years (Waves 25-28: 2016-2019)
 # Processing:   - Big Five personality trait construction from survey items
-#               - School dropout indicators creation
 #               - Household income quintile assignment
 #               - Experience imputation using LOESS regression
 #               - Inverse probability weighting for selection bias
 #
 # Key Variables Created:
 #               - O, C, E, A, ES: Standardized Big Five personality traits
-#               - drop_out variables: Educational dropout indicators
 #               - hh_inc_quintile: Household income quintiles
 #               - exp_imp: Imputed work experience
 #               - ipw_empl: Inverse probability weights for employment
@@ -73,9 +71,14 @@ cat(rep("-", 50), "\n")
 cat("Loading individual data (2016-2019 waves)...")
 start_time <- Sys.time()
 
-ind_2016_2019_empl <- 
+ind_2016_2019_empl <-
   readRDS(file.path(processedData, "rlms_ind_sel_2001_2023.rds")) %>%
   filter(id_w %in% c("25", "28")) %>%
+  # NCS items come in from haven as <haven_labelled>; strip the class so
+  # the >= comparison and downstream rowMeans()/scale() work on every
+  # vctrs version (newer vctrs refuses to coerce haven_labelled to double).
+  # Base-R unclass()+as.numeric() avoids depending on haven being loaded.
+  mutate(across(all_of(ncs_vars), ~ as.numeric(unclass(.)))) %>%
   mutate(across(all_of(ncs_vars), ~ ifelse(. >= 88888888, NA, .))) %>%
   # produce NCS measures
   mutate(o1 = 5 - j445_3,
