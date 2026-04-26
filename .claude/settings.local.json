@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pdftotext /Users/karavan88/Documents/GitHub/Thesis/docs/Thesis.pdf -)",
+      "Bash(git checkout *)",
+      "Bash(cp /Users/karavan88/Documents/GitHub/NonCognSkillsRLMS/02_data_prep/01_data_perp_hh.R 02_codes/03_data/)",
+      "Bash(cp /Users/karavan88/Documents/GitHub/NonCognSkillsRLMS/02_data_prep/02_data_perp_ncs.R 02_codes/03_data/)",
+      "Bash(cp /Users/karavan88/Documents/GitHub/NonCognSkillsRLMS/02_data_prep/03_data_prep_ind.R 02_codes/03_data/)",
+      "Bash(cp /Users/karavan88/Documents/GitHub/NonCognSkillsRLMS/02_data_prep/04_data_merge.R 02_codes/03_data/)",
+      "Bash(cp /Users/karavan88/Documents/GitHub/NonCognSkillsRLMS/02_data_prep/05_data_checks.R 02_codes/03_data/)",
+      "Bash(git mv *)",
+      "Bash(git add *)",
+      "Bash(quarto --version)",
+      "Bash(R --version)",
+      "Bash(Rscript -e 'tryCatch\\({source\\(\"project_config.R\"\\); cat\\(\"OK\\\\n\", \"processedData=\", processedData, \"\\\\n\", \"outputsEmplNcs=\", outputsEmplNcs, \"\\\\n\", \"codesEmplNcs=\", codesEmplNcs, \"\\\\n\", sep=\"\"\\)}, error=function\\(e\\) cat\\(\"ERROR:\", conditionMessage\\(e\\), \"\\\\n\"\\)\\)')",
+      "Bash(Rscript --no-init-file -e 'pkgs <- c\\(\"dplyr\",\"ggplot2\",\"readr\",\"tidyr\",\"lme4\",\"lmerTest\",\"broom\",\"broom.mixed\",\"ggeffects\",\"sjPlot\",\"gtsummary\",\"modelsummary\",\"tinytable\",\"kableExtra\",\"flextable\",\"easystats\",\"performance\",\"glue\",\"igraph\",\"WeightIt\",\"showtext\",\"conflicted\",\"here\",\"haven\",\"readxl\",\"quarto\",\"rmarkdown\",\"knitr\"\\); res <- sapply\\(pkgs, requireNamespace, quietly=TRUE\\); cat\\(\"Installed:\", sum\\(res\\), \"/\", length\\(res\\), \"\\\\n\"\\); cat\\(\"Missing:\", paste\\(names\\(res\\)[!res], collapse=\", \"\\), \"\\\\n\"\\)')",
+      "Bash(RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e 'cat\\(\"dplyr loadable:\", requireNamespace\\(\"dplyr\", quietly=TRUE\\), \"\\\\n\"\\); cat\\(\"lib paths:\", paste\\(.libPaths\\(\\), collapse=\" | \"\\), \"\\\\n\"\\)')",
+      "Bash(RENV_CONFIG_AUTOLOADER_ENABLED=FALSE quarto render --to pdf)",
+      "Bash(RENV_CONFIG_AUTOLOADER_ENABLED=FALSE quarto render /Users/karavan88/Documents/GitHub/Thesis/04_thesis --to pdf)",
+      "Bash(Rscript -e ' *)",
+      "Bash(RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e 'source\\(here::here\\(\"project_config.R\"\\)\\); cat\\(\"path:\", file.path\\(outputsReturnsNcs, \"m1_ipw_coefs.csv\"\\), \"\\\\n\"\\); cat\\(\"exists:\", file.exists\\(file.path\\(outputsReturnsNcs, \"m1_ipw_coefs.csv\"\\)\\), \"\\\\n\"\\)')",
+      "Bash(RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e 'cat\\(\"here:\", here::here\\(\\), \"\\\\n\"\\); cat\\(\"getwd:\", getwd\\(\\), \"\\\\n\"\\)')",
+      "Bash(RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e 'cat\\(rprojroot::find_root\\(rprojroot::is_rstudio_project\\), \"\\\\n\"\\)')",
+      "Bash(perl -i -pe 's/\\\\{\\\\.unnumbered\\\\}/{.unnumbered .unlisted}/g' /Users/karavan88/Documents/GitHub/Thesis/04_thesis/08_annex.qmd)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}

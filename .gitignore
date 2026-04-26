@@ -1,51 +1,56 @@
-# Ignore everything by default
-*
+# ==============================================================================
+# .gitignore - PhD Thesis project
+# ==============================================================================
 
-# Exception for _book folder and its contents
-!_book/
-!_book/**
-
-# Exception for docs folder and its contents (for GitHub Pages)
-!docs/
-!docs/**
-
-# Exception for presentations folder and its contents
-!presentations/
-!presentations/**
-
-# Exception for specific file types
-!*.qmd
-!*.yml
-!*.yaml
-!*.bib
-!*.Rproj
-
-# Exception for specific files
-!apa-with-abstract.csl
-!header.tex
-!README.md
-
-# Keep this gitignore file itself
-!.gitignore
-
-# Still ignore these R-specific files
+# --- R session state ---------------------------------------------------------
 .Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
+.R.Rout
+*.Rcheck/
 
-# Still ignore Quarto cache
-/.quarto/
+# --- Quarto / rendering ------------------------------------------------------
+.quarto/
+**/_files/
+**/*_files/
+**/_freeze/
+04_thesis/_book/
 
-# Still ignore macOS files
+# Build artefacts that may appear next to qmds
+**/*.html
+**/*.pdf
+**/*.docx
+**/*.docx.md
+**/*.html.md
+**/*.tex
+**/Thesis.tex
+
+# Keep CSL and TeX header sources
+!04_thesis/apa-with-abstract.csl
+!04_thesis/header.tex
+!04_thesis/pdf-frontmatter.tex
+
+# --- renv --------------------------------------------------------------------
+renv/library/
+renv/local/
+renv/cellar/
+renv/lock/
+renv/python/
+renv/staging/
+
+# --- OS / editor noise -------------------------------------------------------
 .DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
 
-.ncs_terra_economicus.qmd
+# --- Other -------------------------------------------------------------------
+tinytable_assets/
+_tmp_*/
 
-# Ignore everything in the folder hse_submission
-hse_submission/**
-
-*.docx
-
-# all files in presentations folder - COMMENTED OUT
-# presentations/*
+# --- Claude Code -------------------------------------------------------------
+.claude/worktrees/
+.claude/local/
