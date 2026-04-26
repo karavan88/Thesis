@@ -46,53 +46,17 @@ cat("Script: 04_regression_supplement.R\n")
 cat("Start time:", format(script_start_time, "%Y-%m-%d %H:%M:%S"), "\n")
 cat(rep("=", 80), "\n\n")
 
-# SECTION 1: DATA PREPARATION
-cat("📊 SECTION 1: SUPPLEMENTARY DATA PREPARATION\n")
-cat("Loading and preparing youth employment data for occupational analysis...\n")
+# SECTION 1: DATA LOADING
+cat("📊 SECTION 1: DATA LOADING\n")
+cat("Loading youth_empl (pre-built by 01_data_prep_empl.R)...\n")
 data_start_time <- Sys.time()
 
-youth_empl_suppl <- 
-  readRDS(file.path(processedData, "ind_master_empl.rds")) %>%
-  filter(age >= 15 & age < 30) %>%
-  drop_na(O, C, E, A, ES) %>%
-  select(idind, id_w, age, 
-         edu_lvl, region, sex, employed, year, wave, occupation, 
-         in_education, hh_inc_quintile, area_binary, area, ipw_empl,
-         #empl_offic, 
-         employed_officially,
-         self_employed, satisf_job, j1_1_1, j5_2,
-         O, C, E, A, ES) %>%
-  # create transition_successful variable
-  # should be OFFICIALLy self-employed and satisfied with the job
-  mutate(self_empl_offic_and_saisf = case_when(self_employed == 1 & j1_1_1 == 1 & employed_officially == 1 ~ 1,
-                                               TRUE ~ 0),
-         # exclude self-employed from those employed officially as successfully transitioned
-         transition_successful1 = case_when(self_employed == 1 ~ 0,
-                                            TRUE ~ employed_officially)) %>%
-  # create a final transition successful variable
-  mutate(transition_successful = case_when(transition_successful1 == 1 |
-                                             self_empl_offic_and_saisf == 1 ~ 1,
-                                           TRUE                             ~ 0)) %>%
-  rename(ses5 = hh_inc_quintile) %>%
-  # create age groups based on 15-29
-  mutate(age_group = case_when(age >= 15 & age < 20 ~ "1. 15-19",
-                               age >= 20 & age < 25 ~ "2. 20-24",
-                               age >= 25 & age < 30 ~ "3. 25-29")) %>%
-  mutate(in_education = factor(in_education)) %>%
-  mutate(white_collar_hs = ifelse(occupation %in% c(1, 2, 3), 1, 0)) %>%
-  mutate(white_collar_ls = ifelse(occupation %in% c(4, 5), 1, 0)) %>%
-  mutate(blue_collar_hs = ifelse(occupation %in% c(6, 7), 1, 0)) %>%
-  mutate(blue_collar_ls = ifelse(occupation %in% c(8, 9), 1, 0)) %>%
-  mutate(white_collar = ifelse(occupation %in% c(1, 2, 3, 4, 5), 1, 0)) %>%
-  mutate(age_factor = factor(age)) %>%
-  mutate(skill_mismatch_overeduc = ifelse(edu_lvl == "4. Tertiary" & white_collar_hs !=1, 1, 0)) 
+youth_empl_suppl <- readRDS(file.path(processedData, "youth_empl.rds"))
 
-# Data preparation completed
 data_end_time <- Sys.time()
-cat("✅ Data preparation completed in", round(difftime(data_end_time, data_start_time, units = "secs"), 2), "seconds\n")
+cat("✅ Loaded in", round(difftime(data_end_time, data_start_time, units = "secs"), 2), "seconds\n")
 cat("   - Dataset dimensions:", nrow(youth_empl_suppl), "rows x", ncol(youth_empl_suppl), "columns\n")
 cat("   - Unique individuals:", length(unique(youth_empl_suppl$idind)), "\n")
-cat("   - Age range:", min(youth_empl_suppl$age, na.rm = TRUE), "to", max(youth_empl_suppl$age, na.rm = TRUE), "years\n")
 cat("   - White-collar workers:", sum(youth_empl_suppl$white_collar, na.rm = TRUE), "observations\n")
 cat("   - High-skilled white-collar:", sum(youth_empl_suppl$white_collar_hs, na.rm = TRUE), "observations\n")
 cat("   - Educational mismatch cases:", sum(youth_empl_suppl$skill_mismatch_overeduc, na.rm = TRUE), "observations\n\n")

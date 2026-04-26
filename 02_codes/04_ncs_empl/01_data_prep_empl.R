@@ -77,12 +77,6 @@ ind_2016_2019_empl <-
   readRDS(file.path(processedData, "rlms_ind_sel_2001_2023.rds")) %>%
   filter(id_w %in% c("25", "28")) %>%
   mutate(across(all_of(ncs_vars), ~ ifelse(. >= 88888888, NA, .))) %>%
-  # create school drop out variables
-  mutate(drop_out = ifelse(educ %in% c(0:10, 12, 13, 15, 17), 1, 0),
-         drop_out1 = ifelse(diplom %in% c(1,2, 3) & j70_2 == 2, 1, 0),
-         drop_out_hedu = ifelse(educ %in% c(19, 20) & j72_5a == 1, 1, 0)
-         #drop_out_hedu = ifelse(j72_5a == 1 & j72_5c == 2, 1, 0)
-  ) %>%
   # produce NCS measures
   mutate(o1 = 5 - j445_3,
          o2 = 5 - j445_11,
@@ -479,6 +473,72 @@ saveRDS(ind_master_empl, file.path(processedData, "ind_master_empl.rds"))
 
 cat(" ✓ Completed\n")
 cat("Processing time:", round(as.numeric(difftime(Sys.time(), start_time, units = "secs")), 2), "seconds\n\n")
+
+# ============================================================================
+# PHASE 13: YOUTH ANALYTIC DATASET
+# ============================================================================
+# Build the chapter-4-ready dataset once: youth filter, NCS-complete cases,
+# all renames/recodes/derived variables that downstream scripts (02_descr_empl,
+# 03_regression_empl, 04_regression_supplement) used to recompute every time.
+# After this script runs, those scripts only readRDS() + analyse.
+# ============================================================================
+
+cat("👥 PHASE 13: YOUTH ANALYTIC DATASET\n")
+cat(rep("-", 50), "\n")
+
+cat("Building youth_empl analytic dataset...")
+start_time <- Sys.time()
+
+youth_empl <-
+  ind_master_empl %>%
+  filter(age >= 15 & age < 30) %>%
+  drop_na(O, C, E, A, ES) %>%
+  rename(ses5 = hh_inc_quintile) %>%
+  mutate(
+    age_group     = case_when(
+      age >= 15 & age < 20 ~ "1. 15-19",
+      age >= 20 & age < 25 ~ "2. 20-24",
+      age >= 25 & age < 30 ~ "3. 25-29"
+    ),
+    age_factor    = factor(age),
+    in_education  = factor(in_education),
+    empl_dv       = case_when(
+      employed_officially == 1 & self_employed == 0 ~ 1,
+      TRUE ~ 0
+    ),
+    # Occupation-based outcomes (ISCO-08 major groups)
+    white_collar_hs         = ifelse(occupation %in% c(1, 2, 3), 1, 0),
+    white_collar_ls         = ifelse(occupation %in% c(4, 5), 1, 0),
+    blue_collar_hs          = ifelse(occupation %in% c(6, 7), 1, 0),
+    blue_collar_ls          = ifelse(occupation %in% c(8, 9), 1, 0),
+    white_collar            = ifelse(occupation %in% c(1, 2, 3, 4, 5), 1, 0),
+    skill_mismatch_overeduc = ifelse(edu_lvl == "4. Tertiary" & white_collar_hs != 1, 1, 0),
+    # Successful transition: officially employed (excluding self-employed)
+    # OR self-employed-and-officially-registered-and-job-satisfied
+    self_empl_offic_and_satisf = case_when(
+      self_employed == 1 & j1_1_1 == 1 & employed_officially == 1 ~ 1,
+      TRUE ~ 0
+    ),
+    transition_successful1 = case_when(
+      self_employed == 1 ~ 0,
+      TRUE ~ employed_officially
+    ),
+    transition_successful = case_when(
+      transition_successful1 == 1 | self_empl_offic_and_satisf == 1 ~ 1,
+      TRUE ~ 0
+    ),
+    satisfied_with_job = case_when(j1_1_1 == 1 ~ 1, TRUE ~ 0)
+  )
+
+saveRDS(youth_empl, file.path(processedData, "youth_empl.rds"))
+
+cat(" ✓ Completed\n")
+cat("Processing time:", round(as.numeric(difftime(Sys.time(), start_time, units = "secs")), 2), "seconds\n")
+cat("✓ Youth analytic dataset saved:\n")
+cat("  • File: youth_empl.rds\n")
+cat("  • Observations:", nrow(youth_empl), "\n")
+cat("  • Unique individuals:", length(unique(youth_empl$idind)), "\n")
+cat("  • Variables:", ncol(youth_empl), "\n\n")
 
 cat(rep("=", 80), "\n")
 cat("🎉 DATA PREPARATION COMPLETED SUCCESSFULLY!\n")

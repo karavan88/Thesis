@@ -47,59 +47,17 @@ cat(rep("=", 80), "\n\n")
 # Start timer for overall execution
 script_start_time <- Sys.time()
 
-# SECTION 1: DATA PREPARATION
-cat("📊 SECTION 1: DATA PREPARATION\n")
-cat("Loading and preparing youth employment data...\n")
+# SECTION 1: DATA LOADING
+cat("📊 SECTION 1: DATA LOADING\n")
+cat("Loading youth_empl (pre-built by 01_data_prep_empl.R)...\n")
 data_start_time <- Sys.time()
 
-youth_empl <- 
-  readRDS(file.path(processedData, "ind_master_empl.rds")) %>%
-  filter(age >= 15 & age < 30) %>%
-  drop_na(O, C, E, A, ES) %>%
-  select(idind, id_w, age, 
-         edu_lvl, region, sex, employed, year, wave,
-         in_education, hh_inc_quintile, area_binary, area,
-         #empl_offic, 
-         employed_officially,
-         self_employed, satisf_job, j1_1_1, 
-         O, C, E, A, ES) %>%
-  # create transition_successful variable
-  # should be OFFICIALLy self-employed and satisfied with the job
-  mutate(self_empl_offic_and_saisf = case_when(self_employed == 1 & j1_1_1 == 1 & employed_officially == 1 ~ 1,
-                                         TRUE ~ 0),
-         # exclude self-employed from those employed officially as successfully transitioned
-         transition_successful1 = case_when(self_employed == 1 ~ 0,
-                                            TRUE ~ employed_officially)) %>%
-  # create a final transition successful variable
-  mutate(transition_successful = case_when(transition_successful1 == 1 |
-                                             self_empl_offic_and_saisf == 1 ~ 1,
-                                           TRUE                             ~ 0)) %>%
-  rename(ses5 = hh_inc_quintile) %>%
-  #create age groups based on 15-29
-  mutate(age_group = case_when(age >= 15 & age < 20 ~ "1. 15-19",
-                               age >= 20 & age < 25 ~ "2. 20-24",
-                               age >= 25 & age < 30 ~ "3. 25-29")) %>%
-  mutate(age_factor = factor(age)) %>%
-  mutate(in_education = factor(in_education)) %>%
-  # create those who are employed officially and not in self employment
-  mutate(empl_dv = case_when(employed_officially == 1 & self_employed == 0 ~ 1,
-                             TRUE                                          ~ 0))
+youth_empl <- readRDS(file.path(processedData, "youth_empl.rds"))
 
-
-
-# Table employed officially and self employmenr
-table(youth_empl$employed_officially, youth_empl$self_employed)
-
-summary(factor(youth_empl$employed_officially))
-summary(factor(youth_empl$empl_dv))
-
- 
-# Data preparation completed
 data_end_time <- Sys.time()
-cat("✅ Data preparation completed in", round(difftime(data_end_time, data_start_time, units = "secs"), 2), "seconds\n")
+cat("✅ Loaded in", round(difftime(data_end_time, data_start_time, units = "secs"), 2), "seconds\n")
 cat("   - Dataset dimensions:", nrow(youth_empl), "rows x", ncol(youth_empl), "columns\n")
-cat("   - Unique individuals:", length(unique(youth_empl$idind)), "\n")
-cat("   - Age range:", min(youth_empl$age, na.rm = TRUE), "to", max(youth_empl$age, na.rm = TRUE), "years\n\n")
+cat("   - Unique individuals:", length(unique(youth_empl$idind)), "\n\n")
 
 # SECTION 2: BASELINE MODEL (M1)
 cat("🔧 SECTION 2: BASELINE MODEL (M1)\n")
