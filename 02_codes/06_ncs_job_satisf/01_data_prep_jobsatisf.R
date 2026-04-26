@@ -69,21 +69,27 @@ cat("📊 SECTION 2: MAIN DATASET PREPARATION\n")
 cat("Loading and filtering employment data for job satisfaction analysis...\n")
 data_prep_start <- Sys.time()
 
-# Load master employment dataset and apply filters for job satisfaction analysis
-raw_data <- readRDS(file.path(processedData, "ind_master_empl.rds"))
-cat("   - Loaded raw employment data:", nrow(raw_data), "observations\n")
+# Single source of truth for the youth sample is youth_empl.rds, produced by
+# 02_codes/04_ncs_empl/01_data_prep_empl.R. It already has:
+#   - age 15-29
+#   - non-missing Big-Five (O, C, E, A, ES)
+#   - military (ISCO-08 group 0) excluded
+# Chapter 6 starts from that file and adds the analysis-specific bits:
+# employed-only restriction, satisf_job non-missing, work-hours imputation,
+# occupation labels.
+raw_data <- readRDS(file.path(processedData, "youth_empl.rds"))
+cat("   - Loaded youth_empl.rds:", nrow(raw_data), "observations\n")
 
-youth_job_satisf <- 
+youth_job_satisf <-
   raw_data %>%
-  filter(age >= 15 & age < 30) %>%
   filter(employed == 1) %>%
   select(idind, id_w, year, ipw_empl, wave,
-         age, sex, region, area, edu_lvl, 
+         age, sex, region, area, edu_lvl,
          exp_imp, wages,
          # tenure year and month
          j5a, j5b,
          # employees/subordinates
-         j6, j6_0, 
+         j6, j6_0,
          # working over time or over the weekend
          working_overtime, working_weekends,
          # company ownership
@@ -91,17 +97,14 @@ youth_job_satisf <-
          # labor amount (to derive an hourly wage)
          j6_1, j6_1a, j6_1b, j6_2,
          occupation, industry,
-         starts_with("satisf"), 
+         starts_with("satisf"),
          # original job satisfaction measures
          j1_1_1:j1_1_10,
          O, C, E, A, ES) %>%
-  # if wave is 25, then we need to adjust the wages
-  #mutate(wages = ifelse(id_w == "25", wages * adj_factor, wages)) %>%
-  drop_na(O, C, E, A, ES, satisf_job) %>%
+  drop_na(satisf_job) %>%
   mutate(work_hrs_per_week = ifelse(is.na(j6_2), 40, j6_2)) %>%
   mutate(work_over_40hrs = ifelse(work_hrs_per_week > 40, 1, 0)) %>%
-  mutate(occupation = case_when(occupation == "0" ~ "0. Military",
-                                occupation == "1" ~ "1. Managers",
+  mutate(occupation = case_when(occupation == "1" ~ "1. Managers",
                                 occupation == "2" ~ "2. Professionals",
                                 occupation == "3" ~ "3. Associate Professionals",
                                 occupation == "4" ~ "4. Clerical Workers",
@@ -110,7 +113,7 @@ youth_job_satisf <-
                                 occupation == "7" ~ "7. Craft/Trades Workers",
                                 occupation == "8" ~ "8. Plant/Machine Operators",
                                 occupation == "9" ~ "9. Elementary Occupations"
-                                )) 
+                                ))
 
 data_prep_end <- Sys.time()
 cat("✅ Dataset preparation completed in", round(difftime(data_prep_end, data_prep_start, units = "secs"), 2), "seconds\n")
