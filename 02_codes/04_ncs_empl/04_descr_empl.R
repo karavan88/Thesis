@@ -22,8 +22,6 @@
 #
 # Key Outputs:  - summary_stats: Employment status by year
 #               - ncs_descr: Big Five traits descriptive statistics
-#               - Boxplot visualizations (bp1, bp2, bp3)
-#               - Density plots by demographic groups
 #               - Occupation classification tables
 #
 # Dependencies: ind_master_empl.rds (from 01_data_prep_empl.R)

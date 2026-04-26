@@ -20,7 +20,7 @@ if (knitr::is_latex_output()) {
 # Source the analysis scripts (suppress all output)
 invisible(capture.output({
   source(file.path(rCodes, "05_data_checks.R"))
-  source(file.path(codesEmplNcs, "02_descr_empl.R"))
+  source(file.path(codesEmplNcs, "04_descr_empl.R"))
   source(file.path(codesReturnsNcs, "01_data_prep_returns.R"))
   source(file.path(codesReturnsNcs, "02_descr_returns.R"))
 }))

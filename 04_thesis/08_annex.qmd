@@ -84,15 +84,15 @@ suppressPackageStartupMessages({
 
 source(file.path(rprojroot::find_root(rprojroot::is_rstudio_project), "project_config.R"))
 
-src_ch4_main  <- file.path(codesEmplNcs, "03_regression_empl.R")
-src_ch4_suppl <- file.path(codesEmplNcs, "04_regression_supplement.R")
+src_ch4_main  <- file.path(codesEmplNcs, "02_regression_empl.R")
+src_ch4_suppl <- file.path(codesEmplNcs, "03_regression_supplement.R")
 src_ch5_main  <- file.path(codesReturnsNcs, "03_regression_returns_final.R")
 src_ch6_main  <- file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R")
 
 invisible(capture.output({
-  source(file.path(codesEmplNcs, "02_descr_empl.R"))
+  source(file.path(codesEmplNcs, "04_descr_empl.R"))
   source(file.path(codesJobSatisfNcs, "01_data_prep_jobsatisf.R"))
-  source(file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R"))
+  source(file.path(codesJobSatisfNcs, "04_outputs_jobsatisf.R"))
 }))
 
 # Load raw chapter 5 model objects saved for thesis annex output.
