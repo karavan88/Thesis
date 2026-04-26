@@ -20,20 +20,20 @@ number-sections: false
 #| output: false
 #| results: 'hide'
 
-# Ensure UTF-8 rendering consistency for Russian text in console outputs.
-force_utf8_locale <- function() {
-  for (loc in c("ru_RU.UTF-8", "en_US.UTF-8")) {
-    res <- try(Sys.setlocale("LC_CTYPE", loc), silent = TRUE)
-    if (!inherits(res, "try-error") && is.character(res) && nzchar(res)) {
-      Sys.setenv(LANG = res, LC_CTYPE = res)
-      options(encoding = "UTF-8")
-      return(invisible(res))
-    }
-  }
-  invisible(NULL)
-}
+# # Ensure UTF-8 rendering consistency for Russian text in console outputs.
+# force_utf8_locale <- function() {
+#   for (loc in c("ru_RU.UTF-8", "en_US.UTF-8")) {
+#     res <- try(Sys.setlocale("LC_CTYPE", loc), silent = TRUE)
+#     if (!inherits(res, "try-error") && is.character(res) && nzchar(res)) {
+#       Sys.setenv(LANG = res, LC_CTYPE = res)
+#       options(encoding = "UTF-8")
+#       return(invisible(res))
+#     }
+#   }
+#   invisible(NULL)
+# }
 
-force_utf8_locale()
+# force_utf8_locale()
 
 # Favor regular decimal output in printed model summaries.
 options(scipen = 999)
@@ -245,9 +245,63 @@ print_raw_model_output <- function(label, model, source_file, start_line, end_li
     end_line = end_line,
     render_code = function(model_name) paste0("print(", model_name, ")"),
     render_output = function(model_obj) {
-      printed_lines <- capture.output(print(model_obj))
-      filtered_lines <- printed_lines[!grepl("^[[:space:]]*region", printed_lines)]
-      cat(paste(filtered_lines, collapse = "\n"), "\n", sep = "")
+      print_lqmm_without_regions <- function(one_model) {
+        coefs <- coef(one_model)
+        coef_names <- names(coefs)
+        keep <- !grepl("^region", coef_names)
+        coefs <- coefs[keep]
+
+        formula_txt <- tryCatch(
+          paste(deparse(stats::formula(one_model), width.cutoff = 120), collapse = " "),
+          error = function(e) "formula unavailable"
+        )
+        cat("Call: lqmm(...)\n")
+        cat("Formula: ", formula_txt, "\n\n", sep = "")
+        cat("Quantile ", one_model$tau, "\n\n", sep = "")
+        cat("Fixed effects:\n")
+        for (nm in names(coefs)) {
+          cat(sprintf("%-45s %12.7f\n", nm, unname(coefs[[nm]])))
+        }
+      }
+
+      print_raw_object <- function(x, parent_name = NULL) {
+        if (inherits(x, "lqmm")) {
+          if (!is.null(parent_name)) {
+            cat(parent_name, "\n", strrep("-", nchar(parent_name)), "\n", sep = "")
+          }
+          print_lqmm_without_regions(x)
+          cat("\n")
+          return(invisible(NULL))
+        }
+
+        # Many model objects (e.g., gam/glm/lm) are lists internally.
+        # Handle them before list recursion to avoid dumping massive internals.
+        if (inherits(x, c("gam", "glm", "lm", "merMod", "lmerMod", "lmerModLmerTest"))) {
+          if (!is.null(parent_name)) {
+            cat(parent_name, "\n", strrep("-", nchar(parent_name)), "\n", sep = "")
+          }
+          cat(paste(capture.output(summary(x)), collapse = "\n"), "\n\n", sep = "")
+          return(invisible(NULL))
+        }
+
+        if (is.list(x)) {
+          nms <- names(x)
+          if (is.null(nms) || any(!nzchar(nms))) {
+            nms <- paste0("[[", seq_along(x), "]]")
+          }
+          for (i in seq_along(x)) {
+            child_name <- if (is.null(parent_name)) nms[[i]] else paste0(parent_name, "$", nms[[i]])
+            print_raw_object(x[[i]], child_name)
+          }
+          return(invisible(NULL))
+        }
+
+        printed_lines <- capture.output(print(x))
+        filtered_lines <- printed_lines[!grepl("^[[:space:]]*region", printed_lines)]
+        cat(paste(filtered_lines, collapse = "\n"), "\n", sep = "")
+      }
+
+      print_raw_object(model_obj)
     }
   )
 }
