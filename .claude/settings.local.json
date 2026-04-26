@@ -22,7 +22,8 @@
       "Bash(RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e 'cat\\(\"here:\", here::here\\(\\), \"\\\\n\"\\); cat\\(\"getwd:\", getwd\\(\\), \"\\\\n\"\\)')",
       "Bash(RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e 'cat\\(rprojroot::find_root\\(rprojroot::is_rstudio_project\\), \"\\\\n\"\\)')",
       "Bash(perl -i -pe 's/\\\\{\\\\.unnumbered\\\\}/{.unnumbered .unlisted}/g' /Users/karavan88/Documents/GitHub/Thesis/04_thesis/08_annex.qmd)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

@@ -7,30 +7,15 @@
 #| output: false  
 #| results: 'hide'
 
+source(file.path(rprojroot::find_root(rprojroot::is_rstudio_project), "project_config.R"))
+
 # Force a UTF-8 locale before any tables or plots are created.
-force_utf8_locale <- function() {
-  for (loc in c("ru_RU.UTF-8", "en_US.UTF-8")) {
-    res <- try(Sys.setlocale("LC_CTYPE", loc), silent = TRUE)
-
-    if (!inherits(res, "try-error") && is.character(res) && nzchar(res)) {
-      Sys.setenv(LANG = res, LC_CTYPE = res)
-      options(encoding = "UTF-8")
-      return(invisible(res))
-    }
-  }
-
-  warning("UTF-8 locale is unavailable; DOCX table and figure labels may render incorrectly.")
-  invisible(NULL)
-}
-
 force_utf8_locale()
 
 plot_text_family <- "Times New Roman"
 if (knitr::is_latex_output()) {
   knitr::opts_chunk$set(dev = "cairo_pdf", dev.args = list(family = "Times New Roman"))
 }
-
-source(file.path(rprojroot::find_root(rprojroot::is_rstudio_project), "project_config.R"))
 
 # Source the analysis scripts (suppress all output)
 invisible(capture.output({
@@ -46,63 +31,6 @@ invisible(capture.output({
 ```{r}
 #| echo: false
 #| include: false
-
-style_flex_table <- function(ft, note = NULL) {
-  ft <- flextable::theme_booktabs(ft)
-  ft <- flextable::font(ft, fontname = "Times New Roman", part = "all")
-  ft <- flextable::fontsize(ft, size = 10, part = "all")
-  ft <- flextable::padding(ft, padding = 4, part = "all")
-  ft <- flextable::bold(ft, part = "header")
-
-  if (length(ft$col_keys) > 1) {
-    ft <- flextable::align(ft, j = ft$col_keys[-1], align = "center", part = "all")
-  }
-
-  ft <- flextable::align(ft, j = ft$col_keys[1], align = "left", part = "all")
-
-  if (!is.null(note)) {
-    ft <- flextable::add_footer_lines(ft, values = note)
-    ft <- flextable::fontsize(ft, size = 9, part = "footer")
-  }
-
-  flextable::autofit(ft)
-}
-
-df_to_flex <- function(data, note = NULL, col_labels = NULL) {
-  if (knitr::is_latex_output()) {
-    if (!is.null(col_labels)) {
-      for (cn in intersect(names(data), names(col_labels))) {
-        names(data)[names(data) == cn] <- col_labels[[cn]]
-      }
-    }
-    tbl <- kableExtra::kbl(data, format = "latex", booktabs = TRUE, linesep = "")
-    tbl <- if (ncol(data) > 4) {
-      kableExtra::kable_styling(tbl, latex_options = c("scale_down"), font_size = 9)
-    } else {
-      kableExtra::kable_styling(tbl, font_size = 9)
-    }
-    if (!is.null(note)) {
-      tbl <- kableExtra::footnote(tbl, general = note, general_title = "",
-                                  footnote_as_chunk = TRUE, threeparttable = TRUE)
-    }
-    return(tbl)
-  }
-  ft <- flextable::flextable(data)
-  if (!is.null(col_labels)) {
-    ft <- flextable::set_header_labels(ft, values = col_labels)
-  }
-  style_flex_table(ft, note = note)
-}
-
-gtsummary_to_flex <- function(tbl, note = NULL) {
-  if (knitr::is_latex_output()) {
-    return(
-      gtsummary::as_kable_extra(tbl, format = "latex", booktabs = TRUE, linesep = "") |>
-        kableExtra::kable_styling(font_size = 9)
-    )
-  }
-  style_flex_table(gtsummary::as_flex_table(tbl), note = note)
-}
 
 big5_item_labels_ru <- c(
   o1 = "Вам приходят в голову идеи, до которых другие не додумались раньше?",
@@ -150,37 +78,6 @@ max_iic <- max(big5_item_table$mean_inter_item_corr, na.rm = TRUE)
 min_iic_trait <- big5_item_table$trait[which.min(big5_item_table$mean_inter_item_corr)]
 max_iic_trait <- big5_item_table$trait[which.max(big5_item_table$mean_inter_item_corr)]
 
-make_psychometric_ft <- function(trait_label) {
-  big5_item_table %>%
-    filter(trait == trait_label) %>%
-    mutate(item = recode(item, !!!big5_item_labels_ru)) %>%
-    transmute(
-      item = item,
-      missings = round(missings, 2),
-      mean = round(mean, 2),
-      sd = round(sd, 2),
-      skew = round(skew, 2),
-      item_difficulty = round(item_difficulty, 2),
-      item_discrimination = round(item_discrimination, 2),
-      alpha_if_deleted = round(alpha_if_deleted, 2),
-      cronbach_alpha = round(cronbach_alpha, 2),
-      mean_inter_item_corr = round(mean_inter_item_corr, 2)
-    ) %>%
-    df_to_flex(
-      col_labels = c(
-        item = "Пункт",
-        missings = "Пропуски, %",
-        mean = "Среднее",
-        sd = "SD",
-        skew = "Асимметрия",
-        item_difficulty = "Сложность вопроса",
-        item_discrimination = "Дискриминация вопроса",
-        alpha_if_deleted = "alpha если вопрос удален",
-        cronbach_alpha = "alpha Кронбаха",
-        mean_inter_item_corr = "Средняя межпунктовая корреляция"
-      )
-    )
-}
 ```
 
 Цель данной главы — представить и охарактеризовать эмпирическую базу, на которой строится диссертационное исследование, а также обозначить основные этапы предварительного анализа, предшествующего построению моделей в последующих главах. Особое внимание уделяется тому, как в используемых данных представлены некогнитивные навыки, и в какой степени применяемые измерения позволяют валидно и надёжно зафиксировать межличностные различия по ключевым характеристикам личности.
@@ -236,8 +133,6 @@ likert_plot_ncs +
 ```{r}
 #| label: tbl-psychometric
 #| tbl-cap: 'Психометрические характеристики шкал «Большой пятёрки»'
-
-fmt2 <- function(x) ifelse(is.na(x), "", sprintf("%.2f", x))
 
 tbl_items <- big5_item_table %>%
   mutate(
@@ -448,12 +343,6 @@ ses_stats <- sample_data %>%
   filter(!is.na(ses5_q)) %>%
   count(ses5_q) %>%
   mutate(pct = 100 * n / sum(n))
-
-# Calculate sample percentages for inline use
-fmt_pct <- function(x) {
-  if (is.na(x)) return("")
-  if (x >= 1) as.integer(round(x)) else round(x, 1)
-}
 
 pct_female <- (sex_stats %>% filter(sex_ru == "Женский") %>% pull(pct))[1]
 pct_male <- (sex_stats %>% filter(sex_ru == "Мужской") %>% pull(pct))[1]

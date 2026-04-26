@@ -116,4 +116,15 @@ if ("conflicted" %in% loadedNamespaces()) {
   conflicted::conflicts_prefer(lmerTest::lmer, .quiet = TRUE)
 }
 
+# ---- User-defined helper functions ------------------------------------------
+# Source every *.R file under 99_user_functions/ so the helpers used inside the
+# qmds (table styling, model-output formatting, inline coefficient lookups,
+# etc.) are available globally.
+user_functions_dir <- file.path(projectFolder, "99_user_functions")
+if (dir.exists(user_functions_dir)) {
+  for (f in list.files(user_functions_dir, pattern = "\\.R$", full.names = TRUE)) {
+    source(f, local = FALSE)
+  }
+}
+
 invisible(NULL)

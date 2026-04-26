@@ -7,30 +7,15 @@
 #| output: false  
 #| results: 'hide'
 
+source(file.path(rprojroot::find_root(rprojroot::is_rstudio_project), "project_config.R"))
+
 # Force a UTF-8 locale before any tables or plots are created.
-force_utf8_locale <- function() {
-  for (loc in c("ru_RU.UTF-8", "en_US.UTF-8")) {
-    res <- try(Sys.setlocale("LC_CTYPE", loc), silent = TRUE)
-
-    if (!inherits(res, "try-error") && is.character(res) && nzchar(res)) {
-      Sys.setenv(LANG = res, LC_CTYPE = res)
-      options(encoding = "UTF-8")
-      return(invisible(res))
-    }
-  }
-
-  warning("UTF-8 locale is unavailable; DOCX table and figure labels may render incorrectly.")
-  invisible(NULL)
-}
-
 force_utf8_locale()
 
 plot_text_family <- "Times New Roman"
 if (knitr::is_latex_output()) {
   knitr::opts_chunk$set(dev = "cairo_pdf", dev.args = list(family = "Times New Roman"))
 }
-
-source(file.path(rprojroot::find_root(rprojroot::is_rstudio_project), "project_config.R"))
 
 # Source the analysis scripts (suppress all output)
 invisible(capture.output({
@@ -46,73 +31,6 @@ invisible(capture.output({
 ```{r}
 #| echo: false
 #| include: false
-
-style_flex_table <- function(ft, note = NULL, latex_total_width = 5.6) {
-  ft <- flextable::theme_booktabs(ft)
-  ft <- flextable::font(ft, fontname = "Times New Roman", part = "all")
-  ft <- flextable::fontsize(ft, size = 10, part = "all")
-  ft <- flextable::padding(ft, padding = if (knitr::is_latex_output()) 1 else 4, part = "all")
-  ft <- flextable::line_spacing(ft, space = 1, part = "all")
-  ft <- flextable::bold(ft, part = "header")
-
-  if (length(ft$col_keys) > 1) {
-    ft <- flextable::align(ft, j = ft$col_keys[-1], align = "center", part = "all")
-  }
-
-  ft <- flextable::align(ft, j = ft$col_keys[1], align = "left", part = "all")
-
-  section_titles <- c("Фиксированные эффекты", "Случайные эффекты", "Качество модели")
-  ds <- ft$body$dataset
-  if (!is.null(ds) && "variable" %in% names(ds)) {
-    sec_rows <- which(ds$variable %in% section_titles)
-    if (length(sec_rows) > 0) {
-      for (r in sec_rows) {
-        ft <- flextable::merge_at(ft, i = r, j = seq_along(ft$col_keys), part = "body")
-      }
-      ft <- flextable::bold(ft, i = sec_rows, part = "body")
-      ft <- flextable::bg(ft, i = sec_rows, bg = "#F2F2F2", part = "body")
-      ft <- flextable::align(ft, i = sec_rows, align = "left", part = "body")
-    }
-  }
-
-  if (!is.null(note)) {
-    ft <- flextable::add_footer_lines(ft, values = note)
-    ft <- flextable::font(ft, fontname = "Times New Roman", part = "footer")
-    ft <- flextable::fontsize(ft, size = 9, part = "footer")
-  }
-
-  ft <- flextable::set_table_properties(
-    ft,
-    layout = if (knitr::is_latex_output()) "fixed" else "autofit",
-    opts_word = list(split = TRUE),
-    opts_pdf = list(float = "none", tabcolsep = 1, arraystretch = 1)
-  )
-
-  if (knitr::is_latex_output()) {
-    ncols <- length(ft$col_keys)
-    total_w <- latex_total_width
-    if (ncols >= 2) {
-      first_w <- max(min(2.2, total_w - 0.6 * (ncols - 1)), 1.6)
-      other_w <- max((total_w - first_w) / (ncols - 1), 0.55)
-      ft <- flextable::width(ft, j = 1, width = first_w)
-      ft <- flextable::width(ft, j = 2:ncols, width = other_w)
-    } else {
-      ft <- flextable::width(ft, j = 1, width = total_w)
-    }
-    ft <- flextable::paginate(ft, init = TRUE, hdr_ftr = TRUE)
-    return(ft)
-  }
-
-  flextable::autofit(ft)
-}
-
-df_to_flex <- function(data, note = NULL, col_labels = NULL, latex_total_width = 5.6) {
-  ft <- flextable::flextable(data)
-  if (!is.null(col_labels)) {
-    ft <- flextable::set_header_labels(ft, values = col_labels)
-  }
-  style_flex_table(ft, note = note, latex_total_width = latex_total_width)
-}
 
 returns_note_common <- "Примечание: коэффициенты приведены со стандартными ошибками в скобках; *** p < 0.001, ** p < 0.01, * p < 0.05, . p < 0.1."
 
@@ -276,22 +194,6 @@ $$Q_{\tau}(\log \text{Wage}_{it}) = \beta_{0\tau} + X_{it}\boldsymbol{\beta}_{\t
 
 out_returns <- outputsReturnsNcs
 
-# Helper: read a no-header CSV (variable + 5 quantiles x 5 stats = 26 cols)
-read_ipw_coefs <- function(fname) {
-  readr::read_csv(
-    file.path(out_returns, fname), show_col_types = FALSE,
-    col_names = c("variable",
-      "q10_est","q10_se","q10_lo","q10_hi","q10_p",
-      "q25_est","q25_se","q25_lo","q25_hi","q25_p",
-      "q50_est","q50_se","q50_lo","q50_hi","q50_p",
-      "q75_est","q75_se","q75_lo","q75_hi","q75_p",
-      "q90_est","q90_se","q90_lo","q90_hi","q90_p"))
-}
-get_coef <- function(df, var, col) {
-  val <- suppressWarnings(as.numeric(df[df$variable == var, col, drop = TRUE][1]))
-  round(val * 100, 1)
-}
-
 m1_ipw_raw <- read_ipw_coefs("m1_ipw_coefs.csv")
 m2_ipw_raw <- read_ipw_coefs("m2_ipw_coefs.csv")
 
@@ -306,15 +208,14 @@ edu_tert_q90 <- get_coef(m2_ipw_raw, "edu_lvl4. Tertiary", "q90_est")
 
 # Life-cycle model (has header + age_group column)
 lc_ipw_raw <- readr::read_csv(file.path(out_returns, "m_lc_ipw_coefs.csv"), show_col_types = FALSE)
-get_lc <- function(var, grp) round(lc_ipw_raw[lc_ipw_raw$variable == var & lc_ipw_raw$age_group == grp, "Value", drop = TRUE] * 100, 1)
 
-lc_O_all  <- get_lc("O", "16-65")
-lc_O_3040 <- get_lc("O", "30-40")
-lc_O_4050 <- get_lc("O", "40-50")
-lc_O_5065 <- get_lc("O", "50-65")
-lc_C_all  <- get_lc("C", "16-65")
-lc_C_5065 <- get_lc("C", "50-65")
-lc_E_3040 <- get_lc("E", "30-40")
+lc_O_all  <- get_lc(lc_ipw_raw, "O", "16-65")
+lc_O_3040 <- get_lc(lc_ipw_raw, "O", "30-40")
+lc_O_4050 <- get_lc(lc_ipw_raw, "O", "40-50")
+lc_O_5065 <- get_lc(lc_ipw_raw, "O", "50-65")
+lc_C_all  <- get_lc(lc_ipw_raw, "C", "16-65")
+lc_C_5065 <- get_lc(lc_ipw_raw, "C", "50-65")
+lc_E_3040 <- get_lc(lc_ipw_raw, "E", "30-40")
 
 # Gender interaction: m7_ipw_gender_ncs_int (source of hardcoded text values).
 # NOTE: gend_int_tab (Table tbl-reg-gndr) uses m4_ipw_sex_ncs_int where

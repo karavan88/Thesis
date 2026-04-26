@@ -138,23 +138,6 @@ intro_open_occup <- round(intro_occup_fixef[["O"]] * 100, 1)
 intro_cons_mismatch <- round(abs(intro_mismatch_fixef[["C"]]) * 100, 1)
 intro_open_mismatch <- round(abs(intro_mismatch_fixef[["O"]]) * 100, 1)
 
-read_intro_ipw_coefs <- function(fname) {
-	df <- utils::read.csv(file.path(outputsReturnsNcs, fname), header = FALSE, stringsAsFactors = FALSE)
-	names(df) <- c(
-		"variable",
-		"q10_est", "q10_se", "q10_lo", "q10_hi", "q10_p",
-		"q25_est", "q25_se", "q25_lo", "q25_hi", "q25_p",
-		"q50_est", "q50_se", "q50_lo", "q50_hi", "q50_p",
-		"q75_est", "q75_se", "q75_lo", "q75_hi", "q75_p",
-		"q90_est", "q90_se", "q90_lo", "q90_hi", "q90_p"
-	)
-	df
-}
-
-get_intro_ipw_coef <- function(df, var, col) {
-	round(as.numeric(df[df$variable == var, col][1]) * 100, 1)
-}
-
 intro_m1_ipw_raw <- read_intro_ipw_coefs("m1_ipw_coefs.csv")
 intro_open_q10 <- get_intro_ipw_coef(intro_m1_ipw_raw, "O", "q10_est")
 intro_open_q90 <- get_intro_ipw_coef(intro_m1_ipw_raw, "O", "q90_est")
