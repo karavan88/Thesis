@@ -201,12 +201,7 @@ age_effect_plot <-
     axis.text = element_text(size = 10)
   ) 
 
-# Save the age effect plot
-ggsave(file.path(outputsEmplNcs, "age_effect_plot.png"), 
-       plot = age_effect_plot, 
-       width = 8, height = 6, dpi = 300)
-
-cat("   ✅ Age effect plot completed in", 
+cat("   ✅ Age effect plot completed in",
     round(difftime(Sys.time(), age_plot_start, units = "secs"), 2), "seconds\n\n")
 
 # SECTION 7B: SES HETEROGENEITY PLOT
@@ -225,12 +220,7 @@ plot_ses <-
   ylab("") +
   xlab("")
 
-# Save the SES plot
-ggsave(file.path(outputsEmplNcs, "ses_ncs_plot.png"), 
-       plot = plot_ses, 
-       width = 12, height = 8, dpi = 300)
-
-cat("   ✅ SES effects plot completed in", 
+cat("   ✅ SES effects plot completed in",
     round(difftime(Sys.time(), ses_plot_start, units = "secs"), 2), "seconds\n\n")
 
 # SECTION 7C: EDUCATION HETEROGENEITY PLOT
@@ -249,12 +239,7 @@ plot_edu <-
   ylab("") +
   xlab("")
 
-# Save the education plot
-ggsave(file.path(outputsEmplNcs, "education_ncs_plot.png"), 
-       plot = plot_edu, 
-       width = 12, height = 8, dpi = 300)
-
-cat("   ✅ Education effects plot completed in", 
+cat("   ✅ Education effects plot completed in",
     round(difftime(Sys.time(), edu_plot_start, units = "secs"), 2), "seconds\n\n")
 
 # SECTION 7D: SEX HETEROGENEITY PLOT
@@ -275,12 +260,7 @@ plot_sex <-
   theme(legend.title = element_blank(),
         legend.position = "bottom")
 
-# Save the sex plot
-ggsave(file.path(outputsEmplNcs, "sex_ncs_plot.png"), 
-       plot = plot_sex, 
-       width = 10, height = 6, dpi = 300)
-
-cat("   ✅ Sex effects plot completed in", 
+cat("   ✅ Sex effects plot completed in",
     round(difftime(Sys.time(), sex_plot_start, units = "secs"), 2), "seconds\n\n")
 
 # SECTION 8: SUPPLEMENTARY MODELS AND OUTPUTS
@@ -357,11 +337,6 @@ plot_ses_occup <-
   facet_wrap(Skill~.) +
   ylab("") +
   xlab("")
-
-# Save the occupational SES plot
-ggsave(file.path(outputsEmplNcs, "occupational_ses_ncs_plot.png"), 
-       plot = plot_ses_occup, 
-       width = 12, height = 8, dpi = 300)
 
 suppl_plot_end <- Sys.time()
 cat("   ✅ Supplementary plot completed in", 

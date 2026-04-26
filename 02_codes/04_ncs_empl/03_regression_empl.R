@@ -237,14 +237,12 @@ m3_empl_sensitivity <- lmer(empl_dv ~ 1 +
 summary(m3_empl)
 summary(m3_empl_sensitivity)
 
-saveRDS(sensitivity_data,
-        file = file.path(outputsEmplNcs, "sensitivity_data_2019_outcomes_2016_ncs.rds"))
-saveRDS(m3_empl_sensitivity,
-        file = file.path(outputsEmplNcs, "model_ncs_empl_m3_sensitivity.rds"))
+# NOTE: sensitivity model and sample are kept in-memory for inspection but not
+# written to 03_output/empl_outputs/ — neither 05_regression_final.R nor any
+# qmd reads them, so persisting them only creates orphan files.
 
 sensitivity_end_time <- Sys.time()
-cat("✅ Sensitivity check completed in", round(difftime(sensitivity_end_time, sensitivity_start_time, units = "secs"), 2), "seconds\n")
-cat("   - Files saved: sensitivity_data_2019_outcomes_2016_ncs.rds, model_ncs_empl_m3_sensitivity.rds\n\n")
+cat("✅ Sensitivity check completed in", round(difftime(sensitivity_end_time, sensitivity_start_time, units = "secs"), 2), "seconds\n\n")
 
 # SECTION 5: RANDOM SLOPES MODELS
 cat("🔧 SECTION 5: RANDOM SLOPES MODELS\n")

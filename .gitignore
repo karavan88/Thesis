@@ -57,6 +57,5 @@ _tmp_*/
 .claude/worktrees/
 .claude/local/
 
-# Plot/CSV byproducts that scripts emit but the qmds never read
-03_output/empl_outputs/*.png
+# CSV byproduct that 05_output_returns_rus.R emits but no qmd reads
 03_output/returns_outputs/edu_ncs_fig.csv
