@@ -493,6 +493,10 @@ youth_empl <-
   ind_master_empl %>%
   filter(age >= 15 & age < 30) %>%
   drop_na(O, C, E, A, ES) %>%
+  # Drop military respondents (ISCO-08 major group 0). Keep NA occupation
+  # rows since those represent the not-employed population we still want
+  # to model in M1-M3 (outcome = empl_dv, with 0 for non-employed).
+  filter(is.na(occupation) | occupation != 0) %>%
   rename(ses5 = hh_inc_quintile) %>%
   mutate(
     age_group     = case_when(
@@ -513,21 +517,7 @@ youth_empl <-
     blue_collar_ls          = ifelse(occupation %in% c(8, 9), 1, 0),
     white_collar            = ifelse(occupation %in% c(1, 2, 3, 4, 5), 1, 0),
     skill_mismatch_overeduc = ifelse(edu_lvl == "4. Tertiary" & white_collar_hs != 1, 1, 0),
-    # Successful transition: officially employed (excluding self-employed)
-    # OR self-employed-and-officially-registered-and-job-satisfied
-    self_empl_offic_and_satisf = case_when(
-      self_employed == 1 & j1_1_1 == 1 & employed_officially == 1 ~ 1,
-      TRUE ~ 0
-    ),
-    transition_successful1 = case_when(
-      self_employed == 1 ~ 0,
-      TRUE ~ employed_officially
-    ),
-    transition_successful = case_when(
-      transition_successful1 == 1 | self_empl_offic_and_satisf == 1 ~ 1,
-      TRUE ~ 0
-    ),
-    satisfied_with_job = case_when(j1_1_1 == 1 ~ 1, TRUE ~ 0)
+    satisfied_with_job      = case_when(j1_1_1 == 1 ~ 1, TRUE ~ 0)
   )
 
 saveRDS(youth_empl, file.path(processedData, "youth_empl.rds"))

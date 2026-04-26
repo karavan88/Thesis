@@ -67,14 +67,13 @@ start_time <- Sys.time()
 
 summary_stats <-
   youth_empl %>%
-  mutate(satisfied_with_job = case_when(j1_1_1 == 1 ~ 1, TRUE ~ 0)) %>%
   select(age, sex, year,
-         employed, employed_officially, self_employed, satisfied_with_job, transition_successful,
-         in_education, edu_lvl, 
+         employed, employed_officially, self_employed, satisfied_with_job,
+         in_education, edu_lvl,
          year, area, ses5) %>%
-  tbl_summary(by = year, 
+  tbl_summary(by = year,
               type = list( age ~ 'continuous2',
-                           c(employed, employed_officially, self_employed, transition_successful,
+                           c(employed, employed_officially, self_employed,
                              in_education, satisfied_with_job) ~ 'dichotomous',
                            c( ses5, area, edu_lvl) ~ 'categorical'),
               value = list(in_education ~ 1),
@@ -83,18 +82,17 @@ summary_stats <-
                            employed_officially ~ "Officially Employed",
                            self_employed ~ "Self-Employed",
                            satisfied_with_job ~ "Satisfied with Job",
-                           transition_successful ~ "Transition Successful",
                            in_education ~ "Attending Education",
                            area ~ "Area",
                            sex ~ "Sex",
                            ses5 ~ "HH Income Per Cap Quintile",
-                           edu_lvl ~ "Highest Level of Education") , 
+                           edu_lvl ~ "Highest Level of Education") ,
               statistic = list(all_continuous() ~ "{mean} ({sd})")) %>%
   add_overall() %>%
   modify_header(label = "Variable") %>%
   bold_labels() %>%
   as_gt() %>%
-  tab_source_note(md("Source: Author's calculations based on RLMS-HSE data")) 
+  tab_source_note(md("Source: Author's calculations based on RLMS-HSE data"))
 
 cat(" ✓ Completed\n")
 cat("Processing time:", round(as.numeric(difftime(Sys.time(), start_time, units = "secs")), 2), "seconds\n")
@@ -111,27 +109,24 @@ start_time <- Sys.time()
 
 summary_stats_data_chapter <-
   youth_empl %>%
-  mutate(satisfied_with_job = case_when(j1_1_1 == 1 ~ 1, TRUE ~ 0)) %>%
-  select(employed, employed_officially, 
-         self_employed, satisfied_with_job, transition_successful,
+  select(employed, employed_officially,
+         self_employed, satisfied_with_job,
          year) %>%
-  tbl_summary(by = year, 
-              type = list( # age ~ 'continuous2',
-                           c(employed, employed_officially, self_employed, transition_successful,
-                             satisfied_with_job) ~ 'dichotomous' #,
-                          # c( ses5, area, edu_lvl) ~ 'categorical'
+  tbl_summary(by = year,
+              type = list(
+                           c(employed, employed_officially, self_employed,
+                             satisfied_with_job) ~ 'dichotomous'
                            ),
-              label = list(# age ~ "Age",
+              label = list(
                            employed ~ "Трудоустроен",
                            employed_officially ~ "Формальная занятость",
                            self_employed ~ "Самозанятый",
-                           satisfied_with_job ~ "Удовлетворен работой",
-                           transition_successful ~ "Переход завершен" #,
-                           ) , 
+                           satisfied_with_job ~ "Удовлетворен работой"
+                           ) ,
               statistic = list(all_continuous() ~ "{mean} ({sd})")) %>%
   add_overall() %>%
   modify_header(label = "Переменная") %>%
-  bold_labels() 
+  bold_labels()
 
 cat(" ✓ Completed\n")
 cat("Processing time:", round(as.numeric(difftime(Sys.time(), start_time, units = "secs")), 2), "seconds\n")
