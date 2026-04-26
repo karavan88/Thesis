@@ -21,7 +21,6 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 # Source the analysis scripts (suppress all output)
 invisible(capture.output({
   source(file.path(codesEmplNcs, "02_descr_empl.R"))
-  source(file.path(codesEmplNcs, "05_regression_final.R"))
 }))
 
 ```
@@ -90,18 +89,8 @@ note_rs_coef <- c(
 # Extract key coefficients (adjust model names and variable names as needed)
 # You'll need to check your actual model objects and variable names
 
-# ICC values (variance partition coefficients)
-if(exists("vpc_results") || exists("m1_empl_base")) {
-  # Calculate ICC for base model
-  vpc_base <- icc(m1_empl_base, by_group = TRUE)
-  age_var_pct <- round(vpc_base[vpc_base$Group == "age_factor", "ICC"] * 100, 0)
-  edu_var_pct <- round(vpc_base[vpc_base$Group == "edu_lvl", "ICC"] * 100, 0)
-  region_var_pct <- round(vpc_base[vpc_base$Group == "region", "ICC"] * 100, 0)
-  residual_var_pct <- round((1 - sum(vpc_base$ICC)) * 100, 0)
-}
-
-# Extract coefficients from the models used in the analysis
-coefs_model1 <- fixef(models_empl1[[2]])
+# Extract coefficients from M1 (NCS + controls) for inline use in the chapter text
+coefs_model1 <- fixef(models_empl1[[1]])
 
 # extract the coefs of C, E, in_edu, ses5Q5, and edu_lvl4
 # edu_coef <- coefs_model1[["edu_lvl4. Tertiary"]]
@@ -334,7 +323,7 @@ $$ {#eq-overeduc}
 #| message: false
 
 local({
-  nm <- stats::setNames(models_empl1[2], c("Формальная занятость"))
+  nm <- stats::setNames(models_empl1[1], c("Формальная занятость"))
   df_to_flex(
     build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, inline_se = TRUE),
     note = coef_note

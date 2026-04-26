@@ -91,7 +91,6 @@ src_ch6_main  <- file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R")
 
 invisible(capture.output({
   source(file.path(codesEmplNcs, "02_descr_empl.R"))
-  source(file.path(codesEmplNcs, "05_regression_final.R"))
   source(file.path(codesJobSatisfNcs, "01_data_prep_jobsatisf.R"))
   source(file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R"))
 }))
@@ -163,84 +162,74 @@ if (!exists("models_satisf_rus") && exists("models_satisf")) {
 
 ## Глава 4 {.unnumbered .unlisted}
 
-### Базовая модель занятости {.unnumbered .unlisted}
+### M1: модель занятости с НКН {.unnumbered .unlisted}
 
-Аннотация: уравнение @eq-empl-fixed; таблица @tbl-regs-mem-fixed, столбец «Базовая модель».
-
-```{r}
-#| echo: false
-#| results: asis
-print_model_output("models_empl1[[1]]", models_empl1[[1]], src_ch4_main, 136, 141)
-```
-
-### Модель занятости с НКН {.unnumbered .unlisted}
-
-Аннотация: уравнение @eq-empl-fixed; таблица @tbl-regs-mem-fixed, столбец «Модель с НКН».
+Аннотация: уравнение @eq-empl-fixed; таблица @tbl-regs-mem-fixed.
 
 ```{r}
 #| echo: false
 #| results: asis
-print_model_output("models_empl1[[2]]", models_empl1[[2]], src_ch4_main, 190, 196)
+print_model_output("models_empl1[[1]]", models_empl1[[1]], src_ch4_main, 69, 74)
 ```
 
-### Модель со случайными наклонами по СЭС {.unnumbered .unlisted}
+### M2: модель со случайными наклонами по СЭС {.unnumbered .unlisted}
 
 Аннотация: уравнение @eq-empl-rs; таблица @tbl-regs-mem-random, столбец «СЭС».
 
 ```{r}
 #| echo: false
 #| results: asis
-print_model_output("models_empl2[[1]]", models_empl2[[1]], src_ch4_main, 257, 264)
+print_model_output("models_empl2[[1]]", models_empl2[[1]], src_ch4_main, 99, 105)
 ```
 
-### Модель со случайными наклонами по образованию {.unnumbered .unlisted}
+### M3: модель со случайными наклонами по образованию {.unnumbered .unlisted}
 
 Аннотация: уравнение @eq-empl-rs; таблица @tbl-regs-mem-random, столбец «Уровень образования».
 
 ```{r}
 #| echo: false
 #| results: asis
-print_model_output("models_empl2[[2]]", models_empl2[[2]], src_ch4_main, 296, 303)
+print_model_output("models_empl2[[2]]", models_empl2[[2]], src_ch4_main, 125, 131)
 ```
 
-### Модель со случайными наклонами по полу {.unnumbered .unlisted}
+### M4: модель со случайными наклонами по полу {.unnumbered .unlisted}
 
 Аннотация: уравнение @eq-empl-rs; таблица @tbl-regs-mem-random, столбец «Пол».
 
 ```{r}
 #| echo: false
 #| results: asis
-print_model_output("models_empl2[[3]]", models_empl2[[3]], src_ch4_main, 335, 342)
+print_model_output("models_empl2[[3]]", models_empl2[[3]], src_ch4_main, 151, 157)
 ```
 
-### Базовая модель умственного труда {.unnumbered .unlisted}
+### M5: базовая модель умственного труда {.unnumbered .unlisted}
 
 Аннотация: уравнение @eq-empl-wc; таблица @tbl-mem-occup, столбец «Базовая».
 
 ```{r}
 #| echo: false
 #| results: asis
-print_model_output("models_occup[[1]]", models_occup[[1]], src_ch4_suppl, 128, 135)
+print_model_output("models_occup[[1]]", models_occup[[1]], src_ch4_suppl, 41, 47)
 ```
 
-### Модель умственного труда со случайными наклонами по СЭС {.unnumbered .unlisted}
+### M6: модель умственного труда со случайными наклонами по СЭС {.unnumbered .unlisted}
 
 Аннотация: уравнение @eq-empl-wc; таблица @tbl-mem-occup, столбец «Случайные наклоны по СЭС».
 
 ```{r}
 #| echo: false
 #| results: asis
-print_model_output("models_occup[[2]]", models_occup[[2]], src_ch4_suppl, 149, 158)
+print_model_output("models_occup[[2]]", models_occup[[2]], src_ch4_suppl, 55, 62)
 ```
 
-### Модель избыточной квалификации {.unnumbered .unlisted}
+### M7: модель избыточной квалификации {.unnumbered .unlisted}
 
 Аннотация: уравнение @eq-overeduc; таблица @tbl-reg-mismatch, столбец «Избыточная квалификация».
 
 ```{r}
 #| echo: false
 #| results: asis
-print_model_output("models_suppl[['Educational Mismatch']]", models_suppl[["Educational Mismatch"]], src_ch4_suppl, 194, 201)
+print_model_output("models_suppl[['Educational Mismatch']]", models_suppl[["Educational Mismatch"]], src_ch4_suppl, 90, 95)
 ```
 
 ## Глава 5 {.unnumbered .unlisted}

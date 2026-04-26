@@ -118,7 +118,6 @@ source(file.path(rprojroot::find_root(rprojroot::is_rstudio_project), "project_c
 
 invisible(capture.output({
 	source(file.path(codesEmplNcs, "02_descr_empl.R"))
-	source(file.path(codesEmplNcs, "05_regression_final.R"))
 	source(file.path(codesReturnsNcs, "01_data_prep_returns.R"))
 	source(file.path(codesReturnsNcs, "02_descr_returns.R"))
 	source(file.path(codesReturnsNcs, "05_output_returns_rus.R"))
@@ -126,7 +125,7 @@ invisible(capture.output({
 	source(file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R"))
 }))
 
-intro_empl_fixef <- fixef(models_empl1[[2]])
+intro_empl_fixef <- fixef(models_empl1[[1]])
 intro_occup_fixef <- fixef(models_occup[[1]])
 intro_mismatch_fixef <- fixef(models_suppl[["Educational Mismatch"]])
 intro_js_fixef <- fixef(models_job_satisf_list[[2]])

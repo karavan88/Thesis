@@ -55,6 +55,52 @@ cat("✓ Youth employment dataset loaded:\n")
 cat("  • Total observations:", nrow(youth_empl), "\n")
 cat("  • Unique individuals:", length(unique(youth_empl$idind)), "\n\n")
 
+# ----------------------------------------------------------------------------
+# CHAPTER 4 MODEL OBJECTS + RUSSIAN RENAME VECTOR
+# ----------------------------------------------------------------------------
+# These are loaded here (rather than in a dedicated 05_regression_final.R)
+# so the qmd only has to source 02_descr_empl.R to get both the descriptive
+# inputs and the fitted models for chapter 4.
+# ----------------------------------------------------------------------------
+
+models_empl1     <- readRDS(file.path(outputsEmplNcs, "models_ncs_empl_tab1.rds"))
+models_empl2     <- readRDS(file.path(outputsEmplNcs, "models_ncs_empl_tab2.rds"))
+models_suppl     <- readRDS(file.path(outputsEmplNcs, "models_ncs_empl_suppl.rds"))
+m4_ses_coefs     <- readRDS(file.path(outputsEmplNcs, "m4_ses_coefs.rds"))
+m5_edu_coefs     <- readRDS(file.path(outputsEmplNcs, "m5_edu_coefs.rds"))
+m6_sex_coefs     <- readRDS(file.path(outputsEmplNcs, "m6_sex_coefs.rds"))
+m_occup_ses_coefs <- readRDS(file.path(outputsEmplNcs, "m_occup_ses_coefs.rds"))
+
+# Two-element subset used by the qmd's "occupation" tables
+models_occup <- list(
+  "M5" = models_suppl[["M5"]],
+  "M6" = models_suppl[["M6"]]
+)
+
+# Russian variable labels used by the qmd's modelsummary / tinytable calls
+rename_vector_empl_rus <-
+  c(`(Intercept)`                      = "Константа",
+    age                                = "Возраст",
+    `I(age^2)`                         = "Возраст²",
+    sexMale                            = "Пол: Мужской",
+    `edu_lvl2. Secondary School`       = "Обр: Среднее",
+    `edu_lvl3. Secondary Vocational`   = "Обр: Среднее проф",
+    `edu_lvl4. Tertiary`               = "Обр: Высшее",
+    `areaUrban-Type Settlement`        = "Тип поселения: ПГТ",
+    areaCity                           = "Тип поселения: Город",
+    `areaRegional Center`              = "Тип поселения: Обл центр",
+    `in_education1`                    = "В настоящее время обучается",
+    ses5Q2                             = "Среднедушевой доход ДХ: Q2",
+    ses5Q3                             = "Среднедушевой доход ДХ: Q3",
+    ses5Q4                             = "Среднедушевой доход ДХ: Q4",
+    ses5Q5                             = "Среднедушевой доход ДХ: Q5",
+    O                                  = "Открытость опыту",
+    C                                  = "Добросовестность",
+    E                                  = "Экстраверсия",
+    A                                  = "Доброжелательность",
+    ES                                 = "Эмоциональная стабильность")
+
+
 cat("📋 PHASE 2: SUMMARY STATISTICS TABLES\n")
 cat(rep("-", 50), "\n")
 

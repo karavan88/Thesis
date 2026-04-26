@@ -4,12 +4,12 @@
 #
 # Project:      Non-Cognitive Skills and Labor Market Outcomes
 # File:         01_data_prep_empl.R
-# Purpose:      Data preparation for employment transition analysis
-# 
-# Description:  This script prepares the RLMS-HSE dataset for employment
-#               analysis by processing non-cognitive skills measures (Big Five),
-#               creating employment indicators, handling missing data, and
-#               constructing analytical variables for youth employment models.
+# Purpose:      Data preparation for the youth-employment analysis (Ch. 4)
+#
+# Description:  Prepares the RLMS-HSE dataset for the chapter-4 employment
+#               analysis: builds the Big-Five (NCS) measures, derives
+#               household-income quintiles assigned at age 15, imputes work
+#               experience, and computes employment-selection IPW weights.
 #
 # Data Source:  Russia Longitudinal Monitoring Survey (RLMS-HSE)
 # Sample:       Youth aged 15-29 years (Waves 25-28: 2016-2019)
@@ -115,41 +115,35 @@ cat("  • Big Five traits created and standardized\n")
 cat("  • Dropout indicators created\n")
 cat("  • Missing NCS values forward/backward filled within individuals\n\n")
 
-cat("🎓 PHASE 3: SCHOOL-TO-WORK TRANSITION TIMING\n")
+cat("🎓 PHASE 3: AGE-15 REFERENCE YEAR\n")
 cat(rep("-", 50), "\n")
 
-cat("Calculating SWT reference years (when individuals were 15)...")
+cat("Calculating the calendar year when each respondent turned 15...")
 start_time <- Sys.time()
 
-# we need to find the wave when the individual was 15 years old
-swt_year_dta <-
+# Find the calendar year in which each respondent was 15. Used downstream
+# to look up the household they belonged to at age 15 -> background SES.
+year_15_data <-
   ind_2016_2019_empl %>%
   filter(age >= 15 & age < 30) %>%
   drop_na(O, C, E, A, ES) %>%
   select(idind, age, id_w, year) %>%
-  # how many years ago a respondent was 15?
   mutate(age_diff = age - 15) %>%
-  # which year was it when respondent was 15
   mutate(year_15 = year - age_diff) %>%
   select(idind, year_15) %>%
   distinct() %>%
-  # we need to truncate the decimal and keep only integer part in year
   mutate(year = as.integer(year_15)) %>%
   select(-year_15) %>%
-  mutate(year_note = "initial year of SWT",
+  mutate(year_note = "year individual turned 15",
          year_copy = year)
 
 cat(" ✓ Completed\n")
 cat("Processing time:", round(as.numeric(difftime(Sys.time(), start_time, units = "secs")), 2), "seconds\n")
-cat("✓ SWT timing calculated:\n")
-cat("  • Individuals with NCS data:", length(unique(swt_year_dta$idind)), "\n")
-cat("  • Age range analyzed: 15-29 years\n")
-cat("  • Reference year: When individual was 15 years old\n\n")
-  
-# View(swt_year_dta)
+cat("✓ Reference year computed:\n")
+cat("  • Individuals with NCS data:", length(unique(year_15_data$idind)), "\n")
+cat("  • Age range analyzed: 15-29 years\n\n")
 
-idind_swt <- unique(swt_year_dta$idind)
-# length(idind_swt)
+idind_age15 <- unique(year_15_data$idind)
 
 cat("🏠 PHASE 4: HOUSEHOLD MATCHING\n")
 cat(rep("-", 50), "\n")
@@ -157,13 +151,11 @@ cat(rep("-", 50), "\n")
 cat("Loading longitudinal data for household matching...")
 start_time <- Sys.time()
 
-# Now we need to find which household an individual belonged to when they were 15
-
-rlms_ind_2001_2023 <- 
-  #readRDS("~/Documents/GitHub/Thesis/01_input_data/processed/rlms_ind_2001_2023.rds") %>%
+# Find which household an individual belonged to in the year they turned 15.
+rlms_ind_2001_2023 <-
   readRDS(file.path(processedData, "rlms_ind_2001_2023.rds")) %>%
   select(idind, id_w, year, id_h) %>%
-  filter(idind %in% idind_swt) %>%
+  filter(idind %in% idind_age15) %>%
   mutate(idind = as.factor(idind))
 
 cat(" ✓ Completed\n")
@@ -172,16 +164,11 @@ cat("Processing time:", round(as.numeric(difftime(Sys.time(), start_time, units 
 cat("Performing household ID matching...")
 start_time <- Sys.time()
 
-# View(rlms_ind_2001_2023)
-# length(unique(rlms_ind_2001_2023$idind)) # 4334 which matches the number of idinds in the previous dataset
-
-# rm(rlms_ind_2001_2023)
-
 matching_data <-
   rlms_ind_2001_2023 %>%
-  full_join(swt_year_dta) %>%
+  full_join(year_15_data) %>%
   mutate(matched = ifelse(!is.na(id_h) & !is.na(year_copy), "matched", "unmatched"),
-         idind = as.factor(idind)) 
+         idind = as.factor(idind))
 
 # create the vector of those who were matched
 matched = 
@@ -225,15 +212,9 @@ cat("  • Total matched individuals:", length(idind_matched) + nrow(unmatched),
 
 # View(unmatched)
 
-swt_idh <-
+idh_at_15 <-
   matched %>%
-   bind_rows(unmatched) #%>%
-  # group_by(idind) %>%
-  # # calculate number of values in each group
-  # mutate(n = factor(n())) %>%
-  # ungroup()
-  
-# View(swt_idh)
+  bind_rows(unmatched)
 
 cat("💰 PHASE 5: HOUSEHOLD INCOME DATA\n")
 cat(rep("-", 50), "\n")
@@ -258,7 +239,7 @@ hh_data_selected <-
                                      hh_per_cap_quantile_imp >  0.6 & hh_per_cap_quantile_imp <= 0.8 ~ "Q4",
                                      hh_per_cap_quantile_imp >  0.8                                  ~ "Q5")) %>%
   ungroup() %>%
-  right_join(swt_idh) %>%
+  right_join(idh_at_15) %>%
   select(-id_w, -id_h) 
 
 cat(" ✓ Completed\n")
@@ -540,7 +521,7 @@ cat("  • Unique individuals:", length(unique(ind_master_empl$idind)), "\n")
 cat("  • Waves included: 25 (2016), 28 (2019)\n")
 cat("  • Youth sample (15-29):", nrow(youth), "observations\n")
 cat("  • Variables created: Big Five traits, IPW weights, imputed experience\n")
-cat("  • Ready for employment transition analysis\n")
+cat("  • Ready for chapter-4 employment analysis\n")
 cat(rep("=", 80), "\n")
 cat("Script completed:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
 cat(rep("=", 80), "\n\n")

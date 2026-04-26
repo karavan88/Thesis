@@ -1,219 +1,123 @@
 # ==============================================================================
-# NON-COGNITIVE SKILLS AND EMPLOYMENT - SUPPLEMENTARY ANALYSIS
+# CHAPTER 4 - SUPPLEMENTARY EMPLOYMENT MODELS
 # ==============================================================================
 #
-# Project:      Non-Cognitive Skills and Labor Market Outcomes
 # File:         04_regression_supplement.R
-# Purpose:      Supplementary employment analysis with occupational outcomes
-# 
-# Description:  This script analyzes the relationship between non-cognitive 
-#               skills and occupational outcomes including white-collar employment,
-#               skill-based employment categories, and educational mismatch
-#               among Russian youth. Extends main employment transition analysis
-#               with additional outcome measures.
+# Purpose:      Fit chapter-4 supplementary mixed-effects models on the youth
+#               sample produced by 01_data_prep_empl.R.
 #
-# Data Source:  Russia Longitudinal Monitoring Survey (RLMS-HSE)
-# Sample:       Youth aged 15-29 years (2016-2023)
-# Methodology:  Mixed-effects logistic regression with occupational outcomes
+# Models fitted in this script (continuing the chapter-4 sequence):
+#   M5 - High-skilled white-collar employment, NCS + controls
+#   M6 - High-skilled white-collar with NCS random slopes by SES quintile
+#   M7 - Educational mismatch (overeducation) among tertiary-educated youth
 #
-# Models:       MS1 - White-collar high-skilled employment
-#               MS2 - White-collar high-skilled by SES (random slopes)
-#               MS3 - Educational mismatch (over-education)
+# Outputs (saved to 03_output/empl_outputs/):
+#   models_ncs_empl_suppl.rds  - list("M5"=..., "M6"=..., "Educational Mismatch"=...)
+#   m_occup_ses_coefs.rds      - long-format M6 random-slope coefs (% scale)
 #
-# Outputs:      Model objects and coefficient data for visualization creation
-#               Data saved to outputs folder for 05_regression_final.R
-#
-# Author:       Garen Avanesian
-# Institution:  Southern Federal University
-# Created:      April 27, 2025
-# Modified:     October 19, 2025
-# Version:      2.0 (Separated models from visualization creation)
-#
-# Dependencies: lme4, tidyverse, project configuration
-# Runtime:      ~3-5 minutes (depending on data size and system)
-#
-# Notes:        Models are fitted and saved here, tables and plots created
-#               in 05_regression_final.R for consistent output management
-#
+# Dependencies: lme4, lmerTest, modelsummary, tinytable, tidyverse
 # ==============================================================================
 
-
-# SCRIPT INITIALIZATION
-script_start_time <- Sys.time()
 cat("\n", rep("=", 80), "\n")
-cat("STARTING SUPPLEMENTARY EMPLOYMENT ANALYSIS\n")
+cat("CHAPTER 4 - SUPPLEMENTARY MODELS\n")
 cat("Script: 04_regression_supplement.R\n")
-cat("Start time:", format(script_start_time, "%Y-%m-%d %H:%M:%S"), "\n")
+cat("Start time:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
 cat(rep("=", 80), "\n\n")
 
-# SECTION 1: DATA LOADING
+script_start_time <- Sys.time()
+
+# ---- SECTION 1: DATA LOADING -----------------------------------------------
 cat("📊 SECTION 1: DATA LOADING\n")
-cat("Loading youth_empl (pre-built by 01_data_prep_empl.R)...\n")
-data_start_time <- Sys.time()
-
 youth_empl_suppl <- readRDS(file.path(processedData, "youth_empl.rds"))
+cat("✅ Loaded youth_empl_suppl:", nrow(youth_empl_suppl), "rows\n")
+cat("   - White-collar workers:", sum(youth_empl_suppl$white_collar, na.rm = TRUE), "\n")
+cat("   - High-skilled white-collar:", sum(youth_empl_suppl$white_collar_hs, na.rm = TRUE), "\n")
+cat("   - Educational-mismatch cases:", sum(youth_empl_suppl$skill_mismatch_overeduc, na.rm = TRUE), "\n\n")
 
-data_end_time <- Sys.time()
-cat("✅ Loaded in", round(difftime(data_end_time, data_start_time, units = "secs"), 2), "seconds\n")
-cat("   - Dataset dimensions:", nrow(youth_empl_suppl), "rows x", ncol(youth_empl_suppl), "columns\n")
-cat("   - Unique individuals:", length(unique(youth_empl_suppl$idind)), "\n")
-cat("   - White-collar workers:", sum(youth_empl_suppl$white_collar, na.rm = TRUE), "observations\n")
-cat("   - High-skilled white-collar:", sum(youth_empl_suppl$white_collar_hs, na.rm = TRUE), "observations\n")
-cat("   - Educational mismatch cases:", sum(youth_empl_suppl$skill_mismatch_overeduc, na.rm = TRUE), "observations\n\n")
+# ---- SECTION 2: M5 - HIGH-SKILLED WHITE-COLLAR -----------------------------
+cat("🔧 SECTION 2: M5 (high-skilled white-collar)\n")
+t0 <- Sys.time()
 
-# Configure variable rename vector for tables
-rename_vector_empl <- 
-  c(`(Intercept)` = "Intercept",
-    sexMale = "Sex: Male",
-    `edu_lvl2. Secondary School` = "Education: Secondary",
-    `edu_lvl3. Secondary Vocational` = "Education: Vocational",
-    `edu_lvl4. Tertiary` = "Education: Tertiary",
-    `areaUrban-Type Settlement` = "Area: Urban-Type Settlement",
-    areaCity = "Area: City",
-    `areaRegional Center` = "Area: Regional Center",
-    `in_education1` = "Currently studying: Yes",
-    ses5Q2 = "SES: Q2",
-    ses5Q3 = "SES: Q3",
-    ses5Q4 = "SES: Q4",
-    ses5Q5 = "SES: Q5",
-    O = "Openness",
-    C = "Conscientiousness",
-    E = "Extraversion",
-    A = "Agreeableness",
-    ES = "Emotional Stability")
+m5_empl <- lmer(white_collar_hs ~ 1 +
+                  age + I(age^2) +
+                  sex + edu_lvl + area + ses5 + in_education +
+                  O + C + E + A + ES +
+                  (1|region) + (1|idind) + (1|edu_lvl),
+                weights = ipw_empl,
+                REML = TRUE, data = youth_empl_suppl)
 
-cat("✅ Variable rename vector configured for", length(rename_vector_empl), "variables\n\n")
+cat("✅ M5 fit in", round(difftime(Sys.time(), t0, units = "secs"), 2), "s\n\n")
 
-# SECTION 2: WHITE-COLLAR HIGH-SKILLED EMPLOYMENT MODEL (MS1)
-cat("🔧 SECTION 2: WHITE-COLLAR HIGH-SKILLED MODEL (MS1)\n")
-cat("Fitting white-collar high-skilled employment model...\n")
-ms1_start_time <- Sys.time()
+# ---- SECTION 3: M6 - WHITE-COLLAR x SES RANDOM SLOPES ----------------------
+cat("🔧 SECTION 3: M6 (high-skilled white-collar, random slopes by SES)\n")
+t0 <- Sys.time()
 
-m_occup_wc_hs <- lmer(white_collar_hs ~ 1 + 
-                        age + I(age^2) +
-                        sex + edu_lvl + area + ses5 + in_education + # controls
-                        O + C + E + A + ES + # NCS
-                        (1|region)  + (1|idind) + (1|edu_lvl), # random intercepts
-                      weights = ipw_empl,
-                      REML = T, data = youth_empl_suppl)
+m6_empl <- lmer(white_collar_hs ~ 1 +
+                  age + I(age^2) +
+                  sex + edu_lvl + area + in_education +
+                  O + C + E + A + ES +
+                  (1|idind) + (1|edu_lvl) +
+                  (1 + O + C + E + A + ES | ses5),
+                weights = ipw_empl,
+                REML = TRUE, data = youth_empl_suppl)
 
-ms1_end_time <- Sys.time()
-cat("✅ White-collar high-skilled model (MS1) completed in", 
-    round(difftime(ms1_end_time, ms1_start_time, units = "secs"), 2), "seconds\n")
+cat("✅ M6 fit in", round(difftime(Sys.time(), t0, units = "secs"), 2), "s\n")
 
-# Display model summary
-summary(m_occup_wc_hs)
-cat("✅ MS1 model summary displayed\n\n")
-
-# SECTION 3: WHITE-COLLAR HIGH-SKILLED BY SES MODEL (MS2)
-cat("🔧 SECTION 3: WHITE-COLLAR HIGH-SKILLED BY SES MODEL (MS2)\n")
-cat("Fitting white-collar model with SES random slopes...\n")
-ms2_start_time <- Sys.time()
-
-m_occup_wc_hs_ses <- lmer(white_collar_hs ~ 1 + 
-                            age + I(age^2) +
-                            sex + edu_lvl + area + in_education + # controls
-                            O + C + E + A + ES + # NCS
-                            (1|idind) + (1|edu_lvl) + # random intercepts
-                            (1 + O + C + E + A + ES | ses5), # random effects
-                          weights = ipw_empl,
-                          REML = T, 
-                          data = youth_empl_suppl)
-
-ms2_end_time <- Sys.time()
-cat("✅ White-collar by SES model (MS2) completed in", 
-    round(difftime(ms2_end_time, ms2_start_time, units = "secs"), 2), "seconds\n")
-
-# Display model summary
-summary(m_occup_wc_hs_ses)
-
-# Extract SES coefficients for visualization
-cat("   - Extracting SES coefficients for visualization...\n")
-m_ocup_ses_coefs =
-  coef(m_occup_wc_hs_ses)$`ses5` %>%
+# Extract SES random-slope coefficients (percentage-point scale)
+m6_empl_ses_coefs <-
+  coef(m6_empl)$ses5 %>%
   as.data.frame() %>%
   rownames_to_column(var = "ses5") %>%
   select(ses5, O, C, E, A, ES) %>%
   gather(Skill, Estimate, -ses5) %>%
-  mutate(Estimate = as.numeric(Estimate)*100) %>%
-  mutate(Skill = case_when(Skill == "O" ~ "Openness",
-                           Skill == "C" ~ "Conscientiousness",
-                           Skill == "E" ~ "Extraversion",
-                           Skill == "A" ~ "Agreeableness",
+  mutate(Estimate = as.numeric(Estimate) * 100,
+         Skill = case_when(Skill == "O"  ~ "Openness",
+                           Skill == "C"  ~ "Conscientiousness",
+                           Skill == "E"  ~ "Extraversion",
+                           Skill == "A"  ~ "Agreeableness",
                            Skill == "ES" ~ "Emotional Stability"))
 
-cat("✅ MS2 coefficients extracted for visualization\n\n")
+saveRDS(m6_empl_ses_coefs, file.path(outputsEmplNcs, "m_occup_ses_coefs.rds"))
+cat("   ✓ M6 SES coefficients saved\n\n")
 
+# ---- SECTION 4: M7 - EDUCATIONAL MISMATCH (OVEREDUCATION) ------------------
+cat("🔧 SECTION 4: M7 (educational mismatch among tertiary-educated)\n")
+t0 <- Sys.time()
 
-# SECTION 4: EDUCATIONAL MISMATCH MODEL (MS3)
-cat("🔧 SECTION 4: EDUCATIONAL MISMATCH MODEL (MS3)\n")
-cat("Fitting educational mismatch (over-education) model...\n")
-cat("   - Restricting sample to tertiary education graduates...\n")
-ms3_start_time <- Sys.time()
-
-# Filter data to tertiary education only
 tertiary_data <- youth_empl_suppl[youth_empl_suppl$edu_lvl == "4. Tertiary", ]
-cat("   - Tertiary education sample size:", nrow(tertiary_data), "observations\n")
+cat("   - Tertiary sample size:", nrow(tertiary_data), "\n")
 
-m_overeduc <- lmer(skill_mismatch_overeduc ~ 1 + 
-                         age + I(age^2) +
-                         sex + area + ses5 + # in_education + # controls
-                         O + C + E + A + ES + # NCS
-                         (1|region)  + (1|idind), # random intercepts
-                       REML = T, 
-                       data = tertiary_data)
+m7_empl <- lmer(skill_mismatch_overeduc ~ 1 +
+                  age + I(age^2) +
+                  sex + area + ses5 +
+                  O + C + E + A + ES +
+                  (1|region) + (1|idind),
+                REML = TRUE, data = tertiary_data)
 
-ms3_end_time <- Sys.time()
-cat("✅ Educational mismatch model (MS3) completed in", 
-    round(difftime(ms3_end_time, ms3_start_time, units = "secs"), 2), "seconds\n")
+cat("✅ M7 fit in", round(difftime(Sys.time(), t0, units = "secs"), 2), "s\n\n")
 
-# Display model summary
-summary(m_overeduc)
-cat("✅ MS3 model summary displayed\n\n")
-
-# SECTION 5: SAVE MODELS AND DATA FOR OUTPUT GENERATION
-cat("💾 SECTION 5: SAVING MODELS AND VISUALIZATION DATA\n")
-cat("Saving supplementary models and coefficients for 05_regression_final.R...\n")
-
-# Save supplementary models
+# ---- SECTION 5: SAVE BUNDLE ------------------------------------------------
+# List keyed so the qmd's existing references (e.g. models_suppl[["Educational
+# Mismatch"]]) keep working after the M5/M6/M7 renumbering.
 models_suppl <- list(
-  "White Collar (High-Skilled)" = m_occup_wc_hs,
-  "White Collar (High-Skilled) by SES" = m_occup_wc_hs_ses,
-  "Educational Mismatch" = m_overeduc
+  "M5"                    = m5_empl,
+  "M6"                    = m6_empl,
+  "Educational Mismatch"  = m7_empl
 )
 
 saveRDS(models_suppl, file.path(outputsEmplNcs, "models_ncs_empl_suppl.rds"))
-cat("✅ Supplementary models saved to models_ncs_empl_suppl.rds\n")
+cat("✅ Supplementary bundle saved (M5, M6, Educational Mismatch)\n\n")
 
-# Save SES coefficients for occupation plot
-saveRDS(m_ocup_ses_coefs, file.path(outputsEmplNcs, "m_occup_ses_coefs.rds"))
-cat("✅ Occupational SES coefficients saved to m_occup_ses_coefs.rds\n\n")
+# Convenience: 'occupational' two-model list expected by the qmd. Built here
+# (was previously built in 05_regression_final.R, now eliminated).
+models_occup <- list(
+  "M5" = m5_empl,
+  "M6" = m6_empl
+)
 
-# COMPLETION SUMMARY
-script_end_time <- Sys.time()
-total_time <- difftime(script_end_time, script_start_time, units = "mins")
-
+# ---- COMPLETION ------------------------------------------------------------
+total_time <- difftime(Sys.time(), script_start_time, units = "mins")
 cat(rep("=", 80), "\n")
-cat("🎉 SUPPLEMENTARY ANALYSIS COMPLETED SUCCESSFULLY!\n")
-cat(rep("=", 80), "\n")
-cat("📊 MODELS FITTED:\n")
-cat("   • MS1: White-collar high-skilled employment\n")
-cat("   • MS2: White-collar high-skilled by SES (random slopes)\n")
-cat("   • MS3: Educational mismatch (over-education)\n\n")
-cat("💾 FILES SAVED:\n")
-cat("   • models_ncs_empl_suppl.rds (All supplementary models)\n")
-cat("   • m_occup_ses_coefs.rds (SES coefficients for visualization)\n\n")
-cat("📈 ANALYSIS FEATURES:\n")
-cat("   • Occupational outcome measures\n")
-cat("   • Educational mismatch analysis\n")
-cat("   • SES heterogeneity in occupational outcomes\n")
-cat("   • Mixed-effects modeling with random slopes\n")
-cat("   • IPW weighting for causal inference\n\n")
-cat("🔄 NEXT STEPS:\n")
-cat("   • Run 05_regression_final.R to generate tables and plots\n")
-cat("   • Models and data ready for publication outputs\n\n")
-cat("⏱️  TOTAL EXECUTION TIME:", round(total_time, 2), "minutes\n")
-cat("✅ End time:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
+cat("✅ Chapter 4 supplementary models fitted in", round(total_time, 2), "min\n")
+cat("   M5 (white-collar HS), M6 (white-collar HS x SES), M7 (overeducation)\n")
 cat(rep("=", 80), "\n\n")
-
-
