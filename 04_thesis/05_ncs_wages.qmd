@@ -333,20 +333,23 @@ extd_reg_ipw %>%
 
 Таким образом, несмотря на то что некогнитивные навыки вносят вклад в вариативность заработной платы на всех уровнях образования, их влияние опосредовано как самим уровнем образования, так и позицией работников в распределении заработка.
 
-::: {.callout-note appearance="simple" icon=false}
-Полные коэффициентные сводки для моделей по подвыборкам образования
-(M3a — высшее, M3b — среднее профессиональное, M3c — среднее и ниже)
-приведены в приложении.
-:::
-
 ```{r}
 #| label: fig-edu-ncs
 #| fig-cap: Отдача от некогнитивных навыков по уровням образования и квантилям заработной платы
 #| fig-width: 7.5
 #| fig-height: 8
 
+# Order education subsamples low → high: «Среднее и ниже» → «Среднее
+# профессиональное» → «Высшее» (the CSV stores them in the reverse,
+# alphabetical-by-arbitrary-tag order).
+edu_models_long_plot <- edu_models_long
+edu_models_long_plot$model <- factor(
+  edu_models_long_plot$model,
+  levels = c("Secondary or below", "Secondary Vocational", "Tertiary")
+)
+
 print(
-  ggplot(edu_models_long, aes(x = estimate * 100, y = variable)) +
+  ggplot(edu_models_long_plot, aes(x = estimate * 100, y = variable)) +
     geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
     geom_errorbarh(aes(xmin = ci.low * 100, xmax = ci.upp * 100),
                    height = 0.2, linewidth = 0.5) +
@@ -369,6 +372,8 @@ print(
     )
 )
 ```
+
+> *Примечание.* Полные коэффициентные сводки по подвыборкам образования (M3a — высшее, M3b — среднее профессиональное, M3c — среднее и ниже) приведены в приложении.
 
 ### Надёжность результатов с учётом жизненного цикла: сохраняются ли эффекты в различных возрастных группах трудоспособного населения?
 

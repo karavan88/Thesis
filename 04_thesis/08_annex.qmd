@@ -2,7 +2,7 @@
 number-sections: false
 ---
 
-# Приложение {#.unnumbered}
+# Приложение {.unnumbered}
 
 ```{=latex}
 \setcounter{secnumdepth}{0}
