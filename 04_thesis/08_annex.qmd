@@ -86,7 +86,7 @@ source(file.path(rprojroot::find_root(rprojroot::is_rstudio_project), "project_c
 
 src_ch4_main  <- file.path(codesEmplNcs, "02_regression_empl.R")
 src_ch4_suppl <- file.path(codesEmplNcs, "03_regression_supplement.R")
-src_ch5_main  <- file.path(codesReturnsNcs, "03_regression_returns_final.R")
+src_ch5_main  <- file.path(codesReturnsNcs, "03_fit_models_returns.R")
 src_ch6_main  <- file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R")
 
 invisible(capture.output({
@@ -151,6 +151,16 @@ if (dir.exists(returns_thesis_out)) {
   )
 
   gam_age_model <- readRDS(file.path(returns_thesis_out, "m_gam_age_model.rds"))
+} else {
+  # Models not yet fit. The annex placeholders below let the rest of the book
+  # render; run 03_fit_models_returns.R + 04_summarize_models_returns.R to
+  # populate 03_output/returns_outputs/thesis/ and re-render to fill them in.
+  m1_ipw_models     <- NULL
+  m2_ipw_models     <- NULL
+  m3_edu_ipw_models <- list(Tertiary = NULL, Secondary_Vocational = NULL, Secondary_or_below = NULL)
+  m4_ipw_models     <- NULL
+  m_lc_ipw_models   <- list(age_16_65 = NULL, age_30_39 = NULL, age_40_49 = NULL, age_50_65 = NULL)
+  gam_age_model     <- NULL
 }
 
 # Some scripts expose domain models as models_satisf; chapter text expects models_satisf_rus.
@@ -241,7 +251,7 @@ print_model_output("models_suppl[['Educational Mismatch']]", models_suppl[["Educ
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m1_ipw_models", m1_ipw_models, src_ch5_main, 236, 242)
+print_raw_model_output("m1_ipw_models", m1_ipw_models, src_ch5_main, 152, 159)
 ```
 
 ### Расширенная модель заработной платы с учетом образования {.unnumbered .unlisted}
@@ -251,7 +261,7 @@ print_raw_model_output("m1_ipw_models", m1_ipw_models, src_ch5_main, 236, 242)
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m2_ipw_models", m2_ipw_models, src_ch5_main, 294, 300)
+print_raw_model_output("m2_ipw_models", m2_ipw_models, src_ch5_main, 166, 173)
 ```
 
 ### Модель для группы с высшим образованием {.unnumbered .unlisted}
@@ -261,7 +271,7 @@ print_raw_model_output("m2_ipw_models", m2_ipw_models, src_ch5_main, 294, 300)
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m3_edu_ipw_models[['Tertiary']]", m3_edu_ipw_models[["Tertiary"]], src_ch5_main, 339, 345)
+print_raw_model_output("m3_edu_ipw_models[['Tertiary']]", m3_edu_ipw_models[["Tertiary"]], src_ch5_main, 182, 189)
 ```
 
 ### Модель для группы со средним профессиональным образованием {.unnumbered .unlisted}
@@ -271,7 +281,7 @@ print_raw_model_output("m3_edu_ipw_models[['Tertiary']]", m3_edu_ipw_models[["Te
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m3_edu_ipw_models[['Secondary_Vocational']]", m3_edu_ipw_models[["Secondary_Vocational"]], src_ch5_main, 355, 361)
+print_raw_model_output("m3_edu_ipw_models[['Secondary_Vocational']]", m3_edu_ipw_models[["Secondary_Vocational"]], src_ch5_main, 193, 200)
 ```
 
 ### Модель для группы со средним образованием и ниже {.unnumbered .unlisted}
@@ -281,7 +291,7 @@ print_raw_model_output("m3_edu_ipw_models[['Secondary_Vocational']]", m3_edu_ipw
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m3_edu_ipw_models[['Secondary_or_below']]", m3_edu_ipw_models[["Secondary_or_below"]], src_ch5_main, 371, 377)
+print_raw_model_output("m3_edu_ipw_models[['Secondary_or_below']]", m3_edu_ipw_models[["Secondary_or_below"]], src_ch5_main, 205, 212)
 ```
 
 ### Модель с взаимодействием пола и некогнитивных навыков {.unnumbered .unlisted}
@@ -291,7 +301,7 @@ print_raw_model_output("m3_edu_ipw_models[['Secondary_or_below']]", m3_edu_ipw_m
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m4_ipw_models", m4_ipw_models, src_ch5_main, 440, 446)
+print_raw_model_output("m4_ipw_models", m4_ipw_models, src_ch5_main, 221, 228)
 ```
 
 ### Медианная модель для населения 16-65 лет {.unnumbered .unlisted}
@@ -301,7 +311,7 @@ print_raw_model_output("m4_ipw_models", m4_ipw_models, src_ch5_main, 440, 446)
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m_lc_ipw_models[['age_16_65']]", m_lc_ipw_models[["age_16_65"]], src_ch5_main, 479, 487)
+print_raw_model_output("m_lc_ipw_models[['age_16_65']]", m_lc_ipw_models[["age_16_65"]], src_ch5_main, 236, 241)
 ```
 
 ### Медианная модель для возрастной группы 30-39 лет {.unnumbered .unlisted}
@@ -311,7 +321,7 @@ print_raw_model_output("m_lc_ipw_models[['age_16_65']]", m_lc_ipw_models[["age_1
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m_lc_ipw_models[['age_30_39']]", m_lc_ipw_models[["age_30_39"]], src_ch5_main, 500, 508)
+print_raw_model_output("m_lc_ipw_models[['age_30_39']]", m_lc_ipw_models[["age_30_39"]], src_ch5_main, 243, 248)
 ```
 
 ### Медианная модель для возрастной группы 40-49 лет {.unnumbered .unlisted}
@@ -321,7 +331,7 @@ print_raw_model_output("m_lc_ipw_models[['age_30_39']]", m_lc_ipw_models[["age_3
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m_lc_ipw_models[['age_40_49']]", m_lc_ipw_models[["age_40_49"]], src_ch5_main, 521, 529)
+print_raw_model_output("m_lc_ipw_models[['age_40_49']]", m_lc_ipw_models[["age_40_49"]], src_ch5_main, 250, 255)
 ```
 
 ### Медианная модель для возрастной группы 50-65 лет {.unnumbered .unlisted}
@@ -331,7 +341,7 @@ print_raw_model_output("m_lc_ipw_models[['age_40_49']]", m_lc_ipw_models[["age_4
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("m_lc_ipw_models[['age_50_65']]", m_lc_ipw_models[["age_50_65"]], src_ch5_main, 542, 550)
+print_raw_model_output("m_lc_ipw_models[['age_50_65']]", m_lc_ipw_models[["age_50_65"]], src_ch5_main, 257, 262)
 ```
 
 ### Обобщенная аддитивная модель возраста {.unnumbered .unlisted}
@@ -341,7 +351,7 @@ print_raw_model_output("m_lc_ipw_models[['age_50_65']]", m_lc_ipw_models[["age_5
 ```{r}
 #| echo: false
 #| results: asis
-print_raw_model_output("gam_age_model", gam_age_model, src_ch5_main, 589, 589)
+print_raw_model_output("gam_age_model", gam_age_model, src_ch5_main, 276, 277)
 ```
 
 ## Глава 6 {.unnumbered .unlisted}

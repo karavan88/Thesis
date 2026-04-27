@@ -17,6 +17,18 @@
 #' @param end_line Integer. Last line of the code snippet.
 #' @return Invisibly `NULL`; called for side-effects.
 print_raw_model_output <- function(label, model, source_file, start_line, end_line) {
+  # Graceful placeholder when the model object isn't yet available — happens
+  # for chapter 5 if 03_fit_models_returns.R + 04_summarize_models_returns.R
+  # haven't been run yet. Lets the rest of the book render.
+  if (is.null(model)) {
+    cat("```\n",
+        "[Model `", label, "` not yet fit — run 03_fit_models_returns.R + ",
+        "04_summarize_models_returns.R to populate ",
+        "03_output/returns_outputs/thesis/.]\n",
+        "```\n", sep = "")
+    return(invisible(NULL))
+  }
+
   render_model_output(
     model = model,
     source_file = source_file,
