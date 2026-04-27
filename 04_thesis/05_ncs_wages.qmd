@@ -191,8 +191,10 @@ $$Q_{\tau}(\log \text{Wage}_{it}) = \beta_{0\tau} + X_{it}\boldsymbol{\beta}_{\t
 # Read raw IPW coefficient CSVs for inline citation.
 # (Formatted display tables are already loaded via 05_output_returns_rus.R;
 #  here we read underlying CSVs to extract numeric scalars.)
+# All coefficient CSVs live under returns_outputs/thesis/ — written by
+# 04_summarize_models_returns.R.
 
-out_returns <- outputsReturnsNcs
+out_returns <- returns_thesis_out
 
 m1_ipw_raw <- read_ipw_coefs("m1_ipw_coefs.csv")
 m2_ipw_raw <- read_ipw_coefs("m2_ipw_coefs.csv")
@@ -207,22 +209,32 @@ edu_tert_q10 <- get_coef(m2_ipw_raw, "edu_lvl4. Tertiary", "q10_est")
 edu_tert_q90 <- get_coef(m2_ipw_raw, "edu_lvl4. Tertiary", "q90_est")
 
 # Life-cycle model (has header + age_group column)
-lc_ipw_raw <- readr::read_csv(file.path(out_returns, "m_lc_ipw_coefs.csv"), show_col_types = FALSE)
+.lc_path <- file.path(out_returns, "m_lc_ipw_coefs.csv")
+if (file.exists(.lc_path)) {
+  lc_ipw_raw <- readr::read_csv(.lc_path, show_col_types = FALSE)
+  lc_O_all  <- get_lc(lc_ipw_raw, "O", "16-65")
+  lc_O_3040 <- get_lc(lc_ipw_raw, "O", "30-40")
+  lc_O_4050 <- get_lc(lc_ipw_raw, "O", "40-50")
+  lc_O_5065 <- get_lc(lc_ipw_raw, "O", "50-65")
+  lc_C_all  <- get_lc(lc_ipw_raw, "C", "16-65")
+  lc_C_5065 <- get_lc(lc_ipw_raw, "C", "50-65")
+  lc_E_3040 <- get_lc(lc_ipw_raw, "E", "30-40")
+} else {
+  lc_O_all <- lc_O_3040 <- lc_O_4050 <- lc_O_5065 <-
+    lc_C_all <- lc_C_5065 <- lc_E_3040 <- NA_real_
+}
 
-lc_O_all  <- get_lc(lc_ipw_raw, "O", "16-65")
-lc_O_3040 <- get_lc(lc_ipw_raw, "O", "30-40")
-lc_O_4050 <- get_lc(lc_ipw_raw, "O", "40-50")
-lc_O_5065 <- get_lc(lc_ipw_raw, "O", "50-65")
-lc_C_all  <- get_lc(lc_ipw_raw, "C", "16-65")
-lc_C_5065 <- get_lc(lc_ipw_raw, "C", "50-65")
-lc_E_3040 <- get_lc(lc_ipw_raw, "E", "30-40")
-
-# Gender interaction: m7_ipw_gender_ncs_int (source of hardcoded text values).
-# NOTE: gend_int_tab (Table tbl-reg-gndr) uses m4_ipw_sex_ncs_int where
-# Agreeableness is NOT significant — inconsistency flagged in text below.
-m7_gender_raw  <- readr::read_csv(file.path(out_returns, "m7_ipw_gender_ncs_int.csv"), show_col_types = FALSE)
-gend_A_q50     <- round(m7_gender_raw[m7_gender_raw$variable == "A",             "q50_estimate", drop = TRUE] * 100, 1)
-gend_MaleA_q50 <- round(m7_gender_raw[m7_gender_raw$variable == "genderMale:A", "q50_estimate", drop = TRUE] * 100, 1)
+# Gender interaction: m4_ipw_sex_ncs_int.csv (source of hardcoded text values).
+# Same model as gend_int_tab (Table tbl-reg-gndr); the formula uses `sex`
+# (Female/Male), so the interaction term is named sexMale:A.
+.gend_path <- file.path(out_returns, "m4_ipw_sex_ncs_int.csv")
+if (file.exists(.gend_path)) {
+  m7_gender_raw  <- readr::read_csv(.gend_path, show_col_types = FALSE)
+  gend_A_q50     <- round(m7_gender_raw[m7_gender_raw$variable == "A",         "q50_estimate", drop = TRUE] * 100, 1)
+  gend_MaleA_q50 <- round(m7_gender_raw[m7_gender_raw$variable == "sexMale:A", "q50_estimate", drop = TRUE] * 100, 1)
+} else {
+  gend_A_q50 <- gend_MaleA_q50 <- NA_real_
+}
 ```
 
 {{< pagebreak >}}

@@ -57,12 +57,29 @@ cat("🔧 SECTION 1: SETUP AND SAMPLE STATISTICS\n")
 cat("Configuring output paths and extracting sample statistics...\n")
 setup_start <- Sys.time()
 
-youthOutput <- outputsReturnsNcs
+# All chapter-5 model outputs (summaries + coef CSVs + raw fits) live under
+# the `thesis` subfolder, written by 03_fit_models_returns.R and
+# 04_summarize_models_returns.R. The two analytical samples themselves stay
+# at the top level of returns_outputs/.
+youthOutput <- returns_thesis_out
 
-# Uploaf youth master_returns dataset
 youth_master_returns <- read_rds(file.path(outputsReturnsNcs, "youth_master_returns.rds"))
+ind_master_returns   <- readRDS(file.path(outputsReturnsNcs, "ind_master_returns.rds"))
 
-ind_master_returns <- readRDS(file.path(outputsReturnsNcs, "ind_master_returns.rds"))
+# ---------------------------------------------------------------------------
+# Guard: only build the chapter-5 publication tables if 03_fit_models_returns.R
+# and 04_summarize_models_returns.R have already populated youthOutput.
+# Otherwise emit placeholder tables/plots (matching the shapes the qmd
+# consumes) so the book still renders before the 5-hour fit has run.
+# ---------------------------------------------------------------------------
+.ch5_summary_files <- file.path(youthOutput, c(
+  "m1_ipw_summaries.rds", "m2_ipw_summaries.rds",
+  "m3_edu_ipw_summaries.rds", "m4_ipw_summaries.rds",
+  "m_lc_ipw_summaries.rds"
+))
+.ch5_summaries_ready <- all(file.exists(.ch5_summary_files))
+
+if (.ch5_summaries_ready) {
 
 m1_ipw_summaries <- readRDS(file.path(youthOutput, "m1_ipw_summaries.rds"))
 m2_ipw_summaries <- readRDS(file.path(youthOutput, "m2_ipw_summaries.rds"))
@@ -181,49 +198,10 @@ cat("📊 SECTION 3: BASELINE MODEL TABLE GENERATION\n")
 cat("Processing baseline quantile regression results (M1)...\n")
 baseline_start <- Sys.time()
 
-base_reg <- 
-  read_csv(file.path(youthOutput, "m1_coefs.csv")) %>%
-  select(variable, contains("estimate"), contains("std.error"), contains("p.value")) %>%
-  mutate(across(
-    contains("p.value"), 
-    ~ case_when(
-      . < 0.001 ~ "***",
-      . < 0.01  ~ "**",
-      . < 0.05  ~ "*",
-      . < 0.1   ~ ".",
-      is.na(.)  ~ "",    # Handle NA values
-      TRUE      ~ ""))) %>%
-  mutate(Q10 = paste0(round(q10_estimate, 3), " (", round(q10_std.error, 2), ")", q10_p.value),
-         Q25 = paste0(round(q25_estimate, 3), " (", round(q25_std.error, 2), ")", q25_p.value),
-         Q50 = paste0(round(q50_estimate, 3), " (", round(q50_std.error, 2), ")", q50_p.value),
-         Q75 = paste0(round(q75_estimate, 3), " (", round(q75_std.error, 2), ")", q75_p.value),
-         Q90 = paste0(round(q90_estimate, 3), " (", round(q90_std.error, 2), ")", q90_p.value)) %>%
-  select(variable, Q10, Q25, Q50, Q75, Q90) %>%
-  mutate(variable = case_when(variable == "(Intercept)"  ~ "Константа",
-                              variable == "exp_imp"      ~ "Опыт",
-                              variable == "I(exp_imp^2)" ~ "Опыт²",
-                              variable == "areaГород"    ~ "Тип поселения: Город",
-                              variable == "areaПГТ"      ~ "Тип поселения: ПГТ",
-                              variable == "areaСело"     ~ "Тип поселения: Село",
-                              variable == "gendermale"   ~ "Пол: Мужской",
-                              variable == "O"            ~ "Открытость",
-                              variable == "C"            ~ "Добросовестность",
-                              variable == "E"            ~ "Экстраверсия",
-                              variable == "A"            ~ "Доброжелательность",
-                              variable == "ES"           ~ "Эмоциональная стабильность")) %>%
-  # Add model information rows
-  add_row(variable = "Регион", Q10 = "Контролируется", Q25 = "Контролируется", Q50 = "Контролируется", Q75 = "Контролируется", Q90 = "Контролируется") %>%
-  add_row(variable = "Кол-во групп", Q10 = ngrp_base, Q25 = ngrp_base, Q50 = ngrp_base, Q75 = ngrp_base, Q90 = ngrp_base) %>%
-  add_row(variable = "Кол-во наблюдений", Q10 = as.character(nrow_base), Q25 = as.character(nrow_base), Q50 = as.character(nrow_base), Q75 = as.character(nrow_base), Q90 = as.character(nrow_base))
+# Dead non-IPW table (base_reg) that read m1_coefs.csv was removed: that CSV
+# is no longer produced by the new 03/04 pipeline (only IPW results land in
+# 03_output/returns_outputs/thesis/), and no qmd ever consumed base_reg.
 
-baseline_end <- Sys.time()
-cat("✅ Baseline model table (M1) completed in", round(difftime(baseline_end, baseline_start, units = "secs"), 2), "seconds\n")
-cat("   - Variable labels translated to Russian\n")
-cat("   - Significance stars applied (*** p<0.001, ** p<0.01, * p<0.05, . p<0.1)\n")
-cat("   - Sample information added\n")
-cat("   - Format: coefficient (std.error) significance\n\n") 
-
-### Model into the paper
 base_reg_ipw <-
   read_csv(file.path(youthOutput, "m1_ipw_coefs.csv")) %>%
   select(variable, contains("estimate"), contains("std.error"), contains("p.value")) %>%
@@ -272,42 +250,8 @@ base_reg_ipw <-
 # write_csv(m3_ipw_coefs, file.path(youthOutput, "m3_ipw_coefs.csv"))
 
 
-extd_reg <- 
-  read_csv(file.path(youthOutput, "m2_coefs.csv")) %>%
-  select(variable, contains("estimate"), contains("std.error"), contains("p.value")) %>%
-  mutate(across(
-    contains("p.value"), 
-    ~ case_when(
-      . < 0.001 ~ "***",
-      . < 0.01  ~ "**",
-      . < 0.05  ~ "*",
-      . < 0.1   ~ ".",
-      is.na(.)  ~ "",    # Handle NA values
-      TRUE      ~ ""))) %>%
-  mutate(Q10 = paste0(round(q10_estimate, 3), " (", round(q10_std.error, 2), ")", q10_p.value),
-         Q25 = paste0(round(q25_estimate, 3), " (", round(q25_std.error, 2), ")", q25_p.value),
-         Q50 = paste0(round(q50_estimate, 3), " (", round(q50_std.error, 2), ")", q50_p.value),
-         Q75 = paste0(round(q75_estimate, 3), " (", round(q75_std.error, 2), ")", q75_p.value),
-         Q90 = paste0(round(q90_estimate, 3), " (", round(q90_std.error, 2), ")", q90_p.value)) %>%
-  select(variable, Q10, Q25, Q50, Q75, Q90) %>%
-  mutate(variable = case_when(variable == "(Intercept)" ~ "Константа",
-                              variable == "exp"         ~ "Опыт",
-                              variable == "I(exp^2)"    ~ "Опыт²",
-                              variable == "areaurban"   ~ "Тип поселения: Город",
-                              variable == "gendermale"     ~ "Пол: Мужской",
-                              variable == "edu_lvl2. Secondary School"  ~ "Образование: Среднее",
-                              variable == "edu_lvl3. Secondary Vocational"  ~ "Образование: Среднее профессиональное",
-                              variable == "edu_lvl4. Tertiary"  ~ "Образование: Высшее",
-                              variable == "O"           ~ "Открытость",
-                              variable == "C"           ~ "Добросовестность",
-                              variable == "E"           ~ "Экстраверсия",
-                              variable == "A"           ~ "Доброжелательность",
-                              variable == "ES"          ~ "Эмоциональная стабильность")) %>%
-  mutate(variable = factor(variable, levels = c("Константа", "Опыт", "Опыт²",
-                                                "Тип поселения: Город", "Пол: Мужской",
-                                                "Образование: Среднее", "Образование: Среднее профессиональное",
-                                                "Образование: Высшее", "Открытость", "Добросовестность",
-                                                "Экстраверсия", "Доброжелательность", "Эмоциональная стабильность")))
+# Dead non-IPW extended table (extd_reg) that read m2_coefs.csv was removed:
+# the new pipeline writes only IPW results to thesis/, and no qmd consumed it.
 
 extd_reg_ipw <-
   read_csv(file.path(youthOutput, "m2_ipw_coefs.csv")) %>%
@@ -566,15 +510,11 @@ lc_models <-
 
 
 
-# FINAL SECTION: SUPPLEMENTARY GAM ANALYSIS
-cat("📈 FINAL SECTION: SUPPLEMENTARY GAM ANALYSIS\n")
-cat("Creating GAM model for supplementary age-wage relationship...\n")
-gam_start <- Sys.time()
-
-gam <- gam(log_wage ~ s(age) + sex + region + edu_lvl, data = ind_master_returns)
-
-gam_end <- Sys.time()
-cat("✅ GAM analysis completed in", round(difftime(gam_end, gam_start, units = "secs"), 2), "seconds\n\n")
+# FINAL SECTION: SUPPLEMENTARY GAM (loaded from disk)
+# The GAM is fit by 03_fit_models_returns.R and saved to
+# thesis/m_gam_age_model.rds; load it here so the qmd plot binds without
+# re-fitting on every render.
+gam <- readRDS(file.path(youthOutput, "m_gam_age_model.rds"))
 
 # COMPLETION SUMMARY
 script_end_time <- Sys.time()
@@ -624,3 +564,60 @@ cat("   • All outputs saved and documented\n\n")
 cat("⏱️  TOTAL EXECUTION TIME:", round(total_time, 2), "minutes\n")
 cat("✅ End time:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
 cat(rep("=", 80), "\n\n")
+
+} else {
+
+# ---------------------------------------------------------------------------
+# Placeholder branch: 03_fit_models_returns.R + 04_summarize_models_returns.R
+# have not been run yet, so no *_summaries.rds files exist in
+# 03_output/returns_outputs/thesis/. Build empty / "[Не подогнано]" stubs
+# matching the shapes the qmd consumes, so chapter 5 still renders.
+# ---------------------------------------------------------------------------
+message("[ch5] Model summaries not found in ", youthOutput,
+        " — chapter 5 tables will render as placeholders. ",
+        "Run 03_fit_models_returns.R + 04_summarize_models_returns.R ",
+        "and re-render to fill them in.")
+
+.ph_label  <- "[Модели ещё не подогнаны — запустите 03_fit_models_returns.R + 04_summarize_models_returns.R]"
+.ph_5q_tab <- data.frame(
+  variable = .ph_label,
+  Q10 = "—", Q25 = "—", Q50 = "—", Q75 = "—", Q90 = "—",
+  stringsAsFactors = FALSE
+)
+.ph_3q_tab <- data.frame(
+  variable = .ph_label,
+  Q50 = "—", Q75 = "—", Q90 = "—",
+  stringsAsFactors = FALSE
+)
+
+base_reg_ipw <- .ph_5q_tab
+extd_reg_ipw <- .ph_5q_tab
+gend_int_tab <- .ph_3q_tab
+lc_models    <- data.frame(
+  variable = .ph_label,
+  `16-65` = "—", `30-40` = "—", `40-50` = "—", `50-65` = "—",
+  check.names = FALSE,
+  stringsAsFactors = FALSE
+)
+
+# Long-format placeholder for fig-edu-ncs (ggplot)
+edu_models_long <- data.frame(
+  variable  = factor(rep(c("Openness", "Conscientiousness", "Extraversion",
+                           "Agreeableness", "Emotional Stability"), times = 5)),
+  estimate  = NA_real_,
+  std.error = NA_real_,
+  ci.low    = NA_real_,
+  ci.upp    = NA_real_,
+  p.value   = NA_real_,
+  quantile  = factor(rep(c("Q10", "Q25", "Q50", "Q75", "Q90"), each = 5)),
+  model     = factor(rep("[Не подогнано]", 25)),
+  stringsAsFactors = FALSE
+)
+
+gam <- NULL
+
+# Inline-text scalars used in the chapter narrative
+nrow_base <- 0L
+ngrp_base <- "0"
+
+}  # end if (.ch5_summaries_ready) else { placeholders }

@@ -184,6 +184,7 @@ coef_names_3q <- c(
 # ----- M1_IPW -------------------------------------------------------------
 m1_ipw_summaries <- group_summaries(summary_results, "m1_ipw")
 saveRDS(m1_ipw_summaries, file.path(outputsReturnsNcsThesis, "m1_ipw_summaries.rds"))
+
 m1_ipw_coefs <- extract_quantile_coefs(m1_ipw_summaries)
 names(m1_ipw_coefs) <- coef_names_5q
 write_csv(m1_ipw_coefs, file.path(outputsReturnsNcsThesis, "m1_ipw_coefs.csv"))
@@ -191,6 +192,7 @@ write_csv(m1_ipw_coefs, file.path(outputsReturnsNcsThesis, "m1_ipw_coefs.csv"))
 # ----- M2_IPW -------------------------------------------------------------
 m2_ipw_summaries <- group_summaries(summary_results, "m2_ipw")
 saveRDS(m2_ipw_summaries, file.path(outputsReturnsNcsThesis, "m2_ipw_summaries.rds"))
+
 m2_ipw_coefs <- extract_quantile_coefs(m2_ipw_summaries)
 names(m2_ipw_coefs) <- coef_names_5q
 write_csv(m2_ipw_coefs, file.path(outputsReturnsNcsThesis, "m2_ipw_coefs.csv"))
@@ -223,7 +225,7 @@ m4_ipw_summaries <- group_summaries(summary_results, "m4_ipw")
 saveRDS(m4_ipw_summaries, file.path(outputsReturnsNcsThesis, "m4_ipw_summaries.rds"))
 m4_ipw_coefs <- extract_quantile_coefs(m4_ipw_summaries)
 names(m4_ipw_coefs) <- coef_names_3q
-write.csv(m4_ipw_coefs, file.path(outputsReturnsNcsThesis, "m4_ipw_sex_ncs_int.csv"))
+write_csv(m4_ipw_coefs, file.path(outputsReturnsNcsThesis, "m4_ipw_sex_ncs_int.csv"))
 
 # ----- LIFE-COURSE summaries ----------------------------------------------
 m_lc_ipw_summaries <- group_summaries(summary_results, "m_lc_ipw")

@@ -244,115 +244,128 @@ print_model_output("models_suppl[['Educational Mismatch']]", models_suppl[["Educ
 
 ## Глава 5 {.unnumbered .unlisted}
 
-### Базовая модель заработной платы {.unnumbered .unlisted}
+Все модели главы 5 — линейные смешанные квантильные регрессии (LQMM,
+[@lqmm]) с индивидуальным случайным эффектом и весами обратной вероятности
+занятости (IPW). Региональные фиксированные эффекты включаются в каждой
+спецификации, но в таблицах ниже опущены ради компактности. Числа в
+таблицах — точечные оценки коэффициентов, без стандартных ошибок и
+p-значений (полная инференциальная сводка приведена в основном тексте
+главы). В нижней строке каждой таблицы — дисперсия случайного
+индивидуального эффекта.
 
-Аннотация: таблица @tbl-baseline-reg-ipw.
+### M1: базовая модель заработной платы {.unnumbered .unlisted}
+
+Спецификация (для квантиля $\tau \in \{0.10, 0.25, 0.50, 0.75, 0.90\}$):
+
+$$
+\begin{aligned}
+\log W_{it,\tau} =\; & \beta_0(\tau) + \beta_1(\tau)\,\mathrm{exp}_{it} + \beta_2(\tau)\,\mathrm{exp}_{it}^2 + \beta_3(\tau)\,\mathrm{area}_{it} \\
+                    & + \beta_4(\tau)\,\mathrm{sex}_i + \beta_5(\tau)\,\mathrm{marital}_{it} + \mathbf{Region}_i\boldsymbol{\gamma}(\tau) \\
+                    & + \beta_O(\tau) O_i + \beta_C(\tau) C_i + \beta_E(\tau) E_i + \beta_A(\tau) A_i + \beta_{ES}(\tau) ES_i + u_i
+\end{aligned}
+$$
+
+Аннотация: таблица @tbl-baseline-reg-ipw в основном тексте.
 
 ```{r}
 #| echo: false
-#| results: asis
-print_raw_model_output("m1_ipw_models", m1_ipw_models, src_ch5_main, 152, 159)
+df_to_flex(lqmm_coef_table(m1_ipw_models))
 ```
 
-### Расширенная модель заработной платы с учетом образования {.unnumbered .unlisted}
+### M2: расширенная модель с учетом образования {.unnumbered .unlisted}
+
+К спецификации M1 добавляются дамми уровня образования (базовая категория
+— «среднее и ниже»):
+
+$$
+\log W_{it,\tau} = X_{it}^{M1}\boldsymbol{\beta}(\tau) + \beta_{\mathrm{edu}_2}(\tau)\,\mathrm{Среднее}_i + \beta_{\mathrm{edu}_3}(\tau)\,\mathrm{Среднее\ проф.}_i + \beta_{\mathrm{edu}_4}(\tau)\,\mathrm{Высшее}_i + u_i
+$$
 
 Аннотация: таблица @tbl-extended-reg.
 
 ```{r}
 #| echo: false
-#| results: asis
-print_raw_model_output("m2_ipw_models", m2_ipw_models, src_ch5_main, 166, 173)
+df_to_flex(lqmm_coef_table(m2_ipw_models))
 ```
 
-### Модель для группы с высшим образованием {.unnumbered .unlisted}
+### M3: модели по уровням образования {.unnumbered .unlisted}
 
-Аннотация: рисунок @fig-edu-ncs, панель «Высшее образование».
+Та же спецификация, что и M1, оцениваемая отдельно на трёх подвыборках
+по уровню образования. Аннотация: рисунок @fig-edu-ncs.
+
+#### M3a: высшее образование {.unnumbered .unlisted}
 
 ```{r}
 #| echo: false
-#| results: asis
-print_raw_model_output("m3_edu_ipw_models[['Tertiary']]", m3_edu_ipw_models[["Tertiary"]], src_ch5_main, 182, 189)
+df_to_flex(lqmm_coef_table(m3_edu_ipw_models[["Tertiary"]]))
 ```
 
-### Модель для группы со средним профессиональным образованием {.unnumbered .unlisted}
-
-Аннотация: рисунок @fig-edu-ncs, панель «Среднее профессиональное образование».
+#### M3b: среднее профессиональное образование {.unnumbered .unlisted}
 
 ```{r}
 #| echo: false
-#| results: asis
-print_raw_model_output("m3_edu_ipw_models[['Secondary_Vocational']]", m3_edu_ipw_models[["Secondary_Vocational"]], src_ch5_main, 193, 200)
+df_to_flex(lqmm_coef_table(m3_edu_ipw_models[["Secondary_Vocational"]]))
 ```
 
-### Модель для группы со средним образованием и ниже {.unnumbered .unlisted}
-
-Аннотация: рисунок @fig-edu-ncs, панель «Среднее образование и ниже».
+#### M3c: среднее образование и ниже {.unnumbered .unlisted}
 
 ```{r}
 #| echo: false
-#| results: asis
-print_raw_model_output("m3_edu_ipw_models[['Secondary_or_below']]", m3_edu_ipw_models[["Secondary_or_below"]], src_ch5_main, 205, 212)
+df_to_flex(lqmm_coef_table(m3_edu_ipw_models[["Secondary_or_below"]]))
 ```
 
-### Модель с взаимодействием пола и некогнитивных навыков {.unnumbered .unlisted}
+### M4: взаимодействие пола и некогнитивных навыков {.unnumbered .unlisted}
+
+К спецификации M1 добавляются взаимодействия пола с каждым из пяти
+некогнитивных навыков (квантили $\tau \in \{0.50, 0.75, 0.90\}$):
+
+$$
+\log W_{it,\tau} = X_{it}^{M1}\boldsymbol{\beta}(\tau)
++ \sum_{T \in \{O,C,E,A,ES\}} \delta_T(\tau)\,(\mathrm{sex}_i \times T_i) + u_i
+$$
 
 Аннотация: таблица @tbl-reg-gndr.
 
 ```{r}
 #| echo: false
-#| results: asis
-print_raw_model_output("m4_ipw_models", m4_ipw_models, src_ch5_main, 221, 228)
+df_to_flex(lqmm_coef_table(m4_ipw_models))
 ```
 
-### Медианная модель для населения 16-65 лет {.unnumbered .unlisted}
+### Жизненный цикл: медианная модель по возрастным группам {.unnumbered .unlisted}
 
-Аннотация: таблица @tbl-reg-lc, столбец «16-65».
+Та же спецификация, что и M1, но оцениваемая только на медианном
+квантиле ($\tau = 0.5$) и отдельно для каждой возрастной группы. Выборка
+— все занятые 16–65 лет (без военных). Аннотация: таблица @tbl-reg-lc.
 
 ```{r}
 #| echo: false
-#| results: asis
-print_raw_model_output("m_lc_ipw_models[['age_16_65']]", m_lc_ipw_models[["age_16_65"]], src_ch5_main, 236, 241)
-```
-
-### Медианная модель для возрастной группы 30-39 лет {.unnumbered .unlisted}
-
-Аннотация: таблица @tbl-reg-lc, столбец «30-39».
-
-```{r}
-#| echo: false
-#| results: asis
-print_raw_model_output("m_lc_ipw_models[['age_30_39']]", m_lc_ipw_models[["age_30_39"]], src_ch5_main, 243, 248)
-```
-
-### Медианная модель для возрастной группы 40-49 лет {.unnumbered .unlisted}
-
-Аннотация: таблица @tbl-reg-lc, столбец «40-49».
-
-```{r}
-#| echo: false
-#| results: asis
-print_raw_model_output("m_lc_ipw_models[['age_40_49']]", m_lc_ipw_models[["age_40_49"]], src_ch5_main, 250, 255)
-```
-
-### Медианная модель для возрастной группы 50-65 лет {.unnumbered .unlisted}
-
-Аннотация: таблица @tbl-reg-lc, столбец «50-65».
-
-```{r}
-#| echo: false
-#| results: asis
-print_raw_model_output("m_lc_ipw_models[['age_50_65']]", m_lc_ipw_models[["age_50_65"]], src_ch5_main, 257, 262)
+df_to_flex(lqmm_coef_table(m_lc_ipw_models))
 ```
 
 ### Обобщенная аддитивная модель возраста {.unnumbered .unlisted}
 
-Аннотация: рисунок @fig-age-gam.
+Вспомогательная GAM-модель с непараметрическим эффектом возраста:
+
+$$
+\log W_{it} = s(\mathrm{age}_{it}) + \beta_1\,\mathrm{sex}_i + \mathbf{Region}_i\boldsymbol{\gamma} + \beta_2\,\mathrm{edu}_i + \beta_3\,\mathrm{area}_{it} + \beta_4\,\mathrm{marital}_{it} + \varepsilon_{it}
+$$
+
+где $s(\cdot)$ — сглаживающий сплайн пакета `mgcv` [@mgcv]. Точечные
+оценки параметрических коэффициентов:
 
 ```{r}
 #| echo: false
-#| results: asis
-print_raw_model_output("gam_age_model", gam_age_model, src_ch5_main, 276, 277)
+if (is.null(gam_age_model)) {
+  cat("[Модель не подогнана — запустите 03_fit_models_returns.R.]")
+} else {
+  coefs <- stats::coef(gam_age_model)
+  coefs <- coefs[!grepl("^region", names(coefs)) & !grepl("^s\\(age\\)", names(coefs))]
+  df_to_flex(tibble::tibble(variable = names(coefs),
+                            estimate = round(unname(coefs), 4)))
+}
 ```
+
+Аннотация: рисунок @fig-age-gam.
 
 ## Глава 6 {.unnumbered .unlisted}
 

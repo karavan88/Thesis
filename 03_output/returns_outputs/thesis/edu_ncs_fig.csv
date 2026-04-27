@@ -1,0 +1,76 @@
+variable,model,quantile,estimate,p.value
+Открытость,Tertiary,10,0.05,0.342
+Открытость,Tertiary,25,0.016,0.65
+Открытость,Tertiary,50,0.031,0.326
+Открытость,Tertiary,75,0.071,0.006
+Открытость,Tertiary,90,0.097,0.027
+Добросовестность,Tertiary,10,0.075,0.154
+Добросовестность,Tertiary,25,0.083,0.012
+Добросовестность,Tertiary,50,0.02,0.397
+Добросовестность,Tertiary,75,-0.01,0.73
+Добросовестность,Tertiary,90,-0.026,0.383
+Экстраверсия,Tertiary,10,0.019,0.627
+Экстраверсия,Tertiary,25,0.01,0.742
+Экстраверсия,Tertiary,50,0.006,0.857
+Экстраверсия,Tertiary,75,0.016,0.438
+Экстраверсия,Tertiary,90,-0.004,0.867
+Доброжелательность,Tertiary,10,0.014,0.65
+Доброжелательность,Tertiary,25,0.021,0.487
+Доброжелательность,Tertiary,50,-0.007,0.74
+Доброжелательность,Tertiary,75,0.004,0.87
+Доброжелательность,Tertiary,90,0.001,0.978
+Эмоциональная стабильность,Tertiary,10,-0.004,0.935
+Эмоциональная стабильность,Tertiary,25,-0.015,0.67
+Эмоциональная стабильность,Tertiary,50,-0.028,0.233
+Эмоциональная стабильность,Tertiary,75,-0.028,0.151
+Эмоциональная стабильность,Tertiary,90,0.016,0.63
+Открытость,Secondary Vocational,10,0.075,0.058
+Открытость,Secondary Vocational,25,0.048,0.134
+Открытость,Secondary Vocational,50,0.056,0.064
+Открытость,Secondary Vocational,75,0.064,0.028
+Открытость,Secondary Vocational,90,0.072,0.024
+Добросовестность,Secondary Vocational,10,-0.028,0.345
+Добросовестность,Secondary Vocational,25,-0.021,0.352
+Добросовестность,Secondary Vocational,50,-0.024,0.189
+Добросовестность,Secondary Vocational,75,-0.017,0.486
+Добросовестность,Secondary Vocational,90,0.003,0.901
+Экстраверсия,Secondary Vocational,10,-0.008,0.789
+Экстраверсия,Secondary Vocational,25,0.012,0.512
+Экстраверсия,Secondary Vocational,50,0.024,0.153
+Экстраверсия,Secondary Vocational,75,0.037,0.105
+Экстраверсия,Secondary Vocational,90,0.027,0.209
+Доброжелательность,Secondary Vocational,10,-0.004,0.919
+Доброжелательность,Secondary Vocational,25,0.033,0.276
+Доброжелательность,Secondary Vocational,50,0.019,0.457
+Доброжелательность,Secondary Vocational,75,0.01,0.612
+Доброжелательность,Secondary Vocational,90,-0.002,0.941
+Эмоциональная стабильность,Secondary Vocational,10,-0.028,0.372
+Эмоциональная стабильность,Secondary Vocational,25,0.001,0.973
+Эмоциональная стабильность,Secondary Vocational,50,-0.004,0.861
+Эмоциональная стабильность,Secondary Vocational,75,-0.014,0.527
+Эмоциональная стабильность,Secondary Vocational,90,-0,0.994
+Открытость,Secondary or below,10,-0.012,0.746
+Открытость,Secondary or below,25,0.015,0.527
+Открытость,Secondary or below,50,0.026,0.248
+Открытость,Secondary or below,75,0.023,0.42
+Открытость,Secondary or below,90,0.039,0.221
+Добросовестность,Secondary or below,10,0.027,0.505
+Добросовестность,Secondary or below,25,0.029,0.297
+Добросовестность,Secondary or below,50,0.013,0.612
+Добросовестность,Secondary or below,75,-0.001,0.985
+Добросовестность,Secondary or below,90,-0.055,0.095
+Экстраверсия,Secondary or below,10,-0.014,0.659
+Экстраверсия,Secondary or below,25,0.025,0.475
+Экстраверсия,Secondary or below,50,0.016,0.413
+Экстраверсия,Secondary or below,75,0.023,0.424
+Экстраверсия,Secondary or below,90,0.068,0.016
+Доброжелательность,Secondary or below,10,0.02,0.507
+Доброжелательность,Secondary or below,25,0.014,0.626
+Доброжелательность,Secondary or below,50,0.003,0.896
+Доброжелательность,Secondary or below,75,0.031,0.28
+Доброжелательность,Secondary or below,90,0.016,0.493
+Эмоциональная стабильность,Secondary or below,10,0.054,0.135
+Эмоциональная стабильность,Secondary or below,25,0.044,0.135
+Эмоциональная стабильность,Secondary or below,50,0.02,0.43
+Эмоциональная стабильность,Secondary or below,75,-0.004,0.886
+Эмоциональная стабильность,Secondary or below,90,-0.008,0.803
