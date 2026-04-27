@@ -2,52 +2,47 @@
 # CHAPTER 5 - FIT LQMM REGRESSION MODELS (FIT + SAVE ONLY)
 # ==============================================================================
 #
-# File:         03_fit_models_returns.R
-# Purpose:      Fit every LQMM specification used in chapter 5 and save the
-#               raw fitted model objects to 03_output/returns_outputs/thesis/.
-#               Running summary() on these models is expensive (bootstrap),
-#               so it is done separately in 04_summarize_models_returns.R.
+# Strategy
+# --------
+# Every chapter-5 LQMM fit (5 quantiles × M1, M2, M3-tert, M3-voc, M3-sec;
+# 3 quantiles × M4; 4 life-course median fits) and the supplementary GAM are
+# enqueued as ONE flat list of jobs and dispatched through a single
+# parallel::mclapply with mc.preschedule = FALSE. That gives:
 #
-# Sample inputs (from 01_data_prep_returns.R, in 03_output/returns_outputs/):
-#   youth_master_returns.rds  - youth (16-29), military removed, NCS-complete
-#   ind_master_returns.rds    - life-course (16-65), military removed
+#   * full core utilisation — all workers stay busy because slow jobs do
+#     not block fast ones (e.g. q90 for M1 typically runs much longer than
+#     q50 on the secondary-or-below subsample);
+#   * one shared queue across models, so M2 can start before M1 finishes;
+#   * a single fork point — workers each get one read-only copy of the
+#     youth/life-course frames and write their fit straight to disk.
 #
-# Models fitted:
-#   M1_IPW    baseline LQMM, 5 quantiles (10/25/50/75/90)
-#   M2_IPW    education-extended (explicit edu_lvl), 5 quantiles
-#   M3_*_IPW  education-stratified (Tertiary / Vocational / Secondary or
-#             below), 5 quantiles each
-#   M4_IPW    sex × NCS interaction, 3 quantiles (50/75/90)
-#   M_LC_*    life-course median models for ages 16-65, 30-39, 40-49, 50-65
-#   m_gam     supplementary GAM s(age) for figure
+# The previous design ran 5 parallel quantile fits per model in 6 sequential
+# model passes. With 7 workers it left ~2 cores idle most of the time and
+# created a wait barrier between every model.
 #
-# Output files (one .rds per fit):
-#   m1_ipw_q{10,25,50,75,90}_model.rds
-#   m2_ipw_q{10,25,50,75,90}_model.rds
+# Worker count: NCS_LQMM_WORKERS env var, otherwise detectCores(logical=TRUE)-1.
+# Leaving one core free keeps the macOS UI/IDE responsive.
+#
+# Outputs (in 03_output/returns_outputs/thesis/, one .rds per fit):
+#   m1_ipw_q{10,25,50,75,90}_model.rds, m2_ipw_q{...}_model.rds,
 #   m3_tert_ipw_q{...}_model.rds, m3_voc_ipw_q{...}_model.rds,
-#   m3_sec_ipw_q{...}_model.rds
-#   m4_ipw_q{50,75,90}_model.rds
-#   m_lc_ipw_age_{16_65,30_39,40_49,50_65}_model.rds
+#   m3_sec_ipw_q{...}_model.rds, m4_ipw_q{50,75,90}_model.rds,
+#   m_lc_ipw_age_{16_65,30_39,40_49,50_65}_model.rds,
 #   m_gam_age_model.rds
 #
-# Runtime:      ~5 hours total (LQMM is expensive). Workers can be set via
-#               the NCS_LQMM_WORKERS env var; default is detectCores()-1.
-#
 # Downstream:   04_summarize_models_returns.R reads these files, runs
-#               summary() + coefficient extraction, and writes the
-#               *_summaries.rds and *_coefs.csv files that
-#               05_output_returns_rus.R consumes.
+#               summary() (also in parallel), and writes the
+#               *_summaries.rds + *_coefs.csv files used by 05.
 # ==============================================================================
 
 cat("\n", rep("=", 80), "\n")
-cat("CHAPTER 5 - FIT LQMM MODELS\n")
+cat("CHAPTER 5 - FIT LQMM MODELS (parallel queue)\n")
 cat("Script: 03_fit_models_returns.R\n")
 cat("Start time:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
 cat(rep("=", 80), "\n\n")
 
 script_start_time <- Sys.time()
 
-# Output directory for the fitted-model RDS files
 outputsReturnsNcsThesis <- file.path(outputsReturnsNcs, "thesis")
 dir.create(outputsReturnsNcsThesis, recursive = TRUE, showWarnings = FALSE)
 
@@ -78,199 +73,160 @@ ctrl1 <- lqmmControl(
   UP_tol        = 1e-5,
   check_theta   = TRUE,
   startQR       = TRUE,
-  verbose       = TRUE
+  verbose       = FALSE  # suppress per-iter chatter from parallel workers
 )
 
-quantile_map <- c(q10 = 0.10, q25 = 0.25, q50 = 0.50, q75 = 0.75, q90 = 0.90)
-
-# ----- Worker count for parallel fits --------------------------------------
-lqmm_workers <- suppressWarnings(as.integer(Sys.getenv("NCS_LQMM_WORKERS", unset = NA)))
+# ----- Worker count --------------------------------------------------------
+lqmm_workers <- suppressWarnings(as.integer(Sys.getenv("NCS_LQMM_WORKERS",
+                                                        unset = NA)))
 if (is.na(lqmm_workers)) {
-  detected_cores <- parallel::detectCores(logical = FALSE)
+  detected_cores <- parallel::detectCores(logical = TRUE)
   if (is.na(detected_cores)) detected_cores <- 2L
-  # Keep one core free — each LQMM fit is memory-heavy
-  lqmm_workers <- max(1L, min(length(quantile_map), detected_cores - 1L))
+  lqmm_workers <- max(1L, detected_cores - 1L)
 }
-cat("LQMM worker processes:", lqmm_workers, "\n\n")
+cat("Worker processes:", lqmm_workers,
+    "(of", parallel::detectCores(logical = TRUE), "logical cores)\n\n")
 
-# ----- Helpers: fit a set of quantiles, save raw model objects -------------
-fit_lqmm_by_quantile <- function(fixed_formula, data_frame, weight_vector,
-                                 tau_values, control_obj, control_overrides = NULL) {
-  tau_labels <- names(tau_values)
-
-  fit_one_quantile <- function(idx) {
-    tau_label   <- tau_labels[[idx]]
-    tau_value   <- as.numeric(tau_values[[idx]])
-    control_use <- control_obj
-    if (!is.null(control_overrides) && tau_label %in% names(control_overrides)) {
-      control_use <- control_overrides[[tau_label]]
-    }
-    lqmm(fixed   = fixed_formula,
-         data    = data_frame,
-         random  = ~ 1,
-         group   = idind,
-         tau     = tau_value,
-         weights = weight_vector,
-         control = control_use)
-  }
-
-  if (.Platform$OS.type != "windows" && lqmm_workers > 1L) {
-    model_list <- parallel::mclapply(
-      X       = seq_along(tau_values),
-      FUN     = fit_one_quantile,
-      mc.cores = min(lqmm_workers, length(tau_values))
-    )
-  } else {
-    model_list <- lapply(seq_along(tau_values), fit_one_quantile)
-  }
-
-  rlang::set_names(model_list, tau_labels)
-}
-
-save_lqmm_model_objects <- function(model_list, file_prefix, output_dir) {
-  purrr::iwalk(model_list, function(model_obj, model_label) {
-    saveRDS(model_obj,
-            file.path(output_dir, paste0(file_prefix, "_", model_label, "_model.rds")))
-  })
-  cat("✅ saved", length(model_list), "model file(s) with prefix", file_prefix, "\n")
-}
-
-# ----- Formulas -----------------------------------------------------------
-general_formula <- log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+# ----- Formulas ------------------------------------------------------------
+general_formula  <- log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
   marital_status + region + O + C + E + A + ES
-
-formula_edu <- log_wage ~ edu_lvl + exp_imp + I(exp_imp^2) + sex + area +
+formula_edu      <- log_wage ~ edu_lvl + exp_imp + I(exp_imp^2) + sex + area +
   region + marital_status + O + C + E + A + ES
-
 formula_gend_int <- log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
   marital_status + region + O + C + E + A + ES +
   O*sex + C*sex + E*sex + A*sex + ES*sex
 
-# ----- M1: BASELINE (5 quantiles, IPW) ------------------------------------
-cat("📊 M1_IPW (baseline, 5 quantiles)\n")
-t0 <- Sys.time()
-m1_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = general_formula,
-  data_frame        = youth_master_returns,
-  weight_vector     = youth_master_returns$ipw_empl,
-  tau_values        = quantile_map,
-  control_obj       = ctrl,
-  control_overrides = list(q25 = ctrl1, q90 = ctrl1)
-)
-save_lqmm_model_objects(m1_ipw_models, "m1_ipw", outputsReturnsNcsThesis)
-cat("⏱", round(difftime(Sys.time(), t0, units = "mins"), 2), "min\n\n")
-
-# ----- M2: EDUCATION-EXTENDED (5 quantiles, IPW) --------------------------
-cat("🎓 M2_IPW (education-extended, 5 quantiles)\n")
-t0 <- Sys.time()
-m2_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = formula_edu,
-  data_frame        = youth_master_returns,
-  weight_vector     = youth_master_returns$ipw_empl,
-  tau_values        = quantile_map,
-  control_obj       = ctrl,
-  control_overrides = list(q25 = ctrl1, q90 = ctrl1)
-)
-save_lqmm_model_objects(m2_ipw_models, "m2_ipw", outputsReturnsNcsThesis)
-cat("⏱", round(difftime(Sys.time(), t0, units = "mins"), 2), "min\n\n")
-
-# ----- M3: EDUCATION-STRATIFIED (3 subsets × 5 quantiles) -----------------
-cat("🎓 M3_IPW (education-stratified, 3 subsets × 5 quantiles)\n")
-t0 <- Sys.time()
-
+# ----- Education-stratified subsamples -------------------------------------
+# Precompute once so workers share them read-only via fork CoW.
 dat_m3_tert <- youth_master_returns[youth_master_returns$edu_lvl == "4. Tertiary", ]
-m3_tert_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = general_formula,
-  data_frame        = dat_m3_tert,
-  weight_vector     = dat_m3_tert$ipw_empl,
-  tau_values        = quantile_map,
-  control_obj       = ctrl,
-  control_overrides = list(q25 = ctrl1, q50 = ctrl1, q75 = ctrl1, q90 = ctrl1)
+dat_m3_voc  <- youth_master_returns[youth_master_returns$edu_lvl == "3. Secondary Vocational", ]
+dat_m3_sec  <- youth_master_returns[youth_master_returns$edu_lvl %in%
+                                      c("1. No school", "2. Secondary School"), ]
+
+# ----- Build the flat job queue --------------------------------------------
+make_lqmm_job <- function(prefix, q_label, formula, data, weights, tau, control) {
+  list(
+    prefix    = prefix,
+    q_label   = q_label,
+    formula   = formula,
+    data      = data,
+    weights   = weights,
+    tau       = tau,
+    control   = control,
+    out_file  = file.path(outputsReturnsNcsThesis,
+                          paste0(prefix, "_", q_label, "_model.rds"))
+  )
+}
+
+q5 <- list(q10 = 0.10, q25 = 0.25, q50 = 0.50, q75 = 0.75, q90 = 0.90)
+q3 <- list(q50 = 0.50, q75 = 0.75, q90 = 0.90)
+
+m1_overrides     <- list(q25 = ctrl1, q90 = ctrl1)
+m2_overrides     <- list(q25 = ctrl1, q90 = ctrl1)
+m3_tert_overrides <- list(q25 = ctrl1, q50 = ctrl1, q75 = ctrl1, q90 = ctrl1)
+m3_voc_overrides  <- list(q25 = ctrl1, q50 = ctrl1, q90 = ctrl1)
+m3_sec_overrides  <- list(q25 = ctrl1, q75 = ctrl1, q90 = ctrl1)
+m4_overrides      <- list(q50 = ctrl1)
+
+build_quantile_jobs <- function(prefix, formula, data, weights, taus, overrides) {
+  Map(function(q_label, tau) {
+    cont <- if (q_label %in% names(overrides)) overrides[[q_label]] else ctrl
+    make_lqmm_job(prefix, q_label, formula, data, weights, tau, cont)
+  }, names(taus), unname(taus))
+}
+
+lqmm_jobs <- c(
+  build_quantile_jobs("m1_ipw",      general_formula,  youth_master_returns,
+                      youth_master_returns$ipw_empl,           q5, m1_overrides),
+  build_quantile_jobs("m2_ipw",      formula_edu,      youth_master_returns,
+                      youth_master_returns$ipw_empl,           q5, m2_overrides),
+  build_quantile_jobs("m3_tert_ipw", general_formula,  dat_m3_tert,
+                      dat_m3_tert$ipw_empl,                    q5, m3_tert_overrides),
+  build_quantile_jobs("m3_voc_ipw",  general_formula,  dat_m3_voc,
+                      dat_m3_voc$ipw_empl,                     q5, m3_voc_overrides),
+  build_quantile_jobs("m3_sec_ipw",  general_formula,  dat_m3_sec,
+                      dat_m3_sec$ipw_empl,                     q5, m3_sec_overrides),
+  build_quantile_jobs("m4_ipw",      formula_gend_int, youth_master_returns,
+                      youth_master_returns$ipw_empl,           q3, m4_overrides),
+
+  # Life-course median fits (4 jobs, each its own age window)
+  list(
+    make_lqmm_job("m_lc_ipw", "age_16_65", general_formula,
+                  ind_master_returns,
+                  ind_master_returns$ipw_empl,
+                  0.50, list(method = "df")),
+    make_lqmm_job("m_lc_ipw", "age_30_39", general_formula,
+                  ind_master_returns[ind_master_returns$age >= 30 & ind_master_returns$age < 40, ],
+                  ind_master_returns$ipw_empl[ind_master_returns$age >= 30 & ind_master_returns$age < 40],
+                  0.50, ctrl1),
+    make_lqmm_job("m_lc_ipw", "age_40_49", general_formula,
+                  ind_master_returns[ind_master_returns$age >= 40 & ind_master_returns$age < 50, ],
+                  ind_master_returns$ipw_empl[ind_master_returns$age >= 40 & ind_master_returns$age < 50],
+                  0.50, list(method = "df")),
+    make_lqmm_job("m_lc_ipw", "age_50_65", general_formula,
+                  ind_master_returns[ind_master_returns$age >= 50, ],
+                  ind_master_returns$ipw_empl[ind_master_returns$age >= 50],
+                  0.50, list(method = "df"))
+  )
 )
-save_lqmm_model_objects(m3_tert_ipw_models, "m3_tert_ipw", outputsReturnsNcsThesis)
 
-dat_m3_voc <- youth_master_returns[youth_master_returns$edu_lvl == "3. Secondary Vocational", ]
-m3_voc_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = general_formula,
-  data_frame        = dat_m3_voc,
-  weight_vector     = dat_m3_voc$ipw_empl,
-  tau_values        = quantile_map,
-  control_obj       = ctrl,
-  control_overrides = list(q25 = ctrl1, q50 = ctrl1, q90 = ctrl1)
-)
-save_lqmm_model_objects(m3_voc_ipw_models, "m3_voc_ipw", outputsReturnsNcsThesis)
+cat("LQMM job queue length:", length(lqmm_jobs), "\n")
+cat("  groups:",
+    paste(unique(vapply(lqmm_jobs, function(j) j$prefix, character(1))),
+          collapse = ", "), "\n\n")
 
-dat_m3_sec <- youth_master_returns[youth_master_returns$edu_lvl %in%
-                                     c("1. No school", "2. Secondary School"), ]
-m3_sec_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = general_formula,
-  data_frame        = dat_m3_sec,
-  weight_vector     = dat_m3_sec$ipw_empl,
-  tau_values        = quantile_map,
-  control_obj       = ctrl,
-  control_overrides = list(q25 = ctrl1, q75 = ctrl1, q90 = ctrl1)
-)
-save_lqmm_model_objects(m3_sec_ipw_models, "m3_sec_ipw", outputsReturnsNcsThesis)
+# ----- Run all LQMM fits in one parallel queue -----------------------------
+fit_one_job <- function(job) {
+  t0 <- Sys.time()
+  fit <- lqmm(
+    fixed   = job$formula,
+    data    = job$data,
+    random  = ~ 1,
+    group   = idind,
+    tau     = job$tau,
+    weights = job$weights,
+    control = job$control
+  )
+  saveRDS(fit, job$out_file)
+  list(
+    prefix  = job$prefix,
+    q_label = job$q_label,
+    secs    = as.numeric(difftime(Sys.time(), t0, units = "secs"))
+  )
+}
 
-cat("⏱", round(difftime(Sys.time(), t0, units = "mins"), 2), "min\n\n")
+cat("🚀 Dispatching", length(lqmm_jobs), "LQMM fits across",
+    lqmm_workers, "workers (mc.preschedule = FALSE)\n\n")
 
-# ----- M4: SEX × NCS INTERACTION (3 quantiles, IPW) -----------------------
-cat("👫 M4_IPW (sex × NCS interaction, 3 quantiles)\n")
-t0 <- Sys.time()
-m4_quantile_map <- c(q50 = 0.50, q75 = 0.75, q90 = 0.90)
-m4_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = formula_gend_int,
-  data_frame        = youth_master_returns,
-  weight_vector     = youth_master_returns$ipw_empl,
-  tau_values        = m4_quantile_map,
-  control_obj       = ctrl,
-  control_overrides = list(q50 = ctrl1)
-)
-save_lqmm_model_objects(m4_ipw_models, "m4_ipw", outputsReturnsNcsThesis)
-cat("⏱", round(difftime(Sys.time(), t0, units = "mins"), 2), "min\n\n")
+queue_start <- Sys.time()
 
-# ----- LIFE-COURSE: median quantile by age group --------------------------
-cat("👴 Life-course (median quantile, 4 age groups)\n")
-t0 <- Sys.time()
+if (.Platform$OS.type != "windows" && lqmm_workers > 1L) {
+  fit_results <- parallel::mclapply(
+    lqmm_jobs,
+    fit_one_job,
+    mc.cores       = lqmm_workers,
+    mc.preschedule = FALSE  # dynamic scheduling — slower jobs don't block faster ones
+  )
+} else {
+  fit_results <- lapply(lqmm_jobs, fit_one_job)
+}
 
-m_lc <- lqmm(general_formula,
-             data    = ind_master_returns,
-             random  = ~ 1, group = idind,
-             tau     = 0.50,
-             weights = ind_master_returns$ipw_empl,
-             control = list(method = "df"))
+# Surface any worker errors (mclapply collects them rather than throwing)
+errored <- vapply(fit_results, inherits, logical(1), what = "try-error")
+if (any(errored)) {
+  warning("LQMM jobs failed: ", sum(errored), " of ", length(fit_results),
+          " — inspect fit_results for details.")
+} else {
+  cat("\n✅ All LQMM fits completed.\n")
+  for (r in fit_results) {
+    cat(sprintf("    %-15s %-12s %7.1f s\n", r$prefix, r$q_label, r$secs))
+  }
+}
 
-m_lc_3039 <- lqmm(general_formula,
-                  data    = ind_master_returns[ind_master_returns$age >= 30 & ind_master_returns$age < 40, ],
-                  random  = ~ 1, group = idind,
-                  tau     = 0.50,
-                  weights = ind_master_returns$ipw_empl[ind_master_returns$age >= 30 & ind_master_returns$age < 40],
-                  control = ctrl1)
+queue_total <- difftime(Sys.time(), queue_start, units = "mins")
+cat(sprintf("\n⏱  LQMM queue wall-clock: %.2f min\n\n", as.numeric(queue_total)))
 
-m_lc_4049 <- lqmm(general_formula,
-                  data    = ind_master_returns[ind_master_returns$age >= 40 & ind_master_returns$age < 50, ],
-                  random  = ~ 1, group = idind,
-                  tau     = 0.50,
-                  weights = ind_master_returns$ipw_empl[ind_master_returns$age >= 40 & ind_master_returns$age < 50],
-                  control = list(method = "df"))
-
-m_lc_5065 <- lqmm(general_formula,
-                  data    = ind_master_returns[ind_master_returns$age >= 50, ],
-                  random  = ~ 1, group = idind,
-                  tau     = 0.50,
-                  weights = ind_master_returns$ipw_empl[ind_master_returns$age >= 50],
-                  control = list(method = "df"))
-
-m_lc_models <- list(
-  age_16_65 = m_lc,
-  age_30_39 = m_lc_3039,
-  age_40_49 = m_lc_4049,
-  age_50_65 = m_lc_5065
-)
-save_lqmm_model_objects(m_lc_models, "m_lc_ipw", outputsReturnsNcsThesis)
-cat("⏱", round(difftime(Sys.time(), t0, units = "mins"), 2), "min\n\n")
-
-# ----- Supplementary GAM (age effects) ------------------------------------
+# ----- Supplementary GAM (single-threaded; cheap) --------------------------
 cat("📈 GAM (age, supplementary figure)\n")
 t0 <- Sys.time()
 m_gam <- gam(log_wage ~ s(age) + sex + region + edu_lvl + area + marital_status,
@@ -278,9 +234,9 @@ m_gam <- gam(log_wage ~ s(age) + sex + region + edu_lvl + area + marital_status,
 saveRDS(m_gam, file.path(outputsReturnsNcsThesis, "m_gam_age_model.rds"))
 cat("⏱", round(difftime(Sys.time(), t0, units = "secs"), 2), "s\n\n")
 
-# ----- COMPLETION ---------------------------------------------------------
+# ----- COMPLETION ----------------------------------------------------------
 total_time <- difftime(Sys.time(), script_start_time, units = "mins")
 cat(rep("=", 80), "\n")
-cat("✅ Chapter 5 fits complete in", round(total_time, 2), "min\n")
+cat("✅ Chapter 5 fits complete in", round(total_time, 2), "min total\n")
 cat("   → run 04_summarize_models_returns.R next to build summary RDS + CSVs\n")
 cat(rep("=", 80), "\n\n")

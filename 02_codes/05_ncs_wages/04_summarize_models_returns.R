@@ -2,17 +2,22 @@
 # CHAPTER 5 - SUMMARIZE LQMM MODELS (LOAD + summary() + COEFFICIENT EXPORT)
 # ==============================================================================
 #
-# File:         04_summarize_models_returns.R
-# Purpose:      Read every raw LQMM fit produced by 03_fit_models_returns.R,
-#               run summary() on each (this is also expensive — bootstrap
-#               variance), and save:
-#                  *_summaries.rds  - lists of lqmm summary objects
-#                  *_coefs.csv      - long/wide coefficient tables for plots
+# Strategy
+# --------
+# summary() on an lqmm fit triggers a bootstrap variance estimation that is
+# usually the second-most expensive step in chapter 5. The previous design
+# called summary() five at a time (one model at a time) — the same
+# "5-quantile-batch then move on" pattern that limits 03_fit_models_returns.R.
+#
+# Here we enqueue every per-quantile summary() job into one flat list and
+# run them through a single parallel::mclapply with mc.preschedule = FALSE,
+# so all worker cores stay busy across model groups. After the queue
+# completes we group results back by model and write the
+# *_summaries.rds + *_coefs.csv files that 05_output_returns_rus.R consumes.
 #
 # Inputs (in 03_output/returns_outputs/thesis/):
-#   m1_ipw_q*_model.rds, m2_ipw_q*_model.rds
-#   m3_tert_ipw_q*_model.rds, m3_voc_ipw_q*_model.rds, m3_sec_ipw_q*_model.rds
-#   m4_ipw_q*_model.rds
+#   m1_ipw_q*_model.rds, m2_ipw_q*_model.rds, m3_tert_ipw_q*_model.rds,
+#   m3_voc_ipw_q*_model.rds, m3_sec_ipw_q*_model.rds, m4_ipw_q*_model.rds,
 #   m_lc_ipw_age_*_model.rds
 #
 # Outputs (same directory):
@@ -21,14 +26,10 @@
 #   m3_edu_ipw_summaries.rds, m3_coefs_edu_ipw.csv
 #   m4_ipw_summaries.rds, m4_ipw_sex_ncs_int.csv
 #   m_lc_ipw_summaries.rds, m_lc_ipw_coefs.csv
-#
-# Downstream:   05_output_returns_rus.R reads these files (sourced by qmds).
-#
-# Runtime:      ~30-60 minutes depending on quantile count and bootstrap.
 # ==============================================================================
 
 cat("\n", rep("=", 80), "\n")
-cat("CHAPTER 5 - SUMMARIZE LQMM MODELS\n")
+cat("CHAPTER 5 - SUMMARIZE LQMM MODELS (parallel queue)\n")
 cat("Script: 04_summarize_models_returns.R\n")
 cat("Start time:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
 cat(rep("=", 80), "\n\n")
@@ -37,39 +38,110 @@ script_start_time <- Sys.time()
 
 outputsReturnsNcsThesis <- file.path(outputsReturnsNcs, "thesis")
 
-# ----- Worker count for parallel summary() calls --------------------------
-lqmm_workers <- suppressWarnings(as.integer(Sys.getenv("NCS_LQMM_WORKERS", unset = NA)))
+# ----- Worker count --------------------------------------------------------
+lqmm_workers <- suppressWarnings(as.integer(Sys.getenv("NCS_LQMM_WORKERS",
+                                                        unset = NA)))
 if (is.na(lqmm_workers)) {
-  detected_cores <- parallel::detectCores(logical = FALSE)
+  detected_cores <- parallel::detectCores(logical = TRUE)
   if (is.na(detected_cores)) detected_cores <- 2L
   lqmm_workers <- max(1L, detected_cores - 1L)
 }
+cat("Worker processes:", lqmm_workers,
+    "(of", parallel::detectCores(logical = TRUE), "logical cores)\n\n")
 
-# ----- Helpers ------------------------------------------------------------
-load_quantile_models <- function(file_prefix, output_dir, quantiles) {
-  out <- lapply(quantiles, function(q) {
-    f <- file.path(output_dir, paste0(file_prefix, "_", q, "_model.rds"))
-    if (!file.exists(f)) stop("Missing model file: ", f)
-    readRDS(f)
+# ----- Job queue: one tuple (group, q_label, file) per saved fit ----------
+build_summary_jobs <- function(group, q_labels) {
+  lapply(q_labels, function(q) {
+    list(group   = group,
+         q_label = q,
+         file    = file.path(outputsReturnsNcsThesis,
+                             paste0(group, "_", q, "_model.rds")))
   })
-  rlang::set_names(out, quantiles)
 }
 
-summarize_lqmm_models <- function(model_list) {
-  model_labels <- names(model_list)
-  summarize_one <- function(idx) summary(model_list[[idx]])
+q5 <- c("q10", "q25", "q50", "q75", "q90")
+q3 <- c("q50", "q75", "q90")
 
-  if (.Platform$OS.type != "windows" && lqmm_workers > 1L) {
-    summary_list <- parallel::mclapply(
-      X       = seq_along(model_list),
-      FUN     = summarize_one,
-      mc.cores = min(lqmm_workers, length(model_list))
-    )
-  } else {
-    summary_list <- lapply(seq_along(model_list), summarize_one)
-  }
+summary_jobs <- c(
+  build_summary_jobs("m1_ipw",      q5),
+  build_summary_jobs("m2_ipw",      q5),
+  build_summary_jobs("m3_tert_ipw", q5),
+  build_summary_jobs("m3_voc_ipw",  q5),
+  build_summary_jobs("m3_sec_ipw",  q5),
+  build_summary_jobs("m4_ipw",      q3),
+  list(
+    list(group = "m_lc_ipw", q_label = "age_16_65",
+         file = file.path(outputsReturnsNcsThesis, "m_lc_ipw_age_16_65_model.rds")),
+    list(group = "m_lc_ipw", q_label = "age_30_39",
+         file = file.path(outputsReturnsNcsThesis, "m_lc_ipw_age_30_39_model.rds")),
+    list(group = "m_lc_ipw", q_label = "age_40_49",
+         file = file.path(outputsReturnsNcsThesis, "m_lc_ipw_age_40_49_model.rds")),
+    list(group = "m_lc_ipw", q_label = "age_50_65",
+         file = file.path(outputsReturnsNcsThesis, "m_lc_ipw_age_50_65_model.rds"))
+  )
+)
 
-  rlang::set_names(summary_list, model_labels)
+# Sanity-check that every input file exists before forking
+missing <- vapply(summary_jobs, function(j) !file.exists(j$file), logical(1))
+if (any(missing)) {
+  stop("Missing fit files (run 03_fit_models_returns.R first):\n  ",
+       paste(vapply(summary_jobs[missing], `[[`, character(1), "file"),
+             collapse = "\n  "))
+}
+
+cat("Summary job queue length:", length(summary_jobs), "\n")
+cat("  groups:",
+    paste(unique(vapply(summary_jobs, function(j) j$group, character(1))),
+          collapse = ", "), "\n\n")
+
+# ----- Run all summary() calls in one parallel queue -----------------------
+summarize_one_job <- function(job) {
+  t0    <- Sys.time()
+  model <- readRDS(job$file)
+  s     <- summary(model)
+  list(
+    group   = job$group,
+    q_label = job$q_label,
+    summary = s,
+    secs    = as.numeric(difftime(Sys.time(), t0, units = "secs"))
+  )
+}
+
+cat("🚀 Dispatching", length(summary_jobs), "summary() calls across",
+    lqmm_workers, "workers (mc.preschedule = FALSE)\n\n")
+
+queue_start <- Sys.time()
+
+if (.Platform$OS.type != "windows" && lqmm_workers > 1L) {
+  summary_results <- parallel::mclapply(
+    summary_jobs,
+    summarize_one_job,
+    mc.cores       = lqmm_workers,
+    mc.preschedule = FALSE
+  )
+} else {
+  summary_results <- lapply(summary_jobs, summarize_one_job)
+}
+
+errored <- vapply(summary_results, inherits, logical(1), what = "try-error")
+if (any(errored)) {
+  stop("summary() failed: ", sum(errored), " of ", length(summary_results),
+       " — inspect summary_results.")
+}
+
+cat("\n✅ All summaries completed.\n")
+for (r in summary_results) {
+  cat(sprintf("    %-15s %-12s %7.1f s\n", r$group, r$q_label, r$secs))
+}
+queue_total <- difftime(Sys.time(), queue_start, units = "mins")
+cat(sprintf("\n⏱  Summary queue wall-clock: %.2f min\n\n",
+            as.numeric(queue_total)))
+
+# ----- Group summaries back by model, save bundles + coef CSVs ------------
+group_summaries <- function(results, group_name) {
+  grp <- Filter(function(r) r$group == group_name, results)
+  out <- lapply(grp, `[[`, "summary")
+  rlang::set_names(out, vapply(grp, `[[`, character(1), "q_label"))
 }
 
 extract_quantile_coefs <- function(summary_list, keep_region = FALSE) {
@@ -94,7 +166,6 @@ extract_quantile_coefs <- function(summary_list, keep_region = FALSE) {
     purrr::reduce(full_join, by = "variable")
 }
 
-# Column-name pattern for 5-quantile coef tables
 coef_names_5q <- c(
   "variable",
   "q10_estimate", "q10_std.error", "q10_ci.low", "q10_ci.upp", "q10_p.value",
@@ -110,43 +181,24 @@ coef_names_3q <- c(
   "q90_estimate", "q90_std.error", "q90_ci.low", "q90_ci.upp", "q90_p.value"
 )
 
-q5  <- c("q10", "q25", "q50", "q75", "q90")
-q3  <- c("q50", "q75", "q90")
-
 # ----- M1_IPW -------------------------------------------------------------
-cat("📊 M1_IPW summaries\n")
-t0 <- Sys.time()
-m1_ipw_models    <- load_quantile_models("m1_ipw", outputsReturnsNcsThesis, q5)
-m1_ipw_summaries <- summarize_lqmm_models(m1_ipw_models)
+m1_ipw_summaries <- group_summaries(summary_results, "m1_ipw")
 saveRDS(m1_ipw_summaries, file.path(outputsReturnsNcsThesis, "m1_ipw_summaries.rds"))
-
 m1_ipw_coefs <- extract_quantile_coefs(m1_ipw_summaries)
 names(m1_ipw_coefs) <- coef_names_5q
 write_csv(m1_ipw_coefs, file.path(outputsReturnsNcsThesis, "m1_ipw_coefs.csv"))
-cat("⏱", round(difftime(Sys.time(), t0, units = "mins"), 2), "min\n\n")
 
 # ----- M2_IPW -------------------------------------------------------------
-cat("🎓 M2_IPW summaries\n")
-t0 <- Sys.time()
-m2_ipw_models    <- load_quantile_models("m2_ipw", outputsReturnsNcsThesis, q5)
-m2_ipw_summaries <- summarize_lqmm_models(m2_ipw_models)
+m2_ipw_summaries <- group_summaries(summary_results, "m2_ipw")
 saveRDS(m2_ipw_summaries, file.path(outputsReturnsNcsThesis, "m2_ipw_summaries.rds"))
-
 m2_ipw_coefs <- extract_quantile_coefs(m2_ipw_summaries)
 names(m2_ipw_coefs) <- coef_names_5q
 write_csv(m2_ipw_coefs, file.path(outputsReturnsNcsThesis, "m2_ipw_coefs.csv"))
-cat("⏱", round(difftime(Sys.time(), t0, units = "mins"), 2), "min\n\n")
 
-# ----- M3_IPW (education-stratified) --------------------------------------
-cat("🎓 M3_IPW summaries (Tertiary / Vocational / Secondary or below)\n")
-t0 <- Sys.time()
-m3_tert_models  <- load_quantile_models("m3_tert_ipw", outputsReturnsNcsThesis, q5)
-m3_voc_models   <- load_quantile_models("m3_voc_ipw",  outputsReturnsNcsThesis, q5)
-m3_sec_models   <- load_quantile_models("m3_sec_ipw",  outputsReturnsNcsThesis, q5)
-
-m3_tert_summary <- summarize_lqmm_models(m3_tert_models)
-m3_voc_summary  <- summarize_lqmm_models(m3_voc_models)
-m3_sec_summary  <- summarize_lqmm_models(m3_sec_models)
+# ----- M3 (education-stratified) ------------------------------------------
+m3_tert_summary <- group_summaries(summary_results, "m3_tert_ipw")
+m3_voc_summary  <- group_summaries(summary_results, "m3_voc_ipw")
+m3_sec_summary  <- group_summaries(summary_results, "m3_sec_ipw")
 
 m3_edu_ipw_summaries <- list(
   Tertiary             = m3_tert_summary,
@@ -165,31 +217,16 @@ m3_sec_coefs  <- extract_quantile_coefs(m3_sec_summary,  keep_region = TRUE) %>%
 
 m3_coefs_ipw <- bind_rows(m3_tert_coefs, m3_voc_coefs, m3_sec_coefs)
 write_csv(m3_coefs_ipw, file.path(outputsReturnsNcsThesis, "m3_coefs_edu_ipw.csv"))
-cat("⏱", round(difftime(Sys.time(), t0, units = "mins"), 2), "min\n\n")
 
 # ----- M4_IPW (sex × NCS) -------------------------------------------------
-cat("👫 M4_IPW summaries\n")
-t0 <- Sys.time()
-m4_ipw_models    <- load_quantile_models("m4_ipw", outputsReturnsNcsThesis, q3)
-m4_ipw_summaries <- summarize_lqmm_models(m4_ipw_models)
+m4_ipw_summaries <- group_summaries(summary_results, "m4_ipw")
 saveRDS(m4_ipw_summaries, file.path(outputsReturnsNcsThesis, "m4_ipw_summaries.rds"))
-
 m4_ipw_coefs <- extract_quantile_coefs(m4_ipw_summaries)
 names(m4_ipw_coefs) <- coef_names_3q
 write.csv(m4_ipw_coefs, file.path(outputsReturnsNcsThesis, "m4_ipw_sex_ncs_int.csv"))
-cat("⏱", round(difftime(Sys.time(), t0, units = "mins"), 2), "min\n\n")
 
 # ----- LIFE-COURSE summaries ----------------------------------------------
-cat("👴 Life-course summaries\n")
-t0 <- Sys.time()
-
-age_groups <- c("age_16_65", "age_30_39", "age_40_49", "age_50_65")
-m_lc_models <- lapply(age_groups, function(g) {
-  readRDS(file.path(outputsReturnsNcsThesis, paste0("m_lc_ipw_", g, "_model.rds")))
-})
-names(m_lc_models) <- age_groups
-
-m_lc_ipw_summaries <- lapply(m_lc_models, summary)
+m_lc_ipw_summaries <- group_summaries(summary_results, "m_lc_ipw")
 saveRDS(m_lc_ipw_summaries,
         file.path(outputsReturnsNcsThesis, "m_lc_ipw_summaries.rds"))
 
@@ -203,13 +240,17 @@ to_coefs <- function(s, age_label) {
     mutate(age_group = age_label)
 }
 
-age_labels <- c("16-65", "30-40", "40-50", "50-65")
+age_labels <- c(age_16_65 = "16-65",
+                age_30_39 = "30-40",
+                age_40_49 = "40-50",
+                age_50_65 = "50-65")
 m_lc_long <- do.call(
   rbind,
-  Map(to_coefs, m_lc_ipw_summaries, age_labels)
+  Map(to_coefs,
+      m_lc_ipw_summaries[names(age_labels)],
+      unname(age_labels))
 )
 write_csv(m_lc_long, file.path(outputsReturnsNcsThesis, "m_lc_ipw_coefs.csv"))
-cat("⏱", round(difftime(Sys.time(), t0, units = "mins"), 2), "min\n\n")
 
 # ----- COMPLETION ---------------------------------------------------------
 total_time <- difftime(Sys.time(), script_start_time, units = "mins")
