@@ -95,72 +95,31 @@ invisible(capture.output({
   source(file.path(codesJobSatisfNcs, "04_outputs_jobsatisf.R"))
 }))
 
-# Load raw chapter 5 model objects saved for thesis annex output.
-if (dir.exists(returns_thesis_out)) {
-  m1_ipw_models <- list(
-    q10 = readRDS(file.path(returns_thesis_out, "m1_ipw_q10_model.rds")),
-    q25 = readRDS(file.path(returns_thesis_out, "m1_ipw_q25_model.rds")),
-    q50 = readRDS(file.path(returns_thesis_out, "m1_ipw_q50_model.rds")),
-    q75 = readRDS(file.path(returns_thesis_out, "m1_ipw_q75_model.rds")),
-    q90 = readRDS(file.path(returns_thesis_out, "m1_ipw_q90_model.rds"))
-  )
+# Load chapter-5 model SUMMARIES (one bundle per model) rather than raw fits.
+# The summaries already contain the bootstrapped tTable, so the annex helper
+# does not need to re-run the bootstrap on every render — that is what
+# 04_summarize_models_returns.R is for.
+.read_or_null <- function(f) if (file.exists(f)) readRDS(f) else NULL
 
-  m2_ipw_models <- list(
-    q10 = readRDS(file.path(returns_thesis_out, "m2_ipw_q10_model.rds")),
-    q25 = readRDS(file.path(returns_thesis_out, "m2_ipw_q25_model.rds")),
-    q50 = readRDS(file.path(returns_thesis_out, "m2_ipw_q50_model.rds")),
-    q75 = readRDS(file.path(returns_thesis_out, "m2_ipw_q75_model.rds")),
-    q90 = readRDS(file.path(returns_thesis_out, "m2_ipw_q90_model.rds"))
-  )
+m1_ipw_summaries     <- .read_or_null(file.path(returns_thesis_out, "m1_ipw_summaries.rds"))
+m2_ipw_summaries     <- .read_or_null(file.path(returns_thesis_out, "m2_ipw_summaries.rds"))
+m3_edu_ipw_summaries <- .read_or_null(file.path(returns_thesis_out, "m3_edu_ipw_summaries.rds"))
+m4_ipw_summaries     <- .read_or_null(file.path(returns_thesis_out, "m4_ipw_summaries.rds"))
+m_lc_ipw_summaries   <- .read_or_null(file.path(returns_thesis_out, "m_lc_ipw_summaries.rds"))
+gam_age_model        <- .read_or_null(file.path(returns_thesis_out, "m_gam_age_model.rds"))
 
-  m3_edu_ipw_models <- list(
-    Tertiary = list(
-      q10 = readRDS(file.path(returns_thesis_out, "m3_tert_ipw_q10_model.rds")),
-      q25 = readRDS(file.path(returns_thesis_out, "m3_tert_ipw_q25_model.rds")),
-      q50 = readRDS(file.path(returns_thesis_out, "m3_tert_ipw_q50_model.rds")),
-      q75 = readRDS(file.path(returns_thesis_out, "m3_tert_ipw_q75_model.rds")),
-      q90 = readRDS(file.path(returns_thesis_out, "m3_tert_ipw_q90_model.rds"))
-    ),
-    Secondary_Vocational = list(
-      q10 = readRDS(file.path(returns_thesis_out, "m3_voc_ipw_q10_model.rds")),
-      q25 = readRDS(file.path(returns_thesis_out, "m3_voc_ipw_q25_model.rds")),
-      q50 = readRDS(file.path(returns_thesis_out, "m3_voc_ipw_q50_model.rds")),
-      q75 = readRDS(file.path(returns_thesis_out, "m3_voc_ipw_q75_model.rds")),
-      q90 = readRDS(file.path(returns_thesis_out, "m3_voc_ipw_q90_model.rds"))
-    ),
-    Secondary_or_below = list(
-      q10 = readRDS(file.path(returns_thesis_out, "m3_sec_ipw_q10_model.rds")),
-      q25 = readRDS(file.path(returns_thesis_out, "m3_sec_ipw_q25_model.rds")),
-      q50 = readRDS(file.path(returns_thesis_out, "m3_sec_ipw_q50_model.rds")),
-      q75 = readRDS(file.path(returns_thesis_out, "m3_sec_ipw_q75_model.rds")),
-      q90 = readRDS(file.path(returns_thesis_out, "m3_sec_ipw_q90_model.rds"))
-    )
+# Backward-compatible names: some downstream code (and the chapter text)
+# expected NULL placeholders for these. Keep them so nothing breaks if
+# 03/04 haven't run yet.
+if (is.null(m3_edu_ipw_summaries)) {
+  m3_edu_ipw_summaries <- list(
+    Tertiary = NULL, Secondary_Vocational = NULL, Secondary_or_below = NULL
   )
-
-  m4_ipw_models <- list(
-    q50 = readRDS(file.path(returns_thesis_out, "m4_ipw_q50_model.rds")),
-    q75 = readRDS(file.path(returns_thesis_out, "m4_ipw_q75_model.rds")),
-    q90 = readRDS(file.path(returns_thesis_out, "m4_ipw_q90_model.rds"))
+}
+if (is.null(m_lc_ipw_summaries)) {
+  m_lc_ipw_summaries <- list(
+    age_16_65 = NULL, age_30_39 = NULL, age_40_49 = NULL, age_50_65 = NULL
   )
-
-  m_lc_ipw_models <- list(
-    age_16_65 = readRDS(file.path(returns_thesis_out, "m_lc_ipw_age_16_65_model.rds")),
-    age_30_39 = readRDS(file.path(returns_thesis_out, "m_lc_ipw_age_30_39_model.rds")),
-    age_40_49 = readRDS(file.path(returns_thesis_out, "m_lc_ipw_age_40_49_model.rds")),
-    age_50_65 = readRDS(file.path(returns_thesis_out, "m_lc_ipw_age_50_65_model.rds"))
-  )
-
-  gam_age_model <- readRDS(file.path(returns_thesis_out, "m_gam_age_model.rds"))
-} else {
-  # Models not yet fit. The annex placeholders below let the rest of the book
-  # render; run 03_fit_models_returns.R + 04_summarize_models_returns.R to
-  # populate 03_output/returns_outputs/thesis/ and re-render to fill them in.
-  m1_ipw_models     <- NULL
-  m2_ipw_models     <- NULL
-  m3_edu_ipw_models <- list(Tertiary = NULL, Secondary_Vocational = NULL, Secondary_or_below = NULL)
-  m4_ipw_models     <- NULL
-  m_lc_ipw_models   <- list(age_16_65 = NULL, age_30_39 = NULL, age_40_49 = NULL, age_50_65 = NULL)
-  gam_age_model     <- NULL
 }
 
 # Some scripts expose domain models as models_satisf; chapter text expects models_satisf_rus.
@@ -245,127 +204,205 @@ print_model_output("models_suppl[['Educational Mismatch']]", models_suppl[["Educ
 ## Глава 5 {.unnumbered .unlisted}
 
 Все модели главы 5 — линейные смешанные квантильные регрессии (LQMM,
-[@lqmm]) с индивидуальным случайным эффектом и весами обратной вероятности
-занятости (IPW). Региональные фиксированные эффекты включаются в каждой
-спецификации, но в таблицах ниже опущены ради компактности. Числа в
-таблицах — точечные оценки коэффициентов, без стандартных ошибок и
-p-значений (полная инференциальная сводка приведена в основном тексте
-главы). В нижней строке каждой таблицы — дисперсия случайного
+[@lqmm]) с индивидуальным случайным эффектом и, кроме отдельно
+оговорённых случаев, весами обратной вероятности занятости (IPW). Ниже
+для каждой модели показан **код фита** (R, не исполняется в этом
+приложении — приведён только для документирования спецификации) и
+**вывод `summary()`**, из которого опущены столбцы доверительных
+интервалов (`lower bound`, `upper bound`); региональные дамми скрыты
+ради компактности. В конце каждого блока — дисперсия случайного
 индивидуального эффекта.
 
 ### M1: базовая модель заработной платы {.unnumbered .unlisted}
 
-Спецификация (для квантиля $\tau \in \{0.10, 0.25, 0.50, 0.75, 0.90\}$):
+Спецификация:
 
-$$
-\begin{aligned}
-\log W_{it,\tau} =\; & \beta_0(\tau) + \beta_1(\tau)\,\mathrm{exp}_{it} + \beta_2(\tau)\,\mathrm{exp}_{it}^2 + \beta_3(\tau)\,\mathrm{area}_{it} \\
-                    & + \beta_4(\tau)\,\mathrm{sex}_i + \beta_5(\tau)\,\mathrm{marital}_{it} + \mathbf{Region}_i\boldsymbol{\gamma}(\tau) \\
-                    & + \beta_O(\tau) O_i + \beta_C(\tau) C_i + \beta_E(\tau) E_i + \beta_A(\tau) A_i + \beta_{ES}(\tau) ES_i + u_i
-\end{aligned}
-$$
+```r
+m1_ipw_models <- fit_lqmm_by_quantile(
+  fixed_formula     = log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+                                 marital_status + region +
+                                 O + C + E + A + ES,
+  data_frame        = youth_master_returns,
+  weight_vector     = youth_master_returns$ipw_empl,
+  tau_values        = c(q10 = 0.10, q25 = 0.25, q50 = 0.50,
+                        q75 = 0.75, q90 = 0.90),
+  control_obj       = ctrl,
+  control_overrides = list(q25 = ctrl1, q90 = ctrl1)
+)
+```
 
-Аннотация: таблица @tbl-baseline-reg-ipw в основном тексте.
+Сводка моделей по квантилям. Аннотация: таблица @tbl-baseline-reg-ipw.
 
 ```{r}
 #| echo: false
-df_to_flex(lqmm_coef_table(m1_ipw_models))
+#| results: asis
+print_lqmm_summary_no_ci("M1_IPW", m1_ipw_summaries)
 ```
 
 ### M2: расширенная модель с учетом образования {.unnumbered .unlisted}
 
-К спецификации M1 добавляются дамми уровня образования (базовая категория
-— «среднее и ниже»):
+Спецификация:
 
-$$
-\log W_{it,\tau} = X_{it}^{M1}\boldsymbol{\beta}(\tau) + \beta_{\mathrm{edu}_2}(\tau)\,\mathrm{Среднее}_i + \beta_{\mathrm{edu}_3}(\tau)\,\mathrm{Среднее\ проф.}_i + \beta_{\mathrm{edu}_4}(\tau)\,\mathrm{Высшее}_i + u_i
-$$
+```r
+m2_ipw_models <- fit_lqmm_by_quantile(
+  fixed_formula     = log_wage ~ edu_lvl + exp_imp + I(exp_imp^2) +
+                                 sex + area + region + marital_status +
+                                 O + C + E + A + ES,
+  data_frame        = youth_master_returns,
+  weight_vector     = youth_master_returns$ipw_empl,
+  tau_values        = c(q10 = 0.10, q25 = 0.25, q50 = 0.50,
+                        q75 = 0.75, q90 = 0.90),
+  control_obj       = ctrl,
+  control_overrides = list(q25 = ctrl1, q90 = ctrl1)
+)
+```
 
 Аннотация: таблица @tbl-extended-reg.
 
 ```{r}
 #| echo: false
-df_to_flex(lqmm_coef_table(m2_ipw_models))
+#| results: asis
+print_lqmm_summary_no_ci("M2_IPW", m2_ipw_summaries)
 ```
 
 ### M3: модели по уровням образования {.unnumbered .unlisted}
 
-Та же спецификация, что и M1, оцениваемая отдельно на трёх подвыборках
-по уровню образования. Аннотация: рисунок @fig-edu-ncs.
+Та же спецификация, что и M1, оцениваемая отдельно на каждой
+подвыборке по уровню образования. Аннотация: рисунок @fig-edu-ncs.
 
 #### M3a: высшее образование {.unnumbered .unlisted}
 
+```r
+dat_m3_tert <- youth_master_returns[
+  youth_master_returns$edu_lvl == "4. Tertiary", ]
+
+m3_tert_ipw_models <- fit_lqmm_by_quantile(
+  fixed_formula     = log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+                                 marital_status + region +
+                                 O + C + E + A + ES,
+  data_frame        = dat_m3_tert,
+  weight_vector     = dat_m3_tert$ipw_empl,
+  tau_values        = c(q10 = 0.10, q25 = 0.25, q50 = 0.50,
+                        q75 = 0.75, q90 = 0.90),
+  control_obj       = ctrl,
+  control_overrides = list(q25 = ctrl1, q50 = ctrl1, q75 = ctrl1, q90 = ctrl1)
+)
+```
+
 ```{r}
 #| echo: false
-df_to_flex(lqmm_coef_table(m3_edu_ipw_models[["Tertiary"]]))
+#| results: asis
+print_lqmm_summary_no_ci("M3a (Tertiary)", m3_edu_ipw_summaries[["Tertiary"]])
 ```
 
 #### M3b: среднее профессиональное образование {.unnumbered .unlisted}
 
+```r
+dat_m3_voc <- youth_master_returns[
+  youth_master_returns$edu_lvl == "3. Secondary Vocational", ]
+
+m3_voc_ipw_models <- fit_lqmm_by_quantile(
+  fixed_formula     = log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+                                 marital_status + region +
+                                 O + C + E + A + ES,
+  data_frame        = dat_m3_voc,
+  weight_vector     = dat_m3_voc$ipw_empl,
+  tau_values        = c(q10 = 0.10, q25 = 0.25, q50 = 0.50,
+                        q75 = 0.75, q90 = 0.90),
+  control_obj       = ctrl,
+  control_overrides = list(q25 = ctrl1, q50 = ctrl1, q90 = ctrl1)
+)
+```
+
 ```{r}
 #| echo: false
-df_to_flex(lqmm_coef_table(m3_edu_ipw_models[["Secondary_Vocational"]]))
+#| results: asis
+print_lqmm_summary_no_ci("M3b (Secondary Vocational)",
+                         m3_edu_ipw_summaries[["Secondary_Vocational"]])
 ```
 
 #### M3c: среднее образование и ниже {.unnumbered .unlisted}
 
-```{r}
-#| echo: false
-df_to_flex(lqmm_coef_table(m3_edu_ipw_models[["Secondary_or_below"]]))
+```r
+dat_m3_sec <- youth_master_returns[
+  youth_master_returns$edu_lvl %in% c("1. No school", "2. Secondary School"), ]
+
+m3_sec_ipw_models <- fit_lqmm_by_quantile(
+  fixed_formula     = log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+                                 marital_status + region +
+                                 O + C + E + A + ES,
+  data_frame        = dat_m3_sec,
+  weight_vector     = dat_m3_sec$ipw_empl,
+  tau_values        = c(q10 = 0.10, q25 = 0.25, q50 = 0.50,
+                        q75 = 0.75, q90 = 0.90),
+  control_obj       = ctrl,
+  control_overrides = list(q25 = ctrl1, q75 = ctrl1, q90 = ctrl1)
+)
 ```
 
-### M4: взаимодействие пола и некогнитивных навыков {.unnumbered .unlisted}
-
-К спецификации M1 добавляются взаимодействия пола с каждым из пяти
-некогнитивных навыков (квантили $\tau \in \{0.50, 0.75, 0.90\}$):
-
-$$
-\log W_{it,\tau} = X_{it}^{M1}\boldsymbol{\beta}(\tau)
-+ \sum_{T \in \{O,C,E,A,ES\}} \delta_T(\tau)\,(\mathrm{sex}_i \times T_i) + u_i
-$$
-
-Аннотация: таблица @tbl-reg-gndr.
-
 ```{r}
 #| echo: false
-df_to_flex(lqmm_coef_table(m4_ipw_models))
+#| results: asis
+print_lqmm_summary_no_ci("M3c (Secondary or below)",
+                         m3_edu_ipw_summaries[["Secondary_or_below"]])
 ```
 
 ### Жизненный цикл: медианная модель по возрастным группам {.unnumbered .unlisted}
 
-Та же спецификация, что и M1, но оцениваемая только на медианном
-квантиле ($\tau = 0.5$) и отдельно для каждой возрастной группы. Выборка
-— все занятые 16–65 лет (без военных). Аннотация: таблица @tbl-reg-lc.
+Та же спецификация, что и M1, но на медианном квантиле ($\tau = 0.5$) и
+отдельно для каждой возрастной группы. Выборка — все занятые 16–65 лет
+(без военных). Аннотация: таблица @tbl-reg-lc.
+
+```r
+m_lc <- lqmm(
+  fixed   = log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+                       marital_status + region + O + C + E + A + ES,
+  data    = ind_master_returns,                           # либо подвыборка по возрасту
+  random  = ~ 1, group = idind, tau = 0.50,
+  weights = ind_master_returns$ipw_empl,
+  control = list(method = "df")
+)
+```
+
+Возрастные группы: 16–65 (полная выборка), 30–39, 40–49, 50–65.
 
 ```{r}
 #| echo: false
-df_to_flex(lqmm_coef_table(m_lc_ipw_models))
+#| results: asis
+print_lqmm_summary_no_ci("m_lc_ipw_summaries", m_lc_ipw_summaries)
 ```
 
 ### Обобщенная аддитивная модель возраста {.unnumbered .unlisted}
 
 Вспомогательная GAM-модель с непараметрическим эффектом возраста:
 
-$$
-\log W_{it} = s(\mathrm{age}_{it}) + \beta_1\,\mathrm{sex}_i + \mathbf{Region}_i\boldsymbol{\gamma} + \beta_2\,\mathrm{edu}_i + \beta_3\,\mathrm{area}_{it} + \beta_4\,\mathrm{marital}_{it} + \varepsilon_{it}
-$$
+```r
+m_gam <- gam(
+  log_wage ~ s(age) + sex + region + edu_lvl + area + marital_status,
+  data = ind_master_returns
+)
+```
 
-где $s(\cdot)$ — сглаживающий сплайн пакета `mgcv` [@mgcv]. Точечные
-оценки параметрических коэффициентов:
+Параметрические коэффициенты (без региональных дамми и сглаживающего
+члена `s(age)`). Аннотация: рисунок @fig-age-gam.
 
 ```{r}
 #| echo: false
+#| results: asis
 if (is.null(gam_age_model)) {
-  cat("[Модель не подогнана — запустите 03_fit_models_returns.R.]")
+  cat("```\n[GAM-модель не подогнана.]\n```\n")
 } else {
-  coefs <- stats::coef(gam_age_model)
-  coefs <- coefs[!grepl("^region", names(coefs)) & !grepl("^s\\(age\\)", names(coefs))]
-  df_to_flex(tibble::tibble(variable = names(coefs),
-                            estimate = round(unname(coefs), 4)))
+  s <- summary(gam_age_model)
+  ptab <- as.data.frame(s$p.table)
+  ptab <- ptab[!grepl("^region", rownames(ptab)), , drop = FALSE]
+  ptab <- ptab[, setdiff(colnames(ptab), c("lower bound", "upper bound")),
+               drop = FALSE]
+  ptab <- round(ptab, 4)
+  cat("```\n")
+  print(ptab)
+  cat("```\n")
 }
 ```
-
-Аннотация: рисунок @fig-age-gam.
 
 ## Глава 6 {.unnumbered .unlisted}
 

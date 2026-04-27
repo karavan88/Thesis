@@ -10,7 +10,7 @@
 
 # Read the metadata xlsx file
 codebook_ind <- 
-  readxl::read_excel("00_metadata/ind_codebook.xlsx") %>%
+  readxl::read_excel("00_documentation/ind_codebook.xlsx") %>%
   filter(Keep == "T") 
 
 ind_vars_sel <- codebook_ind %>% pull(var)
@@ -111,50 +111,11 @@ rlms_ind_2001_2023 <-
   mutate(having_kids = case_when(j72_171 == 1 ~ "2. Has kids",
                                  TRUE         ~ "1. No kids")) %>%
   mutate(disability = case_when(m20_7 %in% c(1,5) ~ "2. Disabled",
-                                TRUE              ~ "1. Not Disabled")) %>%
-  mutate(poor_health = case_when(m3 %in% c(4,5) ~ "2. Poor or Very Poor Health",
-                                 TRUE           ~ "1. Normal or Good Health")) %>%
-  mutate(neet = case_when(in_education == 0 & employed == 0 ~ 1,
-                                 TRUE ~ 0)) %>%
-  mutate(neet_unempl = case_when(in_education == 0 & 
-                                   employed == 0 & 
-                                   seeking_employment == 1 ~ 1,
-                                 TRUE ~ 0)) %>%
-  mutate(neet_inactive = case_when(in_education == 0 &
-                                     employed == 0 & 
-                                     seeking_employment == 0 ~ 1,
-                                   TRUE ~ 0)) %>%
-  mutate(neet_status = case_when(neet_unempl   == 1  ~ "NEET: Unemployed",
-                                 neet_inactive == 1  ~ "NEET: Inactive",
-                                 in_education == 1   ~ "In Education",
-                                 employed == 1       ~ "Employed",
-                                 TRUE ~ NA_character_)) 
+                                TRUE              ~ "1. Not Disabled")) 
 
-# # a quick check on the neet rates
-# neet_check = 
-#   rlms_ind_2001_2023 %>%
-#   filter(age >= 15 & age < 25) %>%
-#   filter(id_w %in% c("25", "28")) %>%
-#   group_by(id_w) %>%
-#   summarise(neet = mean(neet, na.rm = TRUE)) 
-# 
-# # a quick check on the neet rates
-# neet_status_check = 
-#   rlms_ind_2001_2023 %>%
-#   select(id_w, year, age, employed, in_education, seeking_employment, neet_status, neet) %>%
-#   filter(age >= 15 & age < 25) %>%
-#   filter(id_w %in% c("25", "28")) 
-# 
-# View(neet_status_check)
-# 
-# table(neet_status_check$neet_status, neet_status_check$year)
-# 
-# table(neet_status_check$neet_status[neet_status_check$year == 2016], 
-#       neet_status_check$neet[neet_status_check$year == 2016])
   
-  
-
 summary(rlms_ind_2001_2023$j6_1b)
+
 rlms_ind_2001_2023$area <- 
   factor(rlms_ind_2001_2023$area, 
          levels = c("Село", "ПГТ", "Город", "Областной центр"))
