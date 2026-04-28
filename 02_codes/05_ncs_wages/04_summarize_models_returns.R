@@ -108,16 +108,23 @@ summarize_one_job <- function(job) {
 }
 
 cat("🚀 Dispatching", length(summary_jobs), "summary() calls across",
-    lqmm_workers, "workers (mc.preschedule = FALSE)\n\n")
+    lqmm_workers, "workers (mc.preschedule = TRUE; one fork per worker)\n\n")
 
 queue_start <- Sys.time()
 
+# Note on mc.preschedule:
+#   - TRUE (default, used here): one fork per worker. 7 forks total for 32 jobs;
+#     each worker processes ~5 tasks. Static load assignment, but fork cost is
+#     amortised. This is the path that delivers the ~5h wall clock.
+#   - FALSE (one fork per task): better load balancing in theory, but on macOS
+#     the per-task fork tax + lqmm bootstrap memory churn ballooned wall-clock
+#     to ~21 hours in practice. Do not flip this.
 if (.Platform$OS.type != "windows" && lqmm_workers > 1L) {
   summary_results <- parallel::mclapply(
     summary_jobs,
     summarize_one_job,
     mc.cores       = lqmm_workers,
-    mc.preschedule = FALSE
+    mc.preschedule = TRUE
   )
 } else {
   summary_results <- lapply(summary_jobs, summarize_one_job)

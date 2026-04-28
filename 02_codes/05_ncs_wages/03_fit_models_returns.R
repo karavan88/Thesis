@@ -196,16 +196,19 @@ fit_one_job <- function(job) {
 }
 
 cat("🚀 Dispatching", length(lqmm_jobs), "LQMM fits across",
-    lqmm_workers, "workers (mc.preschedule = FALSE)\n\n")
+    lqmm_workers, "workers (mc.preschedule = TRUE; one fork per worker)\n\n")
 
 queue_start <- Sys.time()
 
+# Note: mc.preschedule = TRUE is correct here. See the matching comment in
+# 04_summarize_models_returns.R — fork-per-task on macOS multiplies the
+# per-fit memory churn and balloons wall-clock to >20h.
 if (.Platform$OS.type != "windows" && lqmm_workers > 1L) {
   fit_results <- parallel::mclapply(
     lqmm_jobs,
     fit_one_job,
     mc.cores       = lqmm_workers,
-    mc.preschedule = FALSE  # dynamic scheduling — slower jobs don't block faster ones
+    mc.preschedule = TRUE
   )
 } else {
   fit_results <- lapply(lqmm_jobs, fit_one_job)
