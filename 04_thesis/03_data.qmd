@@ -389,9 +389,9 @@ summary_stats <-
   select(age, sex_ru, year, in_education_ru, edu_lvl_ru, area_ru, ses5_q) %>%
   tbl_summary(by = year,
               missing_text = "NA",
-              type = list( age ~ 'continuous2',
+              type = list( age ~ 'continuous',
                            c(in_education_ru, ses5_q, area_ru, edu_lvl_ru, sex_ru) ~ 'categorical'),
-              label = list(age ~ "Возраст",
+              label = list(age ~ "Возраст, среднее (СО)",
                            in_education_ru ~ "Обучается",
                            area_ru ~ "Тип поселения",
                            sex_ru ~ "Пол",
@@ -410,6 +410,7 @@ summary_stats
 ```{r}
 #| label: fig-hist-age-empl
 #| fig-cap: Возрастное распределение выборки в зависимости от статуса занятости и волны исследования
+#| fig-height: 6.5
 
 age_empl_chart
 ```
@@ -518,6 +519,9 @@ youth_descr %>%
     .groups = "drop"
   ) %>%
   mutate(across(-year, ~ round(.x, 2))) %>%
+  # Years are years, not numbers — keep them as plain strings so flextable
+  # doesn't apply thousands-separator formatting (was rendering as 2,016 / 2,019).
+  mutate(year = as.character(year)) %>%
   df_to_flex(
     note = "Примечание: данные 2016 года скорректированы на уровень цен 2019 года с учетом индекса потребительских цен.",
     col_labels = c(

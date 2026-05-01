@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ps -o pid,ppid,etime,pcpu,command -p 99031)",
+      "Bash(command -v pdftotext)",
+      "Bash(pdftotext /Users/karavan88/Documents/GitHub/Thesis/04_thesis/_book/04_thesis.pdf -)",
+      "Bash(brew list *)",
+      "Bash(command -v pdftk)",
+      "Bash(command -v mutool)",
+      "Bash(command -v qpdf)",
+      "Bash(Rscript -e \"if\\(!requireNamespace\\('pdftools', quietly=TRUE\\)\\) cat\\('NO\\\\n'\\) else { library\\(pdftools\\); txt <- pdf_text\\('/Users/karavan88/Documents/GitHub/Thesis/04_thesis/_book/04_thesis.pdf'\\); for\\(i in seq_along\\(txt\\)\\) { lines <- strsplit\\(txt[[i]], '\\\\n'\\)[[1]]; m <- grep\\('borghans|almlund|nyhus|turban|Borghans|Almlund|Nyhus|Turban|TURBAN', lines, ignore.case=FALSE, value=TRUE\\); if\\(length\\(m\\)\\) { cat\\('Page', i, ':\\\\n'\\); cat\\(m, sep='\\\\n'\\); cat\\('\\\\n'\\) } } }\")",
+      "Bash(Rscript -e \"install.packages\\('pdftools', repos='https://cloud.r-project.org', quiet=TRUE\\)\")",
+      "Bash(Rscript -e \"library\\(pdftools\\); txt <- pdf_text\\('/Users/karavan88/Documents/GitHub/Thesis/04_thesis/_book/04_thesis.pdf'\\); npages <- length\\(txt\\); cat\\('Pages:', npages, '\\\\n'\\); for\\(i in seq_along\\(txt\\)\\) { lines <- strsplit\\(txt[[i]], '\\\\n'\\)[[1]]; m <- grep\\('borghans|almlund|nyhus|turban|Borghans|Almlund|Nyhus|Turban|TURBAN', lines, ignore.case=FALSE, value=TRUE\\); if\\(length\\(m\\)\\) { cat\\('--- Page', i, '---\\\\n'\\); cat\\(m, sep='\\\\n'\\); cat\\('\\\\n'\\) } }\")",
+      "Bash(Rscript /tmp/check_pdf.R)",
+      "Bash(Rscript -e \"Sys.setlocale\\('LC_ALL','en_US.UTF-8'\\); library\\(pdftools\\); txt <- pdf_text\\('/Users/karavan88/Documents/GitHub/Thesis/04_thesis/_book/04_thesis.pdf'\\); npages <- length\\(txt\\); for\\(i in 100:npages\\) { lines <- strsplit\\(txt[[i]], '\\\\n'\\)[[1]]; m <- lines[grepl\\('Приложение|Список литературы', lines\\)]; if\\(length\\(m\\)\\) { cat\\('Page', i, ':\\\\n'\\); print\\(m\\); cat\\('\\\\n'\\) } }\")",
+      "Bash(Rscript -e \"Sys.setlocale\\('LC_ALL','en_US.UTF-8'\\); library\\(pdftools\\); txt <- pdf_text\\('/Users/karavan88/Documents/GitHub/Thesis/04_thesis/_book/04_thesis.pdf'\\); for\\(i in 70:90\\) { lines <- strsplit\\(txt[[i]], '\\\\n'\\)[[1]]; m <- lines[grepl\\('Примечание|Полные коэф|Рис\\\\\\\\.|Figure', lines\\)]; if\\(length\\(m\\)\\) { cat\\('Page', i, ':\\\\n'\\); print\\(m\\); cat\\('\\\\n'\\) } }\")",
+      "Bash(Rscript /tmp/check_note.R)"
+    ],
+    "additionalDirectories": [
+      "/tmp",
+      "/private/tmp"
+    ]
+  }
+}

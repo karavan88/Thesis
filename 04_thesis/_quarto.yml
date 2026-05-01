@@ -17,8 +17,8 @@ book:
     - 05_ncs_wages.qmd
     - 06_ncs_job_satisf.qmd
     - 07_concl.qmd
-    - 08_annex.qmd
     - references.qmd
+    - 08_annex.qmd
 
 
 bibliography: references_sorted.bib
