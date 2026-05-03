@@ -8,9 +8,11 @@
 #' @param models_list Named list of fitted `merMod` objects from `lme4`/`lmerTest`.
 #' @param digits Integer number of decimal digits used to format variance
 #'   estimates. Defaults to `3`.
+#' @param include_random_slopes Logical. When `FALSE`, drops `Var(u1)` rows
+#'   (random-slope variance components) from the output. Defaults to `TRUE`.
 #' @return A data frame with first column `term` and one further column per
 #'   model in `models_list` containing formatted variance strings.
-make_re_diagnostics_rows <- function(models_list, digits = 3) {
+make_re_diagnostics_rows <- function(models_list, digits = 3, include_random_slopes = TRUE) {
   var_labels <- c(
     "idind" = "Индивидуальный ID",
     "region" = "Регион",
@@ -54,7 +56,7 @@ make_re_diagnostics_rows <- function(models_list, digits = 3) {
   diag_list <- lapply(models_list, format_one)
   all_terms <- unique(unlist(lapply(diag_list, names)))
   int_terms <- grep("^Var\\(u0\\)", all_terms, value = TRUE)
-  slope_terms <- grep("^Var\\(u1\\)", all_terms, value = TRUE)
+  slope_terms <- if (include_random_slopes) grep("^Var\\(u1\\)", all_terms, value = TRUE) else character(0)
   resid_terms <- grep("^Var\\(Residual\\)$", all_terms, value = TRUE)
   ordered_terms <- c(sort(int_terms), sort(slope_terms), resid_terms)
   ordered_terms <- ordered_terms[ordered_terms %in% all_terms]

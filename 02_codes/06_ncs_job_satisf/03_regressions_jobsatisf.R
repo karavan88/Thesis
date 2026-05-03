@@ -96,6 +96,7 @@ m0_satisf <- lmer(satisf_job ~ 1 +
                                         optCtrl   = list(maxfun = 1e6)),
                   data = youth_job_satisf)
 
+
 cat("✅ M0 fit in", round(difftime(Sys.time(), t0, units = "secs"), 2), "s\n\n")
 
 # ----- SECTION 3: M1 / M1.5 / M2 (overall job-satisfaction main models) ---

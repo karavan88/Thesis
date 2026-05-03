@@ -241,6 +241,10 @@ hh_data_selected <-
                                      hh_per_cap_quantile_imp >  0.4 & hh_per_cap_quantile_imp <= 0.6 ~ "Q3",
                                      hh_per_cap_quantile_imp >  0.6 & hh_per_cap_quantile_imp <= 0.8 ~ "Q4",
                                      hh_per_cap_quantile_imp >  0.8                                  ~ "Q5")) %>%
+  # create deciles for descriptive purposes
+  mutate(hh_inc_decile = factor(ntile(hh_income_per_cap_imp, 10))) %>%
+  # create 20 groups
+  mutate(hh_inc_20group = factor(ntile(hh_income_per_cap_imp, 20))) %>%
   ungroup() %>%
   right_join(idh_at_15) %>%
   select(-id_w, -id_h) 
@@ -250,6 +254,8 @@ cat("Processing time:", round(as.numeric(difftime(Sys.time(), start_time, units 
 cat("✓ Household income data processed:\n")
 cat("  • Income imputation applied for missing values\n")
 cat("  • Income quintiles created (Q1-Q5)\n")
+cat("  • Income deciles created (D1-D10)\n")
+cat("  • Income 20 groups created (G1-G20)\n")
 cat("  • Merged with individual-household matches\n\n")
 
 summary(hh_data_selected$hh_income_per_cap)

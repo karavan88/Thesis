@@ -211,6 +211,10 @@ youth_job_satisf <-
                                           hourly_wage_quantile <= 0.6 ~ "Q3",
                                           hourly_wage_quantile <= 0.8 ~ "Q4",
                                           TRUE                        ~ "Q5" )) %>%
+  # create wage deciles variable for descriptive purposes
+  mutate(hourly_wage_decile = factor(ntile(hourly_wage, 10))) %>%
+  # create 20 groups
+  mutate(hourly_wage_20group = factor(ntile(hourly_wage, 20))) %>%
   # Work-life balance satisfaction only available in wave 28 (2019)
   mutate(satisf_wbl = ifelse(id_w == "28", satisf_wbl, as.numeric(NA))) 
 

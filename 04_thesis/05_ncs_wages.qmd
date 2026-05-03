@@ -196,6 +196,15 @@ base_O_q10 <- get_coef(m1_ipw_raw, "O", "q10_est")
 base_O_q50 <- get_coef(m1_ipw_raw, "O", "q50_est")
 base_O_q90 <- get_coef(m1_ipw_raw, "O", "q90_est")
 
+# Base model (m1_ipw): Extraversion (significant at Q50/Q75/Q90)
+base_E_q50 <- get_coef(m1_ipw_raw, "E", "q50_est")
+base_E_q75 <- get_coef(m1_ipw_raw, "E", "q75_est")
+base_E_q90 <- get_coef(m1_ipw_raw, "E", "q90_est")
+
+# Base model (m1_ipw): Conscientiousness (significant at Q25, penalty at Q90)
+base_C_q25 <- get_coef(m1_ipw_raw, "C", "q25_est")
+base_C_q90 <- get_coef(m1_ipw_raw, "C", "q90_est")
+
 # Extended model (m2_ipw): Tertiary education premium
 edu_tert_q10 <- get_coef(m2_ipw_raw, "edu_lvl4. Tertiary", "q10_est")
 edu_tert_q90 <- get_coef(m2_ipw_raw, "edu_lvl4. Tertiary", "q90_est")
@@ -229,22 +238,37 @@ if (file.exists(.lc_path)) {
     lc_ES_all <- lc_ES_3040 <- lc_ES_4050 <- lc_ES_5065 <- NA_real_
 }
 
-# Education-stratified coefficients (M3, Secondary or below subsample).
-# Pulled from edu_models_long (built in 05_output_returns_rus.R from
-# m3_coefs_edu_ipw.csv) and converted to percentage points.
+# Education-stratified coefficients from edu_models_long (built in
+# 05_output_returns_rus.R from m3_coefs_edu_ipw.csv). The dataframe stores
+# trait names in Russian and quantile codes without the "Q" prefix, so the
+# helper maps English -> Russian and strips the prefix.
+.m3_skill_ru <- c(
+  "Openness" = "Открытость",
+  "Conscientiousness" = "Добросовестность",
+  "Extraversion" = "Экстраверсия",
+  "Agreeableness" = "Доброжелательность",
+  "Emotional Stability" = "Эмоциональная стабильность"
+)
+
 get_m3_coef <- function(skill, model_label, q_label) {
   if (!exists("edu_models_long") || nrow(edu_models_long) == 0) return(NA_real_)
-  v <- edu_models_long[edu_models_long$variable == skill &
+  skill_ru <- if (skill %in% names(.m3_skill_ru)) .m3_skill_ru[[skill]] else skill
+  q_clean  <- sub("^Q", "", q_label)
+  v <- edu_models_long[edu_models_long$variable == skill_ru &
                        edu_models_long$model    == model_label &
-                       edu_models_long$quantile == q_label, "estimate"]
+                       edu_models_long$quantile == q_clean, "estimate"]
   if (length(v) == 0) return(NA_real_)
   round(as.numeric(v[[1]]) * 100, 1)
 }
 
-m3_sec_O_q10 <- get_m3_coef("Openness", "Secondary or below", "Q10")
-m3_sec_O_q50 <- get_m3_coef("Openness", "Secondary or below", "Q50")
-m3_sec_O_q90 <- get_m3_coef("Openness", "Secondary or below", "Q90")
+# Section 5.3.3 (Secondary Vocational subsample): openness shows the stated
+# pattern (sig at Q10/Q50/Q75/Q90, not Q25) here, not in "Secondary or below".
+m3_sec_O_q10 <- get_m3_coef("Openness", "Secondary Vocational", "Q10")
+m3_sec_O_q50 <- get_m3_coef("Openness", "Secondary Vocational", "Q50")
+m3_sec_O_q90 <- get_m3_coef("Openness", "Secondary Vocational", "Q90")
 ```
+
+Результаты базовой модели по 10, 25, 50, 75 и 90 процентилям заработной платы представлены в @tbl-baseline-reg-ipw. Анализ показывает, что среди молодежи, впервые выходящей на рынок труда, только открытость оказывает положительное и статистически значимое влияние на заработную плату. Более того, это влияние сохраняется на всех уровнях распределения, причем общая тенденция указывает на монотонный рост отдачи от открытости с увеличением уровня заработка. Так, влияние открытости составляет `r base_O_q10`% на 10-м процентиле почасовой оплаты, `r base_O_q50`% на медианном уровне и достигает `r base_O_q90`% для молодежи на 90-м процентиле. Экстраверсия оказывает статистически значимый, положительный и умеренный эффект на 50-м, 75-м и 90-м процентилях, и размер этого эффекта растет по мере роста уровня оплаты труда (`r base_E_q50`%, `r base_E_q75`% и `r base_E_q90`% соответственно). Наконец, интересный паттерн демонстрирует добросовестность: хотя она оказывает небольшой и статистически значимый эффект на 25-м процентиле (`r base_C_q25`%), но создает штраф для высокооплачиваемых работников (`r base_C_q90`%).
 
 {{< pagebreak >}}
 
@@ -327,7 +351,7 @@ extd_reg_ipw %>%
 
 Коэффициенты отдачи от некогнитивных навыков по уровням образования, оценённые с использованием модели с взвешиванием обратной вероятности занятости, представлены на графике @fig-edu-ncs. Результаты показывают, что молодые работники с высшим образованием практически не получают выгоды от своих некогнитивных навыков. Единственный выявленный эффект — добросовестность на 25-м процентиле заработной платы, которая оказывает положительную и статистически значимую отдачу.
 
-В то же время у индивидов с образованием на уровне средней школы или ниже, а также молодежи со средним профессиональным образованием наблюдается более выразительная картина. Так, статистически значимый положительный эффект открытости зафиксирован почти на всех выбранных процентилях, за исключением 25-го. При этом интересно, как он варьируется: на 10-м процентиле он составляет `r m3_sec_O_q10`%, теряет значимость на 25-м, на уровне медианы вновь появляется с `r m3_sec_O_q50`% премией и вновь начинает расти, достигая пика в `r m3_sec_O_q90`% на 90-м процентиле.
+В то же время у индивидов с образованием на уровне средней школы или ниже, а также молодежи со средним профессиональным образованием наблюдается более выразительная картина. Так, статистически значимый положительный эффект открытости зафиксирован почти на всех выбранных процентилях, за исключением 25-го. При этом интересно, как он варьируется: на 10-м процентиле он составляет `r m3_sec_O_q10`%, теряет значимость на 25-м, на уровне медианы вновь появляется с `r m3_sec_O_q50`% премией и вновь начинает расти, достигая `r m3_sec_O_q90`% на 90-м процентиле.
 
 Наконец, для индивидов с образованием на уровне средней школы или ниже, ключевую роль на разных уровнях оплаты труда показали такие характеристики как эмоциональная стабильность и доброжелательность. При этом эмоциональная стабильность имеет отдачу на 10-м процентиле, подчеркивая важность устойчивости к стрессу для людей с низким образованием и низкой оплатой труда. При этом, для молодежи с низким уровнем образования характерна возрастающая отдача от доброжелательности на уровнях оплаты труда выше медианы.
 

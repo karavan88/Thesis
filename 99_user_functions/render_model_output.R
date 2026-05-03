@@ -28,6 +28,11 @@ render_model_output <- function(model, source_file, start_line, end_line, render
   code_rendered <- knitr::knit_child(text = code_chunk, quiet = TRUE, envir = knitr::knit_global())
   out <- capture.output(render_output(model))
 
+  # Strip lme4's "boundary (singular) fit" diagnostic from summary.merMod —
+  # the appendix should show the spec + estimates, not the near-zero-variance
+  # warning.
+  out <- out[!grepl("boundary \\(singular\\) fit|isSingular", out)]
+
   cat("\n\n")
   cat(code_rendered, sep = "\n")
   cat("\n")
