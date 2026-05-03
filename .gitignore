@@ -54,8 +54,12 @@ tinytable_assets/
 _tmp_*/
 
 # --- Claude Code -------------------------------------------------------------
-.claude/worktrees/
-.claude/local/
+# Ignore the entire Claude Code working directory (settings, lockfiles,
+# worktrees, transcripts, etc.). These are local/per-machine and should
+# not be tracked.
+.claude/
+CLAUDE.md
+.claudeignore
 
 # CSV byproduct that 05_output_returns_rus.R emits but no qmd reads
 03_output/returns_outputs/edu_ncs_fig.csv
