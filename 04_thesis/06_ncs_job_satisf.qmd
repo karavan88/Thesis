@@ -409,7 +409,7 @@ local({
 local({
   nm <- stats::setNames(models_job_satisf_list, c("Модель 1", "Модель 2", "Модель 3"))
   df_to_flex(
-    build_sectioned_model_table(nm, coef_rename = rename_vector_js_ru, inline_se = TRUE, coef_omit = "SD|Cor|Intercept", include_random_slopes = FALSE),
+    build_sectioned_model_table(nm, coef_rename = rename_vector_js_ru, inline_se = TRUE, coef_omit = "SD|Cor|Intercept", include_random_slopes = TRUE),
     note = coef_note_js
   )
 })
@@ -505,7 +505,7 @@ local({
       coef_rename = rename_vector_js_ru,
       inline_se = TRUE,
       coef_omit = "SD|Cor|Intercept",
-      include_random_slopes = FALSE
+      include_random_slopes = TRUE
     ),
     note = coef_note_js
   )

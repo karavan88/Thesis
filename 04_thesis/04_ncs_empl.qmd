@@ -409,7 +409,7 @@ $$ {#eq-overeduc}
 local({
   nm <- stats::setNames(models_empl1[1], c("Формальная занятость"))
   df_to_flex(
-    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, inline_se = TRUE, include_random_slopes = FALSE),
+    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, inline_se = TRUE, include_random_slopes = TRUE),
     note = coef_note
   )
 })
@@ -426,7 +426,7 @@ local({
 local({
   nm <- stats::setNames(models_empl2, c("Квинтиль дохода", "Уровень образования", "Пол"))
   df_to_flex(
-    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, inline_se = TRUE, include_random_slopes = FALSE),
+    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, inline_se = TRUE, include_random_slopes = TRUE),
     note = coef_note
   )
 })
@@ -636,7 +636,7 @@ local({
 local({
   nm <- stats::setNames(models_occup, c("Базовая", "Случайные коэффициенты по квинтилю дохода"))
   df_to_flex(
-    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, inline_se = TRUE, include_random_slopes = FALSE),
+    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, inline_se = TRUE, include_random_slopes = TRUE),
     note = coef_note
   )
 })
@@ -725,7 +725,7 @@ local({
 local({
   nm <- list("Избыточное образование" = models_suppl[["Educational Mismatch"]])
   df_to_flex(
-    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, single_model_inline = TRUE, include_random_slopes = FALSE),
+    build_sectioned_model_table(nm, coef_rename = rename_vector_empl_rus, single_model_inline = TRUE, include_random_slopes = TRUE),
     note = coef_note_mismatch
   )
 })
