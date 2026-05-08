@@ -290,12 +290,15 @@ if (!exists("youth_empl")) {
 }
 stopifnot(exists("youth_empl"))
 
-# `youth_empl_suppl` is created by 03_regression_supplement.R as a renamed
-# copy of youth_empl (same data, suffix-only convention used throughout
-# chapter 4). Alias here so the M6 bootstrap call below works without
-# having to re-source the supplement script.
+# `youth_empl_suppl` is created by 03_regression_supplement.R as the
+# employed-only subsample (filter(employed_officially == 1)). Recreate
+# the same filter here so the M6 bootstrap call below uses the dataset
+# the model was actually fit on — passing the full youth_empl triggers
+# a "new levels detected" error in bootMer because individual IDs not
+# in the M6 fit appear in the refit data.
 if (!exists("youth_empl_suppl")) {
-  youth_empl_suppl <- youth_empl
+  youth_empl_suppl <- youth_empl[!is.na(youth_empl$employed_officially) &
+                                 youth_empl$employed_officially == 1, ]
 }
 
 models_main <- readRDS(file.path(outputsEmplNcs, "models_ncs_empl_tab2.rds"))

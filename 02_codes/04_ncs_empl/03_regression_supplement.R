@@ -28,7 +28,11 @@ script_start_time <- Sys.time()
 
 # ---- SECTION 1: DATA LOADING -----------------------------------------------
 cat("📊 SECTION 1: DATA LOADING\n")
-youth_empl_suppl <- readRDS(file.path(processedData, "youth_empl.rds"))
+youth_empl_suppl <- 
+  readRDS(file.path(processedData, "youth_empl.rds")) %>%
+  # pick only those who are currently employed 
+  filter(employed_officially == 1) 
+
 cat("✅ Loaded youth_empl_suppl:", nrow(youth_empl_suppl), "rows\n")
 cat("   - White-collar workers:", sum(youth_empl_suppl$white_collar, na.rm = TRUE), "\n")
 cat("   - High-skilled white-collar:", sum(youth_empl_suppl$white_collar_hs, na.rm = TRUE), "\n")
@@ -45,6 +49,7 @@ m5_empl <- lmer(white_collar_hs ~ 1 +
                   (1|region) + (1|idind) + (1|edu_lvl),
                 weights = ipw_empl,
                 REML = TRUE, data = youth_empl_suppl)
+
 
 cat("✅ M5 fit in", round(difftime(Sys.time(), t0, units = "secs"), 2), "s\n\n")
 

@@ -274,8 +274,8 @@ for (p in critical_pkgs) {
 | Блок анализа | Единица анализа | Примерный размер выборки | Почему N отличается |
 |------------------|-----------------:|-----------------:|------------------|
 | Глава 4: формальная занятость | Молодежь 15-29 лет в волнах с измерением некогнитивных навыков | N ≈ 5981 | Включает занятых и незанятых респондентов |
-| Глава 4: умственный труд | Занятая молодежь | меньше полной молодежной выборки | Ограничение занятыми и исключение военной службы |
-| Глава 4: избыточное образование | Занятые респонденты с завершенным высшим образованием | меньше выборки занятых | Исход зависит от наличия высшего образования и профессии |
+| Глава 4: умственный труд | Занятая молодежь | 2401 | Ограничение занятыми |
+| Глава 4: избыточное образование | Занятые респонденты с завершенным высшим образованием | 924 | Исход зависит от наличия высшего образования и профессии |
 | Глава 5: заработная плата | Занятые работники с валидной почасовой оплатой | N ≈ 2661 | Требуются занятость, заработная плата, часы и контрольные переменные |
 | Глава 6: удовлетворенность работой | Занятые работники с ответом об удовлетворенности | N ≈ 2924 | Требуются занятость, заработная плата, удовлетворенность и контрольные переменные |
 
@@ -368,7 +368,7 @@ print_model_output("models_suppl[['Educational Mismatch']]", models_suppl[["Educ
 
 ``` r
 m1_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+  fixed_formula     = log_wage ~ exp + I(exp^2) + area + sex +
                                  marital_status + region +
                                  O + C + E + A + ES,
   data_frame        = youth_master_returns,
@@ -394,7 +394,7 @@ print_lqmm_summary_no_ci("M1_IPW", m1_ipw_summaries)
 
 ``` r
 m2_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = log_wage ~ edu_lvl + exp_imp + I(exp_imp^2) +
+  fixed_formula     = log_wage ~ edu_lvl + exp + I(exp^2) +
                                  sex + area + region + marital_status +
                                  O + C + E + A + ES,
   data_frame        = youth_master_returns,
@@ -425,7 +425,7 @@ dat_m3_tert <- youth_master_returns[
   youth_master_returns$edu_lvl == "4. Tertiary", ]
 
 m3_tert_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+  fixed_formula     = log_wage ~ exp + I(exp^2) + area + sex +
                                  marital_status + region +
                                  O + C + E + A + ES,
   data_frame        = dat_m3_tert,
@@ -450,7 +450,7 @@ dat_m3_voc <- youth_master_returns[
   youth_master_returns$edu_lvl == "3. Secondary Vocational", ]
 
 m3_voc_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+  fixed_formula     = log_wage ~ exp + I(exp^2) + area + sex +
                                  marital_status + region +
                                  O + C + E + A + ES,
   data_frame        = dat_m3_voc,
@@ -476,7 +476,7 @@ dat_m3_sec <- youth_master_returns[
   youth_master_returns$edu_lvl %in% c("1. No school", "2. Secondary School"), ]
 
 m3_sec_ipw_models <- fit_lqmm_by_quantile(
-  fixed_formula     = log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+  fixed_formula     = log_wage ~ exp + I(exp^2) + area + sex +
                                  marital_status + region +
                                  O + C + E + A + ES,
   data_frame        = dat_m3_sec,
@@ -501,7 +501,7 @@ print_lqmm_summary_no_ci("M3c (Secondary or below)",
 
 ``` r
 m_lc <- lqmm(
-  fixed   = log_wage ~ exp_imp + I(exp_imp^2) + area + sex +
+  fixed   = log_wage ~ exp + I(exp^2) + area + sex +
                        marital_status + region + O + C + E + A + ES,
   data    = ind_master_returns,                           # либо подвыборка по возрасту
   random  = ~ 1, group = idind, tau = 0.50,
@@ -638,7 +638,7 @@ print_model_output("m7_satisf (Баланс работы и личной жиз�
 \clearpage
 ```
 
-## Приложение E.  Проверка устойчивости случайных коэффициентов через бустрап-доверительные интервалы {.unnumbered}
+## Приложение E. Проверка устойчивости случайных коэффициентов через бустрап-доверительные интервалы {.unnumbered}
 
 ```{r}
 #| echo: false
