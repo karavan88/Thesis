@@ -20,9 +20,12 @@
 #' @param include_random_slopes Logical. Forwarded to
 #'   `make_re_diagnostics_rows()`. When `FALSE`, omits `Var(u1)` random-slope
 #'   rows from the random-effects block. Defaults to `TRUE`.
+#' @param include_random_correlations Logical. Forwarded to
+#'   `make_re_diagnostics_rows()`. When `TRUE`, appends `Cor:` rows for the
+#'   off-diagonals of each random-effect covariance matrix. Defaults to `FALSE`.
 #' @return A data frame with columns `term` plus one per model, ready to be
 #'   passed to `df_to_flex()`.
-build_sectioned_model_table <- function(models_list, coef_rename = NULL, single_model_inline = FALSE, inline_se = FALSE, coef_omit = "SD|Cor", include_random_slopes = TRUE) {
+build_sectioned_model_table <- function(models_list, coef_rename = NULL, single_model_inline = FALSE, inline_se = FALSE, coef_omit = "SD|Cor", include_random_slopes = TRUE, include_random_correlations = FALSE) {
   ms <- modelsummary::modelsummary(
     models_list,
     output = "dataframe",
@@ -70,7 +73,7 @@ build_sectioned_model_table <- function(models_list, coef_rename = NULL, single_
   })
   fixed_block <- dplyr::bind_rows(fixed_rows)
 
-  re_block <- make_re_diagnostics_rows(models_list, include_random_slopes = include_random_slopes)
+  re_block <- make_re_diagnostics_rows(models_list, include_random_slopes = include_random_slopes, include_random_correlations = include_random_correlations)
   qual_block <- make_model_quality_rows(models_list)
 
   sec_row <- function(lbl) {

@@ -15,7 +15,7 @@ make_icc_rows <- function(models_list) {
     age                  = "ICC: Возраст",
     age_factor           = "ICC: Возраст",
     edu_lvl              = "ICC: Образование",
-    ses5                 = "ICC: Квинтиль СЭС",
+    ses5                 = "ICC: Среднедушевой доход ДХ",
     sex                  = "ICC: Пол",
     occupation           = "ICC: Профессия",
     hourly_wage_quintile = "ICC: Квинтиль зарплаты"
