@@ -316,15 +316,17 @@ $$ {#eq-satisf-rs}
 #| label: fig-wage-jobsatisf
 #| fig-cap: Связь логарифма почасовой заработной платы с общей удовлетворённостью работой, результаты GAM-регрессии
 #| fig-width: 5.5
-#| fig-height: 4.2
+#| fig-height: 4.6
 #| fig-pos: H
 
 old_par <- par(no.readonly = TRUE)
 on.exit(par(old_par), add = TRUE)
 .fam <- if (knitr::is_latex_output()) "Times New Roman" else ""
 # Wider left margin (mar[2]) keeps the two-line ylab from being clipped;
-# mgp pushes the axis title slightly closer to the axis to use that space.
-par(family = .fam, mar = c(4, 5.5, 0.5, 1), mgp = c(3.5, 0.8, 0))
+# Bottom margin of 5 (vs. default 5.1) leaves room for the axis title at
+# mgp[1] = 3.5 plus tick labels and the axis line — at mar[1] = 4 the
+# x-axis title was being clipped along with parts of the tick labels.
+par(family = .fam, mar = c(5, 5.5, 0.5, 1), mgp = c(3.5, 0.8, 0))
 
 log_hourly_wage <- log(youth_job_satisf$hourly_wage)
 wage_cutoffs <- quantile(log_hourly_wage, probs = c(0.2, 0.4, 0.5, 0.6, 0.8), na.rm = TRUE)
