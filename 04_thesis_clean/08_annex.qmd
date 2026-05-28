@@ -1,0 +1,865 @@
+---
+number-sections: false
+---
+
+# Приложение {.unnumbered}
+
+```{=latex}
+\setcounter{secnumdepth}{0}
+\AtBeginEnvironment{Shaded}{\footnotesize}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},breaklines=true,breakanywhere=true,breakindent=0pt,fontsize=\footnotesize}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{breaklines=true,breakanywhere=true,breakindent=0pt,fontsize=\footnotesize}
+```
+
+## Приложение A. Воспроизводимость, структура кода и навигация по результатам {.unnumbered}
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| output: false
+#| results: 'hide'
+
+# # Ensure UTF-8 rendering consistency for Russian text in console outputs.
+# force_utf8_locale <- function() {
+#   for (loc in c("ru_RU.UTF-8", "en_US.UTF-8")) {
+#     res <- try(Sys.setlocale("LC_CTYPE", loc), silent = TRUE)
+#     if (!inherits(res, "try-error") && is.character(res) && nzchar(res)) {
+#       Sys.setenv(LANG = res, LC_CTYPE = res)
+#       options(encoding = "UTF-8")
+#       return(invisible(res))
+#     }
+#   }
+#   invisible(NULL)
+# }
+
+# force_utf8_locale()
+
+# Favor regular decimal output in printed model summaries.
+options(scipen = 999)
+
+# Minimal package set needed for sourced chapter 4/6 scripts.
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(dplyr)
+  library(purrr)
+  library(tibble)
+  library(tidyr)
+  library(forcats)
+  library(lubridate)
+  library(stringr)
+  library(readr)
+  library(haven)
+  library(readxl)
+  library(here)
+  library(gtsummary)
+  library(modelsummary)
+  library(tinytable)
+  library(kableExtra)
+  library(flextable)
+  library(gt)
+  library(lme4)
+  library(lmerTest)
+  library(lqmm)
+  library(mgcv)
+  library(broom)
+  library(broom.mixed)
+  library(psych)
+  library(e1071)
+  library(ggeffects)
+  library(gridExtra)
+  library(sjPlot)
+  library(ggcorrplot)
+  library(ggstats)
+  library(WeightIt)
+  library(easystats)
+  library(bayestestR)
+  library(performance)
+  library(parameters)
+  library(effectsize)
+  library(correlation)
+  library(insight)
+  library(glue)
+})
+
+source(file.path(rprojroot::find_root(rprojroot::is_rstudio_project), "project_config.R"))
+
+# Force a UTF-8 locale before any tables are built — otherwise flextable
+# emits Russian strings (table captions, headers, cell values) as
+# `<U+041E><U+0442>...` escape sequences in the LaTeX output. We register
+# a per-chunk hook so the locale is re-applied before each subsequent
+# chunk (some sourced helper scripts reset LC_CTYPE back to "C", and
+# the per-chunk hook is the only reliable place to lock it back in).
+force_utf8_locale()
+knitr::knit_hooks$set(.utf8_locale = function(before, options, envir) {
+  if (before) {
+    for (loc in c("ru_RU.UTF-8", "en_US.UTF-8")) {
+      r <- try(Sys.setlocale("LC_CTYPE", loc), silent = TRUE)
+      if (!inherits(r, "try-error") && nzchar(r)) break
+    }
+  }
+})
+knitr::opts_chunk$set(.utf8_locale = TRUE)
+
+src_ch4_main  <- file.path(codesEmplNcs, "02_regression_empl.R")
+src_ch4_suppl <- file.path(codesEmplNcs, "03_regression_supplement.R")
+src_ch5_main  <- file.path(codesReturnsNcs, "03_fit_models_returns.R")
+src_ch6_main  <- file.path(codesJobSatisfNcs, "03_regressions_jobsatisf.R")
+
+invisible(capture.output({
+  source(file.path(codesEmplNcs, "04_descr_empl.R"))
+  source(file.path(codesJobSatisfNcs, "01_data_prep_jobsatisf.R"))
+  source(file.path(codesJobSatisfNcs, "04_outputs_jobsatisf.R"))
+}))
+
+# Load chapter-5 model SUMMARIES (one bundle per model) rather than raw fits.
+# The summaries already contain the bootstrapped tTable, so the annex helper
+# does not need to re-run the bootstrap on every render — that is what
+# 04_summarize_models_returns.R is for.
+.read_or_null <- function(f) if (file.exists(f)) readRDS(f) else NULL
+
+m1_ipw_summaries     <- .read_or_null(file.path(returns_thesis_out, "m1_ipw_summaries.rds"))
+m2_ipw_summaries     <- .read_or_null(file.path(returns_thesis_out, "m2_ipw_summaries.rds"))
+m3_edu_ipw_summaries <- .read_or_null(file.path(returns_thesis_out, "m3_edu_ipw_summaries.rds"))
+m4_ipw_summaries     <- .read_or_null(file.path(returns_thesis_out, "m4_ipw_summaries.rds"))
+m_lc_ipw_summaries   <- .read_or_null(file.path(returns_thesis_out, "m_lc_ipw_summaries.rds"))
+gam_age_model        <- .read_or_null(file.path(returns_thesis_out, "m_gam_age_model.rds"))
+
+# Backward-compatible names: some downstream code (and the chapter text)
+# expected NULL placeholders for these. Keep them so nothing breaks if
+# 03/04 haven't run yet.
+if (is.null(m3_edu_ipw_summaries)) {
+  m3_edu_ipw_summaries <- list(
+    Tertiary = NULL, Secondary_Vocational = NULL, Secondary_or_below = NULL
+  )
+}
+if (is.null(m_lc_ipw_summaries)) {
+  m_lc_ipw_summaries <- list(
+    age_16_65 = NULL, age_30_39 = NULL, age_40_49 = NULL, age_50_65 = NULL
+  )
+}
+
+# Some scripts expose domain models as models_satisf; chapter text expects models_satisf_rus.
+if (!exists("models_satisf_rus") && exists("models_satisf")) {
+  models_satisf_rus <- models_satisf
+}
+
+# Russian label maps used by the chapter 4/6 bootstrap CI tables in
+# Приложение 2 below. These are normally defined in the chapter qmds
+# but the annex needs them in scope when building the full tables.
+# IMPORTANT: explicitly mark UTF-8 encoding on these vectors. When this
+# chunk's source is parsed, R's locale may still be "C" (macOS default
+# at Rscript startup), so the literal Russian bytes get Encoding tag
+# "unknown" — which downstream (kableExtra, format, knit_print) renders
+# as "<U+041E>..." escape sequences. Setting the tag explicitly tells
+# downstream tools to treat the bytes as UTF-8.
+.tag_utf8 <- function(x) { Encoding(x) <- "UTF-8"; x }
+skill_code_labels_ru <- .tag_utf8(c(
+  "O"  = "Открытость",
+  "C"  = "Добросовестность",
+  "E"  = "Экстраверсия",
+  "A"  = "Доброжелательность",
+  "ES" = "Эмоциональная стабильность"
+))
+edu_labels_ru <- .tag_utf8(c(
+  "1. No school"            = "1. Ниже среднего",
+  "2. Secondary School"     = "2. Среднее",
+  "3. Secondary Vocational" = "3. Среднее профессиональное",
+  "4. Tertiary"             = "4. Высшее"
+))
+sex_labels_ru <- .tag_utf8(c("Female" = "Женщины", "Male" = "Мужчины"))
+
+```
+
+### A1. Воспроизводимость исследования {.unnumbered .unlisted}
+
+Репозиторий проекта: <https://github.com/karavan88/Thesis>.
+
+Основная логика проекта следующая:
+
+``` text
+Thesis/
+├── 01_data/processed/          # подготовленные данные РМЭЗ
+├── 02_codes/                   # R-скрипты анализа
+│   ├── 03_data/                # подготовка данных и описательная статистика
+│   ├── 04_ncs_empl/            # модели занятости, глава 4
+│   ├── 05_ncs_wages/           # модели заработной платы, глава 5
+│   └── 06_ncs_job_satisf/      # модели удовлетворенности работой, глава 6
+├── 03_output/                  # сохраненные модели и таблицы
+├── 04_thesis/                  # Quarto-файлы диссертации
+├── 99_user_functions/          # функции форматирования таблиц и моделей
+├── project_config.R            # пути проекта и загрузка пакетов
+└── renv.lock                   # зафиксированные версии R-пакетов
+```
+
+Все главы подключают `project_config.R`, который определяет пути к данным, коду и сохраненным результатам. Тяжелые модели сохраняются в `03_output/`, поэтому повторная сборка диссертации не требует переоценивания всех регрессий. Полная сборка выполняется командой `quarto render 04_thesis` из корня репозитория.
+
+```{r}
+#| label: annex-env-pkglist
+#| echo: false
+#| warning: false
+#| message: false
+#| results: 'asis'
+
+quarto_ver <- tryCatch(system2("quarto", "--version", stdout = TRUE)[1],
+                       error = function(e) "—")
+cat(sprintf(
+  "Версия R: %s. Версия Quarto: %s. Менеджер пакетов: renv %s.\n\n",
+  as.character(getRversion()), quarto_ver,
+  as.character(utils::packageVersion("renv"))
+))
+
+cat("Ключевые R-пакеты, использованные в анализе и в подготовке таблиц:\n\n")
+
+critical_pkgs <- c(
+  # Подготовка данных и графика
+  "dplyr", "ggplot2",
+  # Модели смешанных эффектов и квантильная регрессия
+  "lme4", "lmerTest", "lqmm", "mgcv",
+  # Взвешивание и пост-оценочный анализ
+  "WeightIt", "broom.mixed", "parameters", "performance", "ggeffects",
+  # Таблицы и оформление вывода
+  "modelsummary", "kableExtra", "flextable",
+  "gt", "tinytable", "gtsummary"
+)
+
+for (p in critical_pkgs) {
+  v <- as.character(utils::packageVersion(p))
+  ttl <- utils::packageDescription(p)$Title
+  if (is.null(ttl) || is.na(ttl)) ttl <- p
+  ttl <- gsub("\\s+", " ", trimws(ttl))
+  cat(sprintf("- `%s` %s — %s\n", p, v, ttl))
+}
+```
+
+```{=latex}
+\clearpage
+\begin{landscape}
+```
+
+### A2. Карта гипотез, моделей и результатов {.unnumbered .unlisted}
+
+| Гипотеза | Зависимая переменная | Основная модель | Таблица/рисунок |
+|------------------|------------------|------------------|------------------|
+| Н1 | Формальная занятость | Линейная смешанная модель вероятности | @tbl-regs-mem-fixed |
+| Н2 | Формальная занятость × среднедушевой доход домохозяйства/образование/пол | Модели со случайными коэффициентами | @tbl-regs-mem-random; @tbl-rs-coefs-ses-empl; @tbl-rs-coefs-edu-empl; @tbl-rs-coefs-sex-empl |
+| Н3 | Занятость в высококвалифицированном умственном труде | Линейная смешанная модель вероятности с IPW | @tbl-mem-occup |
+| Н4 | Избыточное образование | Линейная смешанная модель вероятности с IPW | @tbl-reg-mismatch |
+| Н5 | Логарифм почасовой заработной платы | LQMM по квантилям заработной платы | @tbl-baseline-reg-ipw |
+| Н6 | Логарифм почасовой заработной платы с учетом образования | LQMM с контролем образования | @tbl-extended-reg |
+| Н7 | Логарифм почасовой заработной платы по группам работников | LQMM по полу, образованию и возрастным группам | @fig-edu-ncs; @tbl-reg-lc; @fig-age-gam |
+| Н8 | Общая удовлетворенность работой | Линейная смешанная модель вероятности с IPW | @tbl-mem-ncs |
+| Н9 | Удовлетворенность работой × квинтиль заработной платы | Модель со случайными коэффициентами по квинтилям заработной платы | @tbl-mem-ncs; @tbl-js-rs-coefs; @fig-wages-ncs |
+| Н10 | Компоненты удовлетворенности работой | Линейные смешанные модели вероятности с IPW | @tbl-mem-ncs2 |
+
+### A3. Соответствие ключевых переменных {.unnumbered .unlisted}
+
+| Концепт в тексте | Переменная в коде | Шкала | Интерпретация |
+|------------------|------------------|------------------|------------------|
+| Открытость опыту | `O` | стандартизированная | Эффект при росте на 1 стандартное отклонение |
+| Добросовестность | `C` | стандартизированная | Эффект при росте на 1 стандартное отклонение |
+| Экстраверсия | `E` | стандартизированная | Эффект при росте на 1 стандартное отклонение |
+| Доброжелательность | `A` | стандартизированная | Эффект при росте на 1 стандартное отклонение |
+| Эмоциональная стабильность | `ES` | стандартизированная | Эффект при росте на 1 стандартное отклонение |
+| Формальная занятость | `empl_dv`, `employed_officially` | 0/1 | Коэффициенты LPM интерпретируются в процентных пунктах |
+| Высококвалифицированный умственный труд | `white_collar_hs` | 0/1 | Занятость в ISCO-08 группах 1-3 |
+| Избыточное образование | `overeduc` | 0/1 | Высшее образование и занятость в профессиях ISCO-08 групп 4-9 |
+| Лог почасовой заработной платы | `log_wage` | натуральный логарифм | Коэффициенты интерпретируются как приблизительные процентные изменения |
+| Общая удовлетворенность работой | `job_satisf` | 0/1 | Коэффициенты LPM интерпретируются в процентных пунктах |
+| Квинтиль заработной платы | `hourly_wage_quintile` | 1-5 | Группировка работников по распределению почасовой оплаты |
+| IPW-вес занятости | `ipw_empl` | положительный вес | Корректирует смещение, связанное с самоотбором в занятость |
+
+### A4. Аналитические выборки {.unnumbered .unlisted}
+
+| Блок анализа | Единица анализа | Размер выборки | Почему N отличается |
+|------------------|-----------------:|-----------------:|------------------|
+| Глава 4: формальная занятость | Молодежь 15-29 лет в волнах с измерением некогнитивных навыков | N = 5981 | Включает занятых и незанятых респондентов |
+| Глава 4: умственный труд | Занятая молодежь | N = 2401 | Ограничение занятыми |
+| Глава 4: избыточное образование | Занятые респонденты с завершенным высшим образованием | N = 924 | Исход зависит от наличия высшего образования и профессии |
+| Глава 5: заработная плата | Занятые работники с валидной почасовой оплатой | N = 2661 | Требуются занятость, заработная плата, часы и контрольные переменные |
+| Глава 6: удовлетворенность работой | Занятые работники с ответом об удовлетворенности | N = 2924 | Требуются занятость, заработная плата, удовлетворенность и контрольные переменные |
+
+```{=latex}
+\end{landscape}
+\clearpage
+```
+
+## Приложение B. Полные регрессионные таблицы Главы 4 {.unnumbered}
+
+Этот раздел содержит спецификацию кода и выводы по регрессионным моделям.
+
+### M1: модель занятости с НКН {.unnumbered .unlisted}
+
+Аннотация: уравнение @eq-empl-fixed; таблица @tbl-regs-mem-fixed.
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_empl1[[1]]", models_empl1[[1]], src_ch4_main, 69, 74)
+```
+
+### M2: модель со случайными наклонами по среднедушевому доходу домохозяйства {.unnumbered .unlisted}
+
+Аннотация: уравнение @eq-empl-rs; таблица @tbl-regs-mem-random, столбец «Среднедушевой доход домохозяйства».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_empl2[[1]]", models_empl2[[1]], src_ch4_main, 99, 105)
+```
+
+### M3: модель со случайными наклонами по образованию {.unnumbered .unlisted}
+
+Аннотация: уравнение @eq-empl-rs; таблица @tbl-regs-mem-random, столбец «Уровень образования».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_empl2[[2]]", models_empl2[[2]], src_ch4_main, 125, 131)
+```
+
+### M4: модель со случайными наклонами по полу {.unnumbered .unlisted}
+
+Аннотация: уравнение @eq-empl-rs; таблица @tbl-regs-mem-random, столбец «Пол».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_empl2[[3]]", models_empl2[[3]], src_ch4_main, 151, 157)
+```
+
+### M5: базовая модель умственного труда {.unnumbered .unlisted}
+
+Аннотация: уравнение @eq-empl-wc; таблица @tbl-mem-occup, столбец «Базовая».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_occup[[1]]", models_occup[[1]], src_ch4_suppl, 41, 47)
+```
+
+### M6: модель умственного труда со случайными наклонами по среднедушевому доходу домохозяйства {.unnumbered .unlisted}
+
+Аннотация: уравнение @eq-empl-wc; таблица @tbl-mem-occup, столбец «Случайные наклоны по среднедушевому доходу домохозяйства».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_occup[[2]]", models_occup[[2]], src_ch4_suppl, 55, 62)
+```
+
+### M7: модель избыточной квалификации {.unnumbered .unlisted}
+
+Аннотация: уравнение @eq-overeduc; таблица @tbl-reg-mismatch, столбец «Избыточная квалификация».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_suppl[['Educational Mismatch']]", models_suppl[["Educational Mismatch"]], src_ch4_suppl, 90, 95)
+```
+
+## Приложение C. Полные регрессионные таблицы Главы 5 {.unnumbered}
+
+Все модели главы 5 — линейные смешанные квантильные регрессии (LQMM, [@lqmm]) с индивидуальным случайным эффектом и взвешиванием обратной вероятности занятости. Для каждой модели показан **код фита** и **вывод `summary()`**; региональные дамми скрыты ради компактности.
+
+### M1: базовая модель заработной платы {.unnumbered .unlisted}
+
+Спецификация:
+
+``` r
+m1_ipw_models <- fit_lqmm_by_quantile(
+  fixed_formula     = log_wage ~ exp + I(exp^2) + area + sex +
+                                 marital_status + region +
+                                 O + C + E + A + ES,
+  data_frame        = youth_master_returns,
+  weight_vector     = youth_master_returns$ipw_empl,
+  tau_values        = c(q10 = 0.10, q25 = 0.25, q50 = 0.50,
+                        q75 = 0.75, q90 = 0.90),
+  control_obj       = ctrl,
+  control_overrides = list(q25 = ctrl1, q90 = ctrl1)
+)
+```
+
+Сводка моделей по квантилям. Аннотация: таблица @tbl-baseline-reg-ipw.
+
+```{r}
+#| echo: false
+#| results: asis
+print_lqmm_summary_no_ci("M1_IPW", m1_ipw_summaries)
+```
+
+### M2: расширенная модель с учетом образования {.unnumbered .unlisted}
+
+Спецификация:
+
+``` r
+m2_ipw_models <- fit_lqmm_by_quantile(
+  fixed_formula     = log_wage ~ edu_lvl + exp + I(exp^2) +
+                                 sex + area + region + marital_status +
+                                 O + C + E + A + ES,
+  data_frame        = youth_master_returns,
+  weight_vector     = youth_master_returns$ipw_empl,
+  tau_values        = c(q10 = 0.10, q25 = 0.25, q50 = 0.50,
+                        q75 = 0.75, q90 = 0.90),
+  control_obj       = ctrl,
+  control_overrides = list(q25 = ctrl1, q90 = ctrl1)
+)
+```
+
+Аннотация: таблица @tbl-extended-reg.
+
+```{r}
+#| echo: false
+#| results: asis
+print_lqmm_summary_no_ci("M2_IPW", m2_ipw_summaries)
+```
+
+### M3: модели по уровням образования {.unnumbered .unlisted}
+
+Та же спецификация, что и M1, оцениваемая отдельно на каждой подвыборке по уровню образования. Аннотация: рисунок @fig-edu-ncs.
+
+#### M3a: высшее образование {.unnumbered .unlisted}
+
+``` r
+dat_m3_tert <- youth_master_returns[
+  youth_master_returns$edu_lvl == "4. Tertiary", ]
+
+m3_tert_ipw_models <- fit_lqmm_by_quantile(
+  fixed_formula     = log_wage ~ exp + I(exp^2) + area + sex +
+                                 marital_status + region +
+                                 O + C + E + A + ES,
+  data_frame        = dat_m3_tert,
+  weight_vector     = dat_m3_tert$ipw_empl,
+  tau_values        = c(q10 = 0.10, q25 = 0.25, q50 = 0.50,
+                        q75 = 0.75, q90 = 0.90),
+  control_obj       = ctrl,
+  control_overrides = list(q25 = ctrl1, q50 = ctrl1, q75 = ctrl1, q90 = ctrl1)
+)
+```
+
+```{r}
+#| echo: false
+#| results: asis
+print_lqmm_summary_no_ci("M3a (Tertiary)", m3_edu_ipw_summaries[["Tertiary"]])
+```
+
+#### M3b: среднее профессиональное образование {.unnumbered .unlisted}
+
+``` r
+dat_m3_voc <- youth_master_returns[
+  youth_master_returns$edu_lvl == "3. Secondary Vocational", ]
+
+m3_voc_ipw_models <- fit_lqmm_by_quantile(
+  fixed_formula     = log_wage ~ exp + I(exp^2) + area + sex +
+                                 marital_status + region +
+                                 O + C + E + A + ES,
+  data_frame        = dat_m3_voc,
+  weight_vector     = dat_m3_voc$ipw_empl,
+  tau_values        = c(q10 = 0.10, q25 = 0.25, q50 = 0.50,
+                        q75 = 0.75, q90 = 0.90),
+  control_obj       = ctrl,
+  control_overrides = list(q25 = ctrl1, q50 = ctrl1, q90 = ctrl1)
+)
+```
+
+```{r}
+#| echo: false
+#| results: asis
+print_lqmm_summary_no_ci("M3b (Secondary Vocational)",
+                         m3_edu_ipw_summaries[["Secondary_Vocational"]])
+```
+
+#### M3c: среднее образование и ниже {.unnumbered .unlisted}
+
+``` r
+dat_m3_sec <- youth_master_returns[
+  youth_master_returns$edu_lvl %in% c("1. No school", "2. Secondary School"), ]
+
+m3_sec_ipw_models <- fit_lqmm_by_quantile(
+  fixed_formula     = log_wage ~ exp + I(exp^2) + area + sex +
+                                 marital_status + region +
+                                 O + C + E + A + ES,
+  data_frame        = dat_m3_sec,
+  weight_vector     = dat_m3_sec$ipw_empl,
+  tau_values        = c(q10 = 0.10, q25 = 0.25, q50 = 0.50,
+                        q75 = 0.75, q90 = 0.90),
+  control_obj       = ctrl,
+  control_overrides = list(q25 = ctrl1, q75 = ctrl1, q90 = ctrl1)
+)
+```
+
+```{r}
+#| echo: false
+#| results: asis
+print_lqmm_summary_no_ci("M3c (Secondary or below)",
+                         m3_edu_ipw_summaries[["Secondary_or_below"]])
+```
+
+### Жизненный цикл: медианная модель по возрастным группам {.unnumbered .unlisted}
+
+Та же спецификация, что и M1, но на медианном квантиле ($\tau = 0.5$) и отдельно для каждой возрастной группы. Выборка — все занятые 16–65 лет (без военных). Аннотация: таблица @tbl-reg-lc.
+
+``` r
+m_lc <- lqmm(
+  fixed   = log_wage ~ exp + I(exp^2) + area + sex +
+                       marital_status + region + O + C + E + A + ES,
+  data    = ind_master_returns,                           # либо подвыборка по возрасту
+  random  = ~ 1, group = idind, tau = 0.50,
+  weights = ind_master_returns$ipw_empl,
+  control = list(method = "df")
+)
+```
+
+Возрастные группы: 16–65 (полная выборка), 30–39, 40–49, 50–65.
+
+```{r}
+#| echo: false
+#| results: asis
+print_lqmm_summary_no_ci("m_lc_ipw_summaries", m_lc_ipw_summaries)
+```
+
+### Обобщенная аддитивная модель возраста {.unnumbered .unlisted}
+
+Вспомогательная GAM-модель с непараметрическим эффектом возраста:
+
+``` r
+m_gam <- gam(
+  log_wage ~ s(age) + sex + region + edu_lvl + area + marital_status,
+  data = ind_master_returns
+)
+```
+
+Параметрические коэффициенты (без региональных дамми и сглаживающего члена `s(age)`). Аннотация: рисунок @fig-age-gam.
+
+```{r}
+#| echo: false
+#| results: asis
+if (is.null(gam_age_model)) {
+  cat("```\n[GAM-модель не подогнана.]\n```\n")
+} else {
+  s <- summary(gam_age_model)
+  ptab <- as.data.frame(s$p.table)
+  ptab <- ptab[!grepl("^region", rownames(ptab)), , drop = FALSE]
+  ptab <- ptab[, setdiff(colnames(ptab), c("lower bound", "upper bound")),
+               drop = FALSE]
+  ptab <- round(ptab, 4)
+  cat("```\n")
+  print(ptab)
+  cat("```\n")
+}
+```
+
+## Приложение D. Полные регрессионные таблицы Главы 6 {.unnumbered}
+
+Все модели главы 6 — линейные смешанные регрессии (`lmer` из пакета `lme4` [@bates2015]) с весами обратной вероятности занятости (IPW) и случайными эффектами на уровнях индивида (`idind`), региона (`region`) и профессии (`occupation`). Ниже представлены три блока: (i) общие модели удовлетворенности работой, (ii) модель со случайными коэффициентами по квантилям заработной платы, (iii) модели для отдельных аспектов удовлетворенности работой.
+
+### Общая удовлетворенность работой {.unnumbered .unlisted}
+
+#### M1: модель с контролями (без НКН) {.unnumbered .unlisted}
+
+Аннотация: уравнение @eq-satisf-main; таблица @tbl-mem-ncs, столбец «Модель 1».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_job_satisf_list[[1]]",
+                   models_job_satisf_list[[1]], src_ch6_main, 105, 109)
+```
+
+#### M2: полная модель с НКН {.unnumbered .unlisted}
+
+Аннотация: уравнение @eq-satisf-main; таблица @tbl-mem-ncs, столбец «Модель 2».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_job_satisf_list[[2]]",
+                   models_job_satisf_list[[2]], src_ch6_main, 116, 121)
+```
+
+### Случайные наклоны по квантилям заработной платы (M3) {.unnumbered .unlisted}
+
+Аннотация: уравнение @eq-satisf-rs; таблица @tbl-mem-ncs, столбец «Модель 3».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("models_job_satisf_list[[3]]",
+                   models_job_satisf_list[[3]], src_ch6_main, 129, 135)
+```
+
+### Отдельные аспекты удовлетворенности работой {.unnumbered .unlisted}
+
+#### M4: удовлетворенность карьерным ростом {.unnumbered .unlisted}
+
+Аннотация: таблица @tbl-mem-ncs2, столбец «Удовлетворенность карьерным ростом».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("m4_satisf (Карьерный рост)",
+                   models_satisf_rus[[1]], src_ch6_main, 143, 148)
+```
+
+#### M5: удовлетворенность условиями труда {.unnumbered .unlisted}
+
+Аннотация: таблица @tbl-mem-ncs2, столбец «Удовлетворенность условиями труда».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("m5_satisf (Условия труда)",
+                   models_satisf_rus[[2]], src_ch6_main, 150, 155)
+```
+
+#### M6: удовлетворенность заработной платой {.unnumbered .unlisted}
+
+Аннотация: таблица @tbl-mem-ncs2, столбец «Удовлетворенность заработной платой».
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("m6_satisf (Заработная плата)",
+                   models_satisf_rus[[3]], src_ch6_main, 157, 162)
+```
+
+#### M7: удовлетворенность балансом работы и личной жизни {.unnumbered .unlisted}
+
+Модель оценивается на ограниченной подвыборке (только 28-я волна РМЭЗ), где доступен соответствующий пункт о балансе.
+
+```{r}
+#| echo: false
+#| results: asis
+print_model_output("m7_satisf (Баланс работы и личной жизни)",
+                   m7_satisf, src_ch6_main, 164, 169)
+```
+
+```{=latex}
+\clearpage
+```
+
+## Приложение E. Проверка устойчивости случайных коэффициентов через бустрап-доверительные интервалы {.unnumbered}
+
+```{r}
+#| echo: false
+
+# Helper that renders a bootstrap CI table via kableExtra (NOT flextable).
+# kableExtra emits plain LaTeX without the per-character \setmainfont
+# wrapping that broke Cyrillic encoding under non-UTF-8 LC_CTYPE in the
+# previous flextable-based version.
+render_bootCI_kbl <- function(d, footnote_lines = character(0)) {
+  # Force a UTF-8 locale RIGHT NOW so as.character() on the kable below
+  # produces the LaTeX string with actual Cyrillic bytes, not "<U+041E>"
+  # escapes. The escape conversion happens at format/print time and depends
+  # on the live LC_CTYPE; setting it here, *inside the chunk body where
+  # the conversion actually runs*, is the only place that reliably works.
+  for (loc in c("ru_RU.UTF-8", "en_US.UTF-8")) {
+    r <- try(Sys.setlocale("LC_CTYPE", loc), silent = TRUE)
+    if (!inherits(r, "try-error") && nzchar(r)) break
+  }
+
+  tbl <- kableExtra::kbl(
+    d,
+    format    = "latex",
+    booktabs  = TRUE,
+    linesep   = "",
+    align     = c("l", "l", rep("r", ncol(d) - 2)),
+    escape    = FALSE
+  )
+  # Note: do NOT pass `latex_options` here. kableExtra's hold_position
+  # wraps the output in its own `\begin{table}[!h]` environment, which
+  # nests inside Quarto's own `\begin{table}` from `tbl-cap` and produces
+  # a stray `[!h]` text leak that breaks LaTeX compile.
+  tbl <- kableExtra::kable_styling(
+    tbl,
+    font_size  = 9,
+    full_width = FALSE,
+    position   = "left"
+  )
+  if (length(footnote_lines)) {
+    tbl <- kableExtra::footnote(
+      tbl,
+      general          = footnote_lines,
+      general_title    = "",
+      threeparttable   = FALSE,
+      escape           = FALSE
+    )
+  }
+  # Convert to plain character now, while locale is UTF-8, and return as
+  # asis_output. Skips knit_print (which would run under whatever locale
+  # is live at chunk-end and re-introduce the escape sequences).
+  knitr::asis_output(as.character(tbl))
+}
+```
+
+```{=latex}
+\clearpage
+\begin{landscape}
+```
+
+```{r}
+#| label: tbl-bootCI-m2-empl
+#| tbl-cap: "Бутстрап-ДИ и p-значения для случайных коэффициентов в модели формальной занятости (Квинтиль дохода × НКН) — расширение @tbl-rs-coefs-ses-empl"
+#| warning: false
+#| message: false
+
+local({
+  boot <- readRDS(file.path(outputsEmplNcs, "m2_empl_bootCI.rds"))
+  render_bootCI_kbl(
+    bootstrap_to_full_table(boot, trait_labels = c(
+      "O" = "Открытость", "C" = "Добросовестность",
+      "E" = "Экстраверсия", "A" = "Доброжелательность",
+      "ES" = "Эмоциональная стабильность"
+    )),
+    footnote_lines = c(
+      "Все значения в процентных пунктах.",
+      "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы."
+    )
+  )
+})
+```
+
+```{=latex}
+\end{landscape}
+```
+
+```{=latex}
+\clearpage
+\begin{landscape}
+```
+
+```{r}
+#| label: tbl-bootCI-m3-empl
+#| tbl-cap: "Бутстрап-ДИ и p-значения для случайных коэффициентов в модели формальной занятости (Образование × НКН) — расширение @tbl-rs-coefs-edu-empl"
+#| warning: false
+#| message: false
+
+local({
+  boot <- readRDS(file.path(outputsEmplNcs, "m3_empl_bootCI.rds"))
+  render_bootCI_kbl(
+    bootstrap_to_full_table(
+      boot,
+      group_labels = c(
+        "1. No school"            = "1. Ниже среднего",
+        "2. Secondary School"     = "2. Среднее",
+        "3. Secondary Vocational" = "3. Среднее профессиональное",
+        "4. Tertiary"             = "4. Высшее"
+      ),
+      trait_labels = c(
+        "O" = "Открытость", "C" = "Добросовестность",
+        "E" = "Экстраверсия", "A" = "Доброжелательность",
+        "ES" = "Эмоциональная стабильность"
+      )
+    ),
+    footnote_lines = c(
+      "Все значения в процентных пунктах.",
+      "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы."
+    )
+  )
+})
+```
+
+```{=latex}
+\end{landscape}
+```
+
+```{=latex}
+\clearpage
+\begin{landscape}
+```
+
+```{r}
+#| label: tbl-bootCI-m4-empl
+#| tbl-cap: "Бутстрап-ДИ и p-значения для случайных коэффициентов в модели формальной занятости (Пол × НКН) — расширение @tbl-rs-coefs-sex-empl"
+#| warning: false
+#| message: false
+
+local({
+  boot <- readRDS(file.path(outputsEmplNcs, "m4_empl_bootCI.rds"))
+  render_bootCI_kbl(
+    bootstrap_to_full_table(
+      boot,
+      group_labels = c("Female" = "Женщины", "Male" = "Мужчины"),
+      trait_labels = c(
+        "O" = "Открытость", "C" = "Добросовестность",
+        "E" = "Экстраверсия", "A" = "Доброжелательность",
+        "ES" = "Эмоциональная стабильность"
+      )
+    ),
+    footnote_lines = c(
+      "Все значения в процентных пунктах.",
+      "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы."
+    )
+  )
+})
+```
+
+```{=latex}
+\end{landscape}
+```
+
+```{=latex}
+\clearpage
+\begin{landscape}
+```
+
+```{r}
+#| label: tbl-bootCI-m6-empl
+#| tbl-cap: "Бутстрап-ДИ и p-значения для случайных коэффициентов в модели занятости в профессиях, основанных на умственном труде (Квинтиль дохода × НКН) — расширение @tbl-rs-coefs-occup-ses"
+#| warning: false
+#| message: false
+
+local({
+  boot <- readRDS(file.path(outputsEmplNcs, "m6_empl_bootCI.rds"))
+  render_bootCI_kbl(
+    bootstrap_to_full_table(boot, trait_labels = c(
+      "O" = "Открытость", "C" = "Добросовестность",
+      "E" = "Экстраверсия", "A" = "Доброжелательность",
+      "ES" = "Эмоциональная стабильность"
+    )),
+    footnote_lines = c(
+      "Все значения в процентных пунктах.",
+      "Модель взвешена обратными вероятностями занятости в высококвалифицированном умственном труде.",
+      "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы."
+    )
+  )
+})
+```
+
+```{=latex}
+\end{landscape}
+```
+
+```{=latex}
+\clearpage
+\begin{landscape}
+```
+
+```{r}
+#| label: tbl-bootCI-m3-satisf
+#| tbl-cap: "Бутстрап-ДИ и p-значения для случайных коэффициентов в модели удовлетворенности работой (Квинтиль зарплаты × НКН) — расширение @tbl-js-rs-coefs"
+#| warning: false
+#| message: false
+
+local({
+  boot <- readRDS(file.path(outputsJobSatisfNcs, "m3_satisf_bootCI.rds"))
+  render_bootCI_kbl(
+    bootstrap_to_full_table(
+      boot,
+      trait_labels = c("O" = "Открытость",
+                       "C" = "Добросовестность",
+                       "E" = "Экстраверсия",
+                       "A" = "Доброжелательность",
+                       "ES" = "Эмоциональная стабильность")
+    ),
+    footnote_lines = c(
+      "Все значения в процентных пунктах.",
+      "Источник: расчеты автора на основе данных РМЭЗ за 2016 и 2019 годы."
+    )
+  )
+})
+```
+
+```{=latex}
+\end{landscape}
+```

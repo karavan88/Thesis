@@ -1,0 +1,282 @@
+---
+title: ""
+author: ""
+date: ""
+documentclass: scrartcl
+papersize: a4
+classoption:
+  - DIV=11
+  - numbers=noendperiod
+mainfont: "Times New Roman"
+sansfont: "Times New Roman"
+monofont: "Courier New"
+titlefont: "Times New Roman"
+fontsize: 12pt
+linestretch: 1
+geometry:
+  - left=2cm
+  - right=2cm
+  - top=2cm
+  - bottom=2cm
+lang: en-US
+bibliography: references_sorted.bib
+biblio-style: bwl-FU
+csl: apa-with-abstract.csl
+citeproc: true
+toc: false
+number-sections: true
+format:
+  pdf:
+    latex-engine: xelatex
+    highlight-style: kate
+    fig-width: 6.5
+    fig-height: 4
+    include-before-body: pdf-frontmatter-resume-eng.tex
+    include-in-header:
+      text: |
+        \usepackage{pdflscape}
+        \usepackage{booktabs}
+        \usepackage{longtable}
+        \usepackage{array}
+        \usepackage{multirow}
+        \usepackage{float}
+        \usepackage{colortbl}
+        \usepackage{threeparttable}
+        \usepackage{threeparttablex}
+        \usepackage[normalem]{ulem}
+        \usepackage{makecell}
+        \usepackage{xcolor}
+        \usepackage{etoolbox}
+        \usepackage{framed}
+        \usepackage{fvextra}
+        \definecolor{shadecolor}{RGB}{245,247,250}
+        \makeatletter
+        \@ifundefined{Shaded}
+          {\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}}
+          {\renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}}
+        \makeatother
+        \setlength{\footskip}{1.5cm}
+        \AtBeginEnvironment{tablenotes}{\fontsize{9}{11}\selectfont\rmfamily}
+execute:
+  echo: false
+  warning: false
+  message: false
+  freeze: auto
+---
+
+# Motivation
+
+The transformations underway in the global supply and demand for labor are reshaping the determinants of labor market success. As far back as the early 2000s, economists were already documenting how computerization had cut the demand for routine cognitive tasks [@acemoglu2011; @autor2003]. The intensive digitalization of the economy and the rapid advances in artificial intelligence over the past decade have shifted the spotlight onto skills and competencies that resist full or partial automation [@deming2017]. A recent global employer survey places such traits as resilience and flexibility, leadership, motivation, empathy, and curiosity among the ten most sought-after skills in today's economy [@wef2025]. The question, then, is how these shifts in the structure of skill demand affect young people entering the labor market.
+
+Labor market success depends on a combination of factors: educational attainment, vocational training, and the balance between supply and demand for skilled labor. Yet attempts of economists to explain individual differences in labor market outcomes through the conventional metrics of human capital have run into clear limits. The heterogeneity observed among individuals with identical formal credentials has prompted a broadening of the analytical frame, drawing attention to factors that econometric models had long set aside — the psychological constructs referred now as non-cognitive skills.
+
+Non-cognitive skills are defined as relatively stable patterns of thoughts, feeling, and behaviors [@borghans2008]. They are treated as skills because they meet three criteria: they are productive, they can be developed through targeted intervention, and they emerge through socialization [@green2013]. The contemporary economic literature views non-cognitive skills as an additional component of human capital, complementing formal schooling [@cunha2007; @heckman2006; @humphries2017; @non-cogn2018]. A growing body of work shows that they are an important element behind the labor market success of youth [@avanesian2024; @glewwe2017; @lerman2013; @ripamonti2023; @zudina2022]. Their decisive role for employment, wages, and other labor market outcomes has been documented in both developed [@almlund2011; @ferguson2011] and developing economies [@nordman2015; @onsomu2025]. Despite the variety of competing taxonomies, the most widely used classification of non-cognitive skills remains the Big Five personality traits model [@costa1992a; @goldberg1990], which characterizes personality along five continuous and orthogonal dimensions: openness to experience, conscientiousness, extraversion, agreeableness, and emotional stability (the inverse of neuroticism).
+
+Although the international body of work on non-cognitive skills is now extensive, research into their effects on individuals' economic behavior in the Russian context is relatively recent. Its emergence was made possible thank to the inclusion of a personality module in the Russian Longitudinal Monitoring Survey (RLMS-HSE). However, existing Russian studies have largely concentrated on average effects within the working-age population [@maksimova2019; @gimpelson2020; @rozhkova2019], paying limited attention to youth as labor market actors and largely ignoring the heterogeneity of skill effects within different employment outcomes. Yet youth are among the most vulnerable groups on the labor market. Understanding which non-cognitive skills shape extrinsic and intrinsic career success is therefore particularly important. The absence of a systematic analysis of these issues defines the research agenda from which this dissertation departs.
+
+# Brief Literature Review
+
+The theoretical foundation of the dissertation lies in human capital theory [@becker1964; @mincer1974], which treats individual qualifications and knowledge as a form of capital that generates economic value through higher labor productivity. The work of James Heckman and his co-authors extended this framework, showing that the human capital production function encompasses a broad set of skills and personality traits formed through parental, educational, and social investments across the life cycle [@heckman2006; @heckman2001; @estimati2010].
+
+In this framework, personality traits are treated as factors that raise the marginal return on the other components of human capital — education, work experience, health — through the logic of dynamic complementarity [@cunha2007]. The complementarity also operates indirectly, through individual choices in education and occupation [@roberts2007]. Personality traits do more than just predict labor market outcomes; they causally shape social and economic behaviors that reflect the market valuation of individual productivity [@heckman2012]. In other words, non-cognitive skills function as intangible assets and as channels through which labor market success is realized [@cinque2021; @non-cogn2018].
+
+Empirical work confirms that the Big Five influences youth employment outcomes [@buhl2007]. Extraversion and emotional stability raise the success of job search, often through the social capital they generate [@baay2014]. Conscientiousness predicts career success, while low emotional stability undermines it [@judge1999]. Studies of vulnerable populations point in the same direction: among migrants in Germany, extraversion and openness predict employment more strongly than they do for natives, and extraversion can even substitute for formal qualifications among the less-educated [@akay2023].
+
+Findings on wages are less clear-cut and vary across countries. Swedish administrative data covering 1992–2013 show rising returns to non-cognitive skills, particularly in the private sector and at higher percentiles of the wage distribution [@edin2022]. Household panel evidence reveals gender-specific patterns. In Germany, agreeableness lowers women's wages by more than 6 percent, while no comparable effect is observed for men [@heineck2010]. A meta-analysis of the broader literature confirms substantial cross-country heterogeneity in returns to non-cognitive abilities [@cabus2021]. The returns are well documented, however, their magnitude varies by gender, country, and sector.
+
+Job satisfaction differs from wages in being subjective as opposed to objective reward, but it is no less important for understanding youth labor market outcomes. The Big Five has emerged as a robust predictor of job satisfaction [@cooper2014]. Extraversion is consistently positively associated with job satisfaction and helps individuals adapt to the interpersonal dynamics of work [@furnham1986; @judge2008job; @templer2011]. Conscientiousness has a more moderate influence, sometimes linked to better working conditions but not always to higher satisfaction [@seibert2001]. However, the literature rather outlines that of all the traits, neuroticism shows the strongest association, lowering satisfaction across any context [@judge2002; @judge2010].
+
+Russian studies based on RLMS-HSE data have confirmed the relevance of non-cognitive skills for the Russian labor market and have identified a particular role for openness and emotional stability in predicting wage premia [@maksimova2019; @rozhkova2019]. Non-cognitive skills have also been shown to account for part of the gender wage gap, though their contribution is small [@rozhkova2025]. Descriptive analysis has documented substantial inequality in non-cognitive skill endowments across socio-demographic groups [@gimpelson2020]. The analytical focus has gradually broadened, with subsequent studies confirming the role of non-cognitive skills in decisions about higher education and the choice of field [@rozhkova2021b; @rozhkova2021a], in the school-to-work transition [@avanesian2024; @zudina2022], and in subjective evaluations of labor market success [@zudina2024].
+
+Even with this growing literature on Russian and international data, several gaps remain unaddressed. First, most studies are based on the working-age population as a whole, leaving aside the particular role of non-cognitive skills in shaping labor market outcomes of youth. Second, the economic literature has concentrated on objective indicators such as employment status and wages, paying less attention to subjective evaluations of job quality. Third, despite consistent evidence that non-cognitive skills matter, the literature lacks a systematic account of how their effects vary with predetermined ex-ante conditions, including those established before labor market entry. This gap limits our understanding of which groups, and under what conditions, derive the most benefit from non-cognitive skills. The present dissertation aims to address these gaps.
+
+# Research Objectives
+
+The object of the dissertation is Russian youth aged 15 to 29 in the labor market. The subject is the effect of non-cognitive skills on youth labor market outcomes — the probability and quality of employment, the wage level, and job satisfaction.
+
+The goal of the study is to assess the magnitude and heterogeneity of the effects of non-cognitive skills on the objective and subjective antecedents of labor market success amongst youth in Russia. These characteristics — formal employment, occupational choice, overeducation, the wage level, and job satisfaction — are at the center of the analysis because together they capture the key dimensions of youth labor market integration, from employment itself to subjective evaluations of its quality.
+
+The following research objectives serve to achieve this goal:
+
+-   To estimate how non-cognitive skills relate to formal employment among Russian youth, and to establish how this relationship varies with predetermined conditions such as socio-economic status, educational attainment, and gender.
+
+-   To examine how non-cognitive skills relate to qualitative features of youth employment, including the probability of having a white collar job and the risk of overeducation.
+
+-   To estimate the heterogeneity of returns to non-cognitive skills along the wage distribution.
+
+-   To determine how far the relationship between non-cognitive skills and wages is mediated by formal education and how it varies across socio-demographic groups.
+
+-   To assess the relationship between non-cognitive skills and overall job satisfaction and its individual components, and to identify how this relationship varies with the worker's position in the wage distribution.
+
+# Methodology
+
+## Data
+
+The dissertation draws on RLMS-HSE data from 2016 and 2019. The 2016 wave was the first to include a personality module covering the Big Five traits, and the module's repetition in 2019 makes it possible to use both waves. The youth sample, restricted to respondents aged 15–29, contains roughly 6,000 observations across the two waves. The data form an unbalanced panel. Because temporal variability in non-cognitive skills is not the focus of the analysis, the sample is strictly limited to respondents in the 15–29 range, in line with the ILO's definition of youth.
+
+## Endogeneity and Identification Challenges
+
+Estimating the effect of non-cognitive skills on labor market outcomes of youth is challanged by a number of identification obstacles that constrain causal interpretation. Non-cognitive skills are an endogenous regressor for several reasons. First, a reverse-causality problem stems from the time-varying nature of non-cognitive skills. An individual's labor trajectory can shape the patterns of thinking and behavior that define personality: success in finding a job, the type of work, the level of pay, and the dynamics of the professional environment can all influence levels of social activity, emotional stability, and self-confidence. This is especially relevant for youth, since personality traits continue to develop into early adulthood.
+
+Second, omitted-variable bias presents a concern. Non-cognitive skills do not exist in isolation from cognitive ability and are deeply tied to parental investment, educational quality, and unobserved socio-cultural factors.
+
+Third, family socio-economic status affects both non-cognitive skills and employment outcomes, acting as a confounder of the relationship between predictor and outcome. The empirical evidence makes clear that personality is shaped not only by genetics but also by the social environment. Family socio-economic status proxies the quality and quantity of investments in human capital. Wealthier families have more resources to develop traits such as independence and leadership in their children. They also typically have wider access to high-quality schooling and to the labor market, which can reinforce the advantages conferred by non-cognitive skills.
+
+Fourth, estimates may be biased by unobserved heterogeneity at the individual and regional levels. Young labor market participants may possess unobserved characteristics that influence both their non-cognitive skills and their employment outcomes. The labor market itself displays substantial regional variation in labor demand. Youth living in different regions face different baseline probabilities of employment and different wage levels, and these differences are not random.
+
+Finally, any analysis restricted to employed individuals is subject to sample selection bias. Employment is not a random outcome but a function of observed and unobserved characteristics, including non-cognitive skills themselves. An analysis confined to employed youth only produces biased estimates if self-selection into employment is not accounted for. This requires correcting the coefficients so that the results are not limited to the employed subsample. Failing to address self selection into employment can produce coefficients that are too large or too small, depending on which unobserved characteristics raise the probability of employment and correlate with the variables under study.
+
+The central methodological challenge of the study, then, is that the observed relationship between non-cognitive skills and labor market outcomes can reflect several overlapping sources of bias. The econometric strategy is designed to reduce these biases sequentially.
+
+## Econometric Strategy
+
+To address these challenges, the analysis relies on mixed-effects regression models [@pinheiro2000; @gelman2006]. This choice follows from the design of the study. First, the data form an unbalanced panel, with some respondents observed in more than one wave. More importantly, individuals are nested within the wider regional context of the Russian labor market. Mixed-effects models accommodate unobserved heterogeneity at multiple levels through random intercepts, without forcing all variation to be explained at the individual level. Second, the study aims not only to estimate average effects of non-cognitive skills on employment outcomes but to characterize the heterogeneity of these effects across initial conditions, which themselves act as confounders. Random coefficients on non-cognitive skills allow for an efficient handling of effect heterogeneity across groups defined by ex-ante characteristics — family socio-economic status, gender, education — without splitting the analysis into separate sub-samples. Third, when the analysis is restricted to employed individuals, the mixed-effects models incorporate inverse probability weights, which bring the estimates closer to the characteristics of the broader youth population by accounting for the observable determinants of employment.
+
+This strategy is intended to reduce the biases introduced by unobserved individual and regional heterogeneity, by the clustered structure of the data, by the confounding role of ex-ante characteristics, and by self-selection into employment. It does not, however, fully resolve the reverse-causality problem that arises from the time-varying nature of non-cognitive skills and from the influence of labor market entry on personality itself. The estimates reported in this work should therefore be read as conditional associations, cleaned of the main sources of bias, rather than as strictly identified causal effects.
+
+## Research Design and Hypotheses
+
+Because non-cognitive skills can be converted into economic advantages in different ways and depending on the specific employment outcome, the study design estimates these effects separately. While formulating hypotheses, however, a general umbrella term is used, since the analysis proceeds from the assumption that, taken together, these characteristics are potentially productive. The design of the study is comprised of 3 consecutive stages.
+
+### Stage 1 
+
+At the first stage, the dependent variables are formal employment and two of its characteristics: employment in high-skilled white collar occupations, and overeducation. This setup makes it possible to estimate both the role of non-cognitive skills in entering employment and certain aspects of its quality. Four hypotheses are tested at this stage:
+
+> *H1: Higher levels of non-cognitive skills are statistically significantly and positively associated with the probability of formal employment among youth.*
+>
+> *H2: These associations are heterogeneous and vary with predetermined characteristics such as family socio-economic status, educational attainment, and gender.*
+>
+> *H3: Higher levels of non-cognitive skills are statistically significantly and positively associated with the probability of employment in high-skilled cognitive occupations.*
+>
+> *H4: Higher levels of non-cognitive skills statistically significantly reduce the probability of overeducation among youth with completed higher education.*
+
+### Stage 2 
+
+The second stage measures the economic returns to non-cognitive skills among Russian youth in the form of wages. The dependent variable here is the log hourly wage. In contrast to the previous stage, where heterogeneity was assessed through the variation of average effects across exogenous characteristics, the second stage focuses on heterogeneity along the statistical distribution of the dependent variable. The baseline methodology is therefore extended through quantile mixed-effects regressions, which estimate the relationship between non-cognitive skills and wages at different points of the wage distribution — among low-, middle-, and high-wage young workers. The hypotheses tested at this stage are:
+
+> *H5: Non-cognitive skills are statistically significantly and positively associated with the wages of young workers, but the level of return varies with the worker's position in the wage distribution.*
+>
+> *H6: Part of the wage return to non-cognitive skills is mediated by educational attainment, but the effect on wages persists after education is accounted for.*
+>
+> *H7: Returns to non-cognitive skills are not uniform across worker groups; they vary by gender and educational attainment among young workers, and across different stages of the life cycle beyond the youth period.*
+
+### Stage 3 
+
+The third stage examines the relationship between non-cognitive skills and the subjective perception of employment quality, captured by overall job satisfaction and by satisfaction with specific aspects of work — working conditions, pay, and career advancement opportunities. Overall job satisfaction is therefore the main dependent variable, with satisfaction in specific domains serving as auxiliary outcomes. The starting premise is that the relationship between wages and job satisfaction may be non-linear, and that the effect of non-cognitive skills on satisfaction can vary with the worker's position in the wage distribution. The hypotheses tested at this stage are:
+
+> *H8: Non-cognitive skills are statistically significantly and positively associated with overall job satisfaction among young workers.*
+>
+> *H9: The strength of the association between non-cognitive skills and job satisfaction varies with the worker's position in the wage distribution.*
+>
+> *H10: The positive and statistically significant effect of non-cognitive skills extends beyond overall satisfaction to its components: (a) satisfaction with working conditions; (b) satisfaction with career advancement opportunities; and (c) satisfaction with pay.*
+
+## Reproducibility
+
+The dissertation is conceived as a reproducible study, written in Quarto Markdown [@quarto] using the R language [@r2024]. All tables, figures, and regression coefficients are generated automatically from the original RLMS-HSE microdata, ensuring full transparency. The entire research workflow is documented and openly available on GitHub: <https://github.com/karavan88/Thesis>.
+
+```{r}
+#| echo: false
+#| include: false
+#| message: false
+#| warning: false
+
+source(file.path(rprojroot::find_root(rprojroot::is_rstudio_project), "project_config.R"))
+
+invisible(capture.output({
+	source(file.path(codesEmplNcs, "04_descr_empl.R"))
+	source(file.path(codesReturnsNcs, "01_data_prep_returns.R"))
+	source(file.path(codesReturnsNcs, "02_descr_returns.R"))
+	source(file.path(codesReturnsNcs, "05_output_returns_rus.R"))
+	source(file.path(codesJobSatisfNcs, "01_data_prep_jobsatisf.R"))
+	source(file.path(codesJobSatisfNcs, "04_outputs_jobsatisf.R"))
+}))
+
+intro_empl_fixef <- fixef(models_empl1[[1]])
+intro_occup_fixef <- fixef(models_occup[[1]])
+intro_mismatch_fixef <- fixef(models_suppl[["Educational Mismatch"]])
+intro_js_fixef <- fixef(models_job_satisf_list[[2]])
+
+intro_cons_empl <- round(intro_empl_fixef[["C"]] * 100, 1)
+intro_extr_empl <- round(intro_empl_fixef[["E"]] * 100, 1)
+intro_cons_occup <- round(intro_occup_fixef[["C"]] * 100, 1)
+intro_open_occup <- round(intro_occup_fixef[["O"]] * 100, 1)
+intro_cons_mismatch <- round(abs(intro_mismatch_fixef[["C"]]) * 100, 1)
+intro_open_mismatch <- round(abs(intro_mismatch_fixef[["O"]]) * 100, 1)
+
+intro_m1_ipw_raw <- read_intro_ipw_coefs("m1_ipw_coefs.csv")
+intro_open_q10 <- get_intro_ipw_coef(intro_m1_ipw_raw, "O", "q10_est")
+intro_open_q90 <- get_intro_ipw_coef(intro_m1_ipw_raw, "O", "q90_est")
+
+intro_js_cons <- round(intro_js_fixef[["C"]] * 100, 1)
+intro_js_extr <- round(intro_js_fixef[["E"]] * 100, 1)
+intro_js_es <- round(intro_js_fixef[["ES"]] * 100, 1)
+```
+
+# Main Findings
+
+## Stage 1: Formal Employment and Its Characteristics
+
+-   Non-cognitive skills shape both the probability of formal employment among youth and its qualitative features. The statistically significant and positive effects on formal employment come from conscientiousness (`r intro_cons_empl` pp) and extraversion (`r intro_extr_empl` pp). Openness has a statistically significant positive effect on the probability of having a high-skilled white collar job (`r intro_open_occup` pp) and reduces the probability of overeducation by `r intro_open_mismatch` pp.
+
+-   The relationship between non-cognitive skills and employment is heterogeneous and depends on predetermined initial conditions. Family socio-economic status amplifies the gains from extraversion and conscientiousness. Conscientiousness raises the probability of employment more for men than for women, while extraversion does the reverse. The pattern by educational attainment runs the opposite way: extraversion is most productive for youth without completed secondary education, whereas conscientiousness reinforces the advantages associated with higher education.
+
+## Stage 2: Wages
+
+-   The economic return to non-cognitive skills is heterogeneous and depends on the worker's position in the wage distribution. The most stable and statistically significant effect comes from openness to new experience, whose return rises from `r intro_open_q10`% at the 10th quantile to `r intro_open_q90`% at the 90th quantile. Other traits produce statistically significant effects only on selected segments of the wage distribution, supporting the hypothesis of heterogeneous returns and exposing the limits of predictive models that rely on average coefficients alone.
+
+-   Returns to non-cognitive skills are partly mediated by formal education and vary across socio-demographic groups and stages of the life cycle. Once educational attainment enters the regression, the relationship between certain non-cognitive skills and wages weakens but does not disappear, confirming that the skills generate a wage premium independently of formal human capital. Returns also differ by gender and education and shift along the life cycle. The higher the level of education, the smaller the return to many of the traits — since obtaining higher education is itself associated with a number of non-cognitive skills, part of their return is already embedded in the diploma premium. At the same time, non-cognitive skills serve as an effective mechanism of self-selection into occupations where formal education plays a smaller role.
+
+## Stage 3: Job Satisfaction
+
+-   Non-cognitive skills are statistically significantly related not only to the objective but also to the subjective characteristics of youth employment. Extraversion, emotional stability, and conscientiousness are all positively associated with overall job satisfaction. Extraversion raises the probability of being satisfied with one's work by about `r intro_js_extr` pp, emotional stability by `r intro_js_es` pp, and conscientiousness by `r intro_js_cons` pp. These coefficients vary across wage quintiles. While extraversion and conscientiousness have stronger effects on satisfaction among workers in the lower quintiles, emotional stability shows substantial dispersion in coefficients. The relationships identified for overall job satisfaction extend, with relative stability, to its individual components.
+
+# Significance and Novelty of the Study
+
+Earlier work, including studies on Russian data, has already established the importance of non-cognitive skills for individual labor market outcomes. The **theoretical novelty** of the present study is that it sharpens our understanding of how these skills relate to outcomes by exposing the limits of analyses that rely on a single, universal interpretation of average effects. The dissertation shows that the effects of non-cognitive skills are inherently heterogeneous. Moreover, they need to be treated as a context-dependent mechanism, mediated by initial conditions and inequality of opportunities. In this sense the work goes beyond supplementing the existing literature: it expands its basic theoretical premise and argues that the meaning of non-cognitive skills is determined not only by their presence, but by the conditions under which they translate into successful outcomes on the labor market.
+
+The **practical novelty** is that the results confirm the potential of non-cognitive skills as instruments for improving the effectiveness of youth employment policy. The findings show that non-cognitive skills can act as a plausible channel for reducing the risks of unemployment, overeducation, and job dissatisfaction. They also help identify which non-cognitive skills are most relevant in early career stages, and which youth subgroups stand to benefit most from their development.
+
+The **methodological novelty** lies in applying mixed-effects models with linear and quantile components, which are still relatively new in econometric practice. The approach is promising — particularly for panel data — because it accommodates multiple sources of unobserved heterogeneity, captures the variation of relationships of interest, and allows hypothesis testing not only at the sample mean but also at different percentiles of the distribution of the dependent variable.
+
+# Contribution
+
+The novelty and contribution of the dissertation can be summarized as follows:
+
+-   The dissertation is the first to use Russian empirical data to show that non-cognitive skills are an independent factor of youth labor market success, operating separately from formal education and acting as a meaningful mechanism for raising individual productivity in employment.
+
+-   The analysis demonstrates that the effect of non-cognitive skills on youth labor market outcomes is systematically heterogeneous across predetermined conditions. It shows for the first time on Russian data that the relationship between non-cognitive skills and employment varies with the family's initial socio-economic position — which reinforces their cumulative advantages — as well as with educational attainment and gender. These results identify the youth groups, and the conditions, in which non-cognitive skills matter most, and they highlight the methodological need to move away from a single average estimate over the full sample.
+
+-   The dissertation is the first in the Russian economic literature to estimate the heterogeneous economic return to non-cognitive skills among youth across different points of the wage distribution. In contrast to earlier studies based on average log-linear effects, the analysis shows that the same personality traits are rewarded differently at low, median, and high wages. The findings refine our understanding of how the labor market values personality and demonstrate that the return to such skills depends on the worker's initial position in the wage structure.
+
+-   The dissertation establishes that part of the economic return to non-cognitive skills is mediated by formal education but is not reducible to it; the contribution of the skills themselves is genuinely independent, which matters in particular for youth entering the labor market. The work shows that returns to non-cognitive skills differ by educational attainment and gender, and shift outside the youth age range. The letter in many ways opens a new view to interpret the complementary and compensatory roles of non-cognitive skills within the structure of human capital.
+
+-   The dissertation extends the economic literature on non-cognitive skills by including not only the objective and observable outcomes of youth employment but also subjective evaluations of its quality. It is the first study on Russian data to show that the role of economic incentives is non-linear in the wage distribution and that non-cognitive skills act as an important channel of motivation, with measurable effects on job satisfaction. The study also identifies the heterogeneity of mechanisms through which non-cognitive skills relate to job satisfaction by way of wages.
+
+# Conference Presentations
+
+1.  15 December 2025 — 17th International Symposium on Human Capital and Labor Markets (China Center for Human Capital and Labor Market Research, Central University of Finance and Economics, Beijing, China). Presentation: "Estimating Cognitive Skill Formation in Brazil, China, and Russia: An Education Production Function Approach."
+
+2.  5–7 June 2025 — Society for the Advancement of Behavioral Economics (University of Trento, Trento, Italy). Presentation: "Intra-Family Variability in Non-Cognitive Skills of Siblings During Adolescence and Youth: Insights from the Household Random Intercept Terms" (with K. V. Rozhkova).
+
+3.  15–18 April 2025 — XXV Yasin (April) International Academic Conference on Economic and Social Development (HSE University, Moscow); round table "Assessing Spheres of Child Well-Being for Human Development and Evidence-Based Social Policy." Presentation: "Measuring Child Well-Being Across Countries."
+
+4.  25–27 October 2023 — XIV International Conference on Higher Education Research (HSE University, Moscow). Presentation: "The Effect of Non-Cognitive Skills on Intentions to Enroll in Higher Education" (with K. V. Rozhkova).
+
+5.  4–8 April 2022 — XXIII Yasin (April) International Academic Conference on Economic and Social Development (HSE University, Moscow). Presentation: "NEET Youth in Russia: How Far Are They Falling Behind in Their Non-Cognitive Skills?" (with M. A. Masych and V. A. Egorova).
+
+# Publications
+
+1.  Avanesyan, K. A., Borovskaya, M. A., Ryzhova, V. S., Kirik, V. A., Egorova, V. A., Bermus, A. G. (2022). Can Investment in Non-Cognitive Skills Improve the Academic Performance of Students from the Poorest Families? A Causal Analysis Using Propensity Score Matching. *Voprosy obrazovaniya / Educational Studies Moscow*, 1, 13–53. <https://doi.org/10.17323/1814-9545-2022-1-13-53>. Journal metrics: SJR 2022: Q2; included in HSE List B.
+
+2.  Avanesian, G., Borovskaya, M., Masych, M., Dikaya, L., Ryzhova, V., Egorova, V. (2024). How Far Are NEET Youth Falling Behind in Their Non-Cognitive Skills? An Econometric Analysis of Disparities. *Economies*, 12(1), 25. <https://doi.org/10.3390/economies12010025>. Journal metrics: SJR 2024: Q2; included in HSE List C.
+
+3.  Avanesian, G. (2025). Do Non-Cognitive Skills Produce Heterogeneous Returns Across Different Wage Levels Amongst Youth Entering the Workforce? A Quantile Mixed Model Approach. *Economies*, 13(5), 114. <https://doi.org/10.3390/economies13050114>. Journal metrics: SJR 2025: Q2; included in HSE List C.
+
+4.  Avanesian, G., Rozhkova, K. (2025). The Effect of Non-Cognitive Skills on Academic Performance: Does It Vary by Socio-Economic Status? *International Journal of Educational Research*, 133, 102680. <https://doi.org/10.1016/j.ijer.2025.102680>. Journal metrics: SJR 2025: Q1; included in HSE List A.
+
+{{< pagebreak >}}
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

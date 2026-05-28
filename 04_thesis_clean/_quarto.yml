@@ -1,0 +1,104 @@
+project:
+  type: book
+  output-dir: _book
+  execute-dir: project
+
+book:
+  title: ""
+  author: ""
+  date: ""
+  chapters:
+    - index.qmd
+    - 02_lit_rev.qmd
+    - 03_data.qmd
+    - 04_ncs_empl.qmd
+    - 05_ncs_wages.qmd
+    - 06_ncs_job_satisf.qmd
+    - 07_concl.qmd
+    - references.qmd
+    - 08_annex.qmd
+
+
+bibliography: references_sorted.bib
+
+format:
+  html:
+    theme: cosmo
+  pdf:
+    latex-engine: xelatex
+    mainfont: "Times New Roman"          # body text
+    sansfont: "Times New Roman"          # sans-serif text (used in headings by some classes)
+    monofont: "Courier New"              # monospace text (code blocks, etc.)
+    titlefont: "Times New Roman"         # <- this works in `quarto` >=1.5
+    documentclass: scrreprt
+    papersize: a4
+    classoption:
+      - DIV=11
+      - numbers=noendperiod
+      - open=any
+    number-sections: true
+    lang: ru-RU
+    fontsize: 12pt                       # <- set font size here
+    linestretch: 1
+    geometry:
+      - left=2cm
+      - right=2cm
+      - top=2cm
+      - bottom=2cm
+    highlight-style: kate
+    toc: false               # ← suppress automatic TOC
+    lof: false               # ← suppress automatic list of figures
+    lot: false               # ← suppress automatic list of tables
+    fig-width: 6.5
+    fig-height: 4
+    include-before-body: pdf-frontmatter.tex
+    include-in-header:
+      text: |
+        \usepackage{pdflscape}
+        \usepackage{booktabs}
+        \usepackage{longtable}
+        \usepackage{array}
+        \usepackage{multirow}
+        \usepackage{float}
+        \usepackage{colortbl}
+        \usepackage{threeparttable}
+        \usepackage{threeparttablex}
+        \usepackage[normalem]{ulem}
+        \usepackage{makecell}
+        \usepackage{xcolor}
+        \usepackage{etoolbox}
+        \usepackage{framed}
+        \usepackage{fvextra}
+        \definecolor{shadecolor}{RGB}{245,247,250}
+        \makeatletter
+        \@ifundefined{Shaded}
+          {\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}}
+          {\renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}}
+        \makeatother
+        \setlength{\footskip}{1.5cm}
+        \AtBeginEnvironment{tablenotes}{\fontsize{9}{11}\selectfont\rmfamily}
+  docx: 
+    number-sections: true
+    mainfont: "Times New Roman"          # body text
+    sansfont: "Times New Roman"          # sans-serif text (used in headings by some classes)
+    monofont: "Courier New"              # monospace text (code blocks, etc.)
+    titlefont: "Times New Roman"         # <- this works in `quarto` >=1.5
+    toc: false                           # handled manually in index.qmd
+    lof: false
+    lot: false
+    dpi: 300
+
+
+lang: ru-RU
+citeproc: true
+biblio-style: bwl-FU
+csl: "apa-with-abstract.csl"
+
+editor: visual
+
+execute:
+  echo: false
+  warning: false
+  message: false
+  error: false   # optional
+  freeze: auto   # cache chunk results; re-run only when source changes
