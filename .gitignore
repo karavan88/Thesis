@@ -32,6 +32,10 @@
 !04_thesis/apa-with-abstract.csl
 !04_thesis/header.tex
 !04_thesis/pdf-frontmatter.tex
+!04_thesis_clean/header.tex
+!04_thesis_clean/pdf-frontmatter.tex
+!04_thesis_clean/pdf-frontmatter-resume.tex
+!04_thesis_clean/pdf-frontmatter-resume-eng.tex
 
 # --- renv --------------------------------------------------------------------
 renv/library/
