@@ -117,7 +117,7 @@ Unlike wages, which constitute an objective reward for work, job satisfaction is
 
 > *H10: Non-cognitive skills are statistically significantly and positively associated with overall job satisfaction among young workers.*
 
-At the same time, the economic literature shows that the relationship between wages and job satisfaction is non-linear: as pay rises, the marginal effect of wages on satisfaction diminishes [@clark1996; @judge2010]. This suggests that the relative role of other determinants of satisfaction, including the worker's personality traits, may differ depending on the worker's position in the wage distribution:
+At the same time, the economic literature shows that the relationship between wages and job satisfaction is non-linear: as pay rises, the marginal effect of wages on satisfaction diminishes [@clark1996]. Psychological research, in turn, indicates that the effect of personality traits on job satisfaction depends on the level of pay, working conditions, and other features of the workplace [@judge2010]:
 
 > *H11: The strength of the association between non-cognitive skills and job satisfaction varies with the worker's position in the wage distribution.*
 
